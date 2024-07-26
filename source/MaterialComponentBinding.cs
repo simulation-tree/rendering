@@ -9,14 +9,14 @@ namespace Materials
     /// </summary>
     public struct MaterialComponentBinding : IEquatable<MaterialComponentBinding>
     {
-        public ResourceKey key;
+        public DescriptorResourceKey key;
         public ShaderStage stage;
         public RuntimeType componentType;
         public Flags flags;
 
         public bool Changed
         {
-            get => (flags & Flags.Changed) != 0;
+            readonly get => (flags & Flags.Changed) != 0;
             set
             {
                 if (value)
@@ -32,7 +32,7 @@ namespace Materials
 
         public bool AlwaysUpdated
         {
-            get => (flags & Flags.AlwaysUpdate) != 0;
+            readonly get => (flags & Flags.AlwaysUpdate) != 0;
             set
             {
                 if (value)
@@ -50,7 +50,7 @@ namespace Materials
 
         public bool RequireManualUpdate
         {
-            get => (flags & Flags.RequireManualUpdate) != 0;
+            readonly get => (flags & Flags.RequireManualUpdate) != 0;
             set
             {
                 if (value)
@@ -66,7 +66,7 @@ namespace Materials
             }
         }
 
-        public MaterialComponentBinding(ResourceKey key, ShaderStage stage, RuntimeType componentType)
+        public MaterialComponentBinding(DescriptorResourceKey key, ShaderStage stage, RuntimeType componentType)
         {
             this.key = key;
             this.componentType = componentType;
@@ -91,7 +91,7 @@ namespace Materials
         /// <summary>
         /// Gets a property element that references a component of type <typeparamref name="T"/>.
         /// </summary>
-        public static MaterialComponentBinding Create<T>(ResourceKey key, ShaderStage stage) where T : unmanaged
+        public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, ShaderStage stage) where T : unmanaged
         {
             return new MaterialComponentBinding(key, stage, RuntimeType.Get<T>());
         }

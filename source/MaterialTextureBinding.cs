@@ -1,5 +1,5 @@
-﻿using Game;
-using Shaders;
+﻿using Shaders;
+using Simulation;
 using System;
 using System.Numerics;
 
@@ -10,8 +10,8 @@ namespace Materials
     /// </summary>
     public struct MaterialTextureBinding
     {
-        public ResourceKey key;
-        public EntityID texture;
+        public DescriptorResourceKey key;
+        public eint texture;
         public Vector4 region;
         public Flags flags;
 
@@ -31,7 +31,7 @@ namespace Materials
             }
         }
 
-        public MaterialTextureBinding(ResourceKey key, EntityID texture, Vector4 region)
+        public MaterialTextureBinding(DescriptorResourceKey key, eint texture, Vector4 region)
         {
             this.key = key;
             this.texture = texture;
