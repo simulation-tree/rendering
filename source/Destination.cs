@@ -37,11 +37,16 @@ namespace Rendering
 
         public readonly struct Extension
         {
-            public readonly FixedString value;
+            public readonly FixedString text;
 
-            public Extension(FixedString value)
+            public Extension(FixedString text)
             {
-                this.value = value;
+                this.text = text;
+            }
+
+            public Extension(ReadOnlySpan<char> text)
+            {
+                this.text = new(text);
             }
         }
     }

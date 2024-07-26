@@ -30,7 +30,7 @@ public static class DestinationFunctions
         int count = (int)Math.Min(extensions.Count, buffer.Length);
         for (int i = 0; i < count; i++)
         {
-            buffer[i] = extensions[(uint)i].value;
+            buffer[i] = extensions[(uint)i].text;
         }
 
         return count;
@@ -41,7 +41,7 @@ public static class DestinationFunctions
         UnmanagedList<Destination.Extension> extensions = entity.GetList<T, Destination.Extension>();
         for (uint i = 0; i < extensions.Count; i++)
         {
-            if (extensions[i].value == extension)
+            if (extensions[i].text == extension)
             {
                 throw new InvalidOperationException($"Extension '{extension}' already attached to destination");
             }

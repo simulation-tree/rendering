@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Simulation;
+using System;
 using Unmanaged;
 
 namespace Rendering
 {
     public interface IRenderSystem
     {
-        FixedString Label { get; }
-        
-        void Initialize(ReadOnlySpan<FixedString> extensionName);
-        void CreateInstance(Destination destination);
+        static abstract FixedString Label { get; }
+
+        void Initialize(eint entity, ReadOnlySpan<FixedString> extensionName);
     }
 }
