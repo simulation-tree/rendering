@@ -24,6 +24,11 @@ namespace Rendering
             entity = new(world, existingEntity);
         }
 
+        public Camera(World world, Destination destination, bool isOrthographic, float size, float minDepth = 0.1f, float maxDepth = 1000f) :
+            this(world, default, Quaternion.Identity, destination, isOrthographic, size, minDepth, maxDepth)
+        {
+        }
+
         public Camera(World world, Vector3 position, Quaternion rotation, Destination destination, bool isOrthographic,
             float size, float minDepth = 0.1f, float maxDepth = 1000f)
         {

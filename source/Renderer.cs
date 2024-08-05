@@ -1,35 +1,27 @@
-﻿using Materials;
+﻿using Meshes;
 using Rendering.Components;
-using Shaders;
 using Simulation;
 using System;
 using Unmanaged;
 
 namespace Rendering
 {
-    public readonly struct Material : IMaterial, IDisposable
+    public readonly struct Renderer : IRenderer, IDisposable
     {
         public readonly Entity entity;
 
         eint IEntity.Value => entity.value;
         World IEntity.World => entity.world;
 
-        public Material()
-        {
-            throw new InvalidOperationException("Cannot create a material without a world.");
-        }
-
-        public Material(World world, eint existingEntity)
+        public Renderer(World world, eint existingEntity)
         {
             entity = new(world, existingEntity);
         }
 
-        public Material(World world, Shader shader)
+        public Renderer(World world, Mesh mesh, Material material, Camera camera)
         {
             entity = new(world);
-            entity.AddComponent(new IsMaterial(shader.entity.value));
-            entity.CreateList<Entity, MaterialComponentBinding>();
-            entity.CreateList<Entity, MaterialTextureBinding>();
+            entity.AddComponent(new IsRenderer(material.entity.value, mesh.entity.value, camera.entity.value));
         }
 
         public readonly void Dispose()
@@ -44,7 +36,7 @@ namespace Rendering
 
         public static Query GetQuery(World world)
         {
-            return new(world, RuntimeType.Get<IsMaterial>());
+            return new(world, RuntimeType.Get<IsRenderer>());
         }
     }
 }

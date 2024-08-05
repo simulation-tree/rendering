@@ -1,13 +1,13 @@
-﻿using Simulation;
-using System;
+﻿using System;
 using Unmanaged;
 
 namespace Rendering
 {
-    public interface IRenderSystem
+    public interface IRenderSystem : IDisposable
     {
         static abstract FixedString Label { get; }
 
-        void Initialize(eint entity, ReadOnlySpan<FixedString> extensionName);
+        void Initialize(ReadOnlySpan<FixedString> extensionName);
+        void Render(Destination destination, Camera camera, ReadOnlySpan<Renderer> entities);
     }
 }
