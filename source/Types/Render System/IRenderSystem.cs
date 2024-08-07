@@ -10,6 +10,6 @@ namespace Rendering
         /// Retrieve the functions that compose a "render system".
         /// <para>Called just once, and balanced by the <see cref="FinishFunction"/>.</para>
         /// </summary>
-        static abstract (CreateFunction, DestroyFunction, RenderFunction, FinishFunction) GetFunctions();
+        static abstract (CreateFunction, DestroyFunction, RenderFunction, FinishFunction, SurfaceCreatedFunction) GetFunctions();
     }
 }
