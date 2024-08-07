@@ -12,6 +12,9 @@ public static class DestinationFunctions
         return new(entity.World, entity.Value);
     }
 
+    /// <summary>
+    /// Retrieves the size of the destination.
+    /// </summary>
     public static (uint width, uint height) GetDestinationSize<T>(this T entity) where T : IDestination
     {
         IsDestination isDestination = entity.GetComponent<T, IsDestination>();
