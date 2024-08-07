@@ -36,8 +36,9 @@ public static class DestinationFunctions
         return entity.GetComponent<T, IsDestination>().region;
     }
 
-    public static int GetExtensions<T>(this T entity, Span<FixedString> buffer) where T : IDestination
+    public static int CopyExtensionNamesTo<T>(this T entity, Span<FixedString> buffer) where T : IDestination
     {
+        //todo: should be possible to cast the unmanaged list directly into the desired type, the extension and FixedString are same size
         UnmanagedList<Destination.Extension> extensions = entity.GetList<T, Destination.Extension>();
         int count = (int)Math.Min(extensions.Count, buffer.Length);
         for (int i = 0; i < count; i++)

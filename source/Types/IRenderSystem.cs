@@ -1,13 +1,14 @@
-﻿using System;
-using Unmanaged;
+﻿using Unmanaged;
 
 namespace Rendering
 {
-    public interface IRenderSystem : IDisposable
+    public interface IRenderSystem
     {
         static abstract FixedString Label { get; }
 
-        void Initialize(ReadOnlySpan<FixedString> extensionName);
-        void Render(Destination destination, Camera camera, ReadOnlySpan<Renderer> entities);
+        /// <summary>
+        /// Initializes the renderer.
+        /// </summary>
+        static abstract (SetupFunction setup, DisposeFunction tearDown, RenderFunction render) GetFunctions();
     }
 }
