@@ -4,16 +4,16 @@ namespace Rendering
 {
     public unsafe readonly struct SystemFunction
     {
-        private readonly delegate* unmanaged<Allocation, Allocation, void> function;
+        private readonly delegate* unmanaged<Allocation, bool> function;
 
-        public SystemFunction(delegate* unmanaged<Allocation, Allocation, void> function)
+        public SystemFunction(delegate* unmanaged<Allocation, bool> function)
         {
             this.function = function;
         }
 
-        public readonly void Invoke(Allocation system, Allocation buffer)
+        public readonly bool Invoke(Allocation system)
         {
-            function(system, buffer);
+            return function(system);
         }
     }
 }

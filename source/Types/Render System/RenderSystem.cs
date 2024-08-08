@@ -10,7 +10,7 @@ namespace Rendering
     /// </summary>
     public struct RenderSystem : IDisposable
     {
-        private bool surfaceCreated;
+        private bool hasSurface;
         public readonly nint library;
         public readonly UnmanagedList<eint> cameras;
         public readonly UnmanagedDictionary<eint, UnmanagedDictionary<int, UnmanagedList<eint>>> renderers;
@@ -18,10 +18,9 @@ namespace Rendering
         public readonly UnmanagedDictionary<int, eint> meshes;
 
         private readonly Allocation system;
-        private readonly Allocation buffer;
         private readonly RenderSystemType type;
 
-        public readonly bool IsSurfaceCreated => surfaceCreated;
+        public readonly bool IsSurfaceAvailable => hasSurface;
 
         [Obsolete("Default constructor not supported", true)]
         public RenderSystem()
@@ -32,7 +31,6 @@ namespace Rendering
         internal RenderSystem(CreateResult result, RenderSystemType type)
         {
             this.system = result.system;
-            this.buffer = result.buffer;
             this.library = result.library;
             this.type = type;
 
@@ -45,7 +43,6 @@ namespace Rendering
         public readonly void Dispose()
         {
             type.destroy.Invoke(system);
-            buffer.Dispose();
             materials.Dispose();
             meshes.Dispose();
             cameras.Dispose();
@@ -68,12 +65,12 @@ namespace Rendering
         public void SurfaceCreated(nint surface)
         {
             type.surfaceCreated.Invoke(system, surface);
-            surfaceCreated = true;
+            hasSurface = true;
         }
 
-        public readonly void BeginRender()
+        public readonly bool BeginRender()
         {
-            type.beginRender.Invoke(system, buffer);
+            return type.beginRender.Invoke(system);
         }
 
         public unsafe readonly void Render(ReadOnlySpan<eint> renderers, eint material, eint mesh, eint camera)
@@ -84,9 +81,9 @@ namespace Rendering
             }
         }
 
-        public readonly void EndRender()
+        public readonly bool EndRender()
         {
-            type.endRender.Invoke(system, buffer);
+            return type.endRender.Invoke(system);
         }
     }
 }

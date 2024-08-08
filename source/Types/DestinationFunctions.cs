@@ -21,6 +21,12 @@ public static class DestinationFunctions
         return (isDestination.width, isDestination.height);
     }
 
+    public static uint GetDestinationArea<T>(this T entity) where T : IDestination
+    {
+        (uint width, uint height) = entity.GetDestinationSize();
+        return width * height;
+    }
+
     public static void SetDestinationSize<T>(this T entity, uint width, uint height) where T : IDestination
     {
         IsDestination isDestination = entity.GetComponent<T, IsDestination>();
