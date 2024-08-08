@@ -68,7 +68,7 @@ namespace Rendering
             hasSurface = true;
         }
 
-        public readonly bool BeginRender()
+        public readonly uint BeginRender()
         {
             return type.beginRender.Invoke(system);
         }
@@ -81,7 +81,7 @@ namespace Rendering
             }
         }
 
-        public readonly bool EndRender()
+        public readonly uint EndRender()
         {
             return type.endRender.Invoke(system);
         }

@@ -10,6 +10,8 @@ namespace Rendering.Components
         public Vector4 region;
         public FixedString rendererLabel;
 
+        public readonly uint Area => width * height;
+
         public IsDestination(uint width, uint height, Vector4 region, FixedString rendererLabel)
         {
             this.width = width;
