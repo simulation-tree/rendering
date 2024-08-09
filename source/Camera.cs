@@ -9,7 +9,7 @@ namespace Rendering
 {
     public readonly struct Camera : ICamera, IDisposable
     {
-        public readonly Entity entity;
+        private readonly Entity entity;
 
         World IEntity.World => entity.world;
         eint IEntity.Value => entity.value;
@@ -38,7 +38,7 @@ namespace Rendering
             entity = new(world);
             entity.AddComponent(new IsCamera(minDepth, maxDepth));
             entity.AddComponent(new IsTransform());
-            entity.AddComponent(new CameraOutput(destination.entity.value, new(0, 0, 1, 1), new(0, 0, 0, 1), order));
+            entity.AddComponent(new CameraOutput(destination, new(0, 0, 1, 1), new(0, 0, 0, 1), order));
             if (isOrthographic)
             {
                 entity.AddComponent(new CameraOrthographicSize(size));

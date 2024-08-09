@@ -41,7 +41,7 @@ public static class CameraFunctions
     public static void SetDestination<T>(this T camera, Destination destination) where T : ICamera
     {
         ref CameraOutput output = ref camera.GetComponentRef<T, CameraOutput>();
-        output.destination = destination.entity.value;
+        output.destination = destination.GetEntityValue();
     }
 
     public static Vector4 GetOutputRegion<T>(this T camera) where T : ICamera

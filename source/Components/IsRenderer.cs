@@ -11,9 +11,9 @@ namespace Rendering.Components
 
         public IsRenderer(Mesh mesh, Material material, Camera camera)
         {
-            this.mesh = mesh.entity.value;
-            this.material = material.entity.value;
-            this.camera = camera.entity.value;
+            this.mesh = mesh.GetEntityValue();
+            this.material = material.GetEntityValue();
+            this.camera = camera.GetEntityValue();
         }
     }
 }

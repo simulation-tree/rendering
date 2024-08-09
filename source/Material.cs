@@ -9,7 +9,7 @@ namespace Rendering
 {
     public readonly struct Material : IMaterial, IDisposable
     {
-        public readonly Entity entity;
+        private readonly Entity entity;
 
         eint IEntity.Value => entity.value;
         World IEntity.World => entity.world;

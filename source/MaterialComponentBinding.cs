@@ -1,4 +1,5 @@
 ﻿using Shaders;
+using Simulation;
 using System;
 using Unmanaged;
 
@@ -10,68 +11,17 @@ namespace Materials
     public struct MaterialComponentBinding : IEquatable<MaterialComponentBinding>
     {
         public DescriptorResourceKey key;
-        public ShaderStage stage;
+        public eint entity;
         public RuntimeType componentType;
-        public Flags flags;
+        public ShaderStage stage;
 
         public readonly byte Binding => key.Binding;
         public readonly byte Set => key.Set;
 
-        public bool Changed
-        {
-            readonly get => (flags & Flags.Changed) != 0;
-            set
-            {
-                if (value)
-                {
-                    flags |= Flags.Changed;
-                }
-                else
-                {
-                    flags &= ~Flags.Changed;
-                }
-            }
-        }
-
-        public bool AlwaysUpdated
-        {
-            readonly get => (flags & Flags.AlwaysUpdate) != 0;
-            set
-            {
-                if (value)
-                {
-                    flags |= Flags.AlwaysUpdate;
-                    flags &= ~Flags.RequireManualUpdate;
-                }
-                else
-                {
-                    flags &= ~Flags.AlwaysUpdate;
-                    flags |= Flags.RequireManualUpdate;
-                }
-            }
-        }
-
-        public bool RequireManualUpdate
-        {
-            readonly get => (flags & Flags.RequireManualUpdate) != 0;
-            set
-            {
-                if (value)
-                {
-                    flags |= Flags.RequireManualUpdate;
-                    flags &= ~Flags.AlwaysUpdate;
-                }
-                else
-                {
-                    flags &= ~Flags.RequireManualUpdate;
-                    flags |= Flags.AlwaysUpdate;
-                }
-            }
-        }
-
-        public MaterialComponentBinding(DescriptorResourceKey key, ShaderStage stage, RuntimeType componentType)
+        public MaterialComponentBinding(DescriptorResourceKey key, eint entity, RuntimeType componentType, ShaderStage stage)
         {
             this.key = key;
+            this.entity = entity;
             this.componentType = componentType;
             this.stage = stage;
         }
@@ -94,9 +44,9 @@ namespace Materials
         /// <summary>
         /// Gets a property element that references a component of type <typeparamref name="T"/>.
         /// </summary>
-        public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, ShaderStage stage) where T : unmanaged
+        public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, eint entity, ShaderStage stage) where T : unmanaged
         {
-            return new MaterialComponentBinding(key, stage, RuntimeType.Get<T>());
+            return new MaterialComponentBinding(key, entity, RuntimeType.Get<T>(), stage);
         }
 
         public static bool operator ==(MaterialComponentBinding left, MaterialComponentBinding right)
@@ -107,15 +57,6 @@ namespace Materials
         public static bool operator !=(MaterialComponentBinding left, MaterialComponentBinding right)
         {
             return !(left == right);
-        }
-
-        [Flags]
-        public enum Flags : byte
-        {
-            None = 0,
-            AlwaysUpdate = 1,
-            RequireManualUpdate = 2,
-            Changed = 4
         }
     }
 }

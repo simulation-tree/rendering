@@ -8,7 +8,7 @@ namespace Rendering
 {
     public readonly struct Destination : IDestination, IDisposable
     {
-        public readonly Entity entity;
+        private readonly Entity entity;
 
         World IEntity.World => entity.world;
         eint IEntity.Value => entity.value;
