@@ -15,6 +15,7 @@ namespace Rendering
         public readonly UnmanagedList<eint> cameras;
         public readonly UnmanagedDictionary<eint, UnmanagedDictionary<int, UnmanagedList<eint>>> renderers;
         public readonly UnmanagedDictionary<int, eint> materials;
+        public readonly UnmanagedDictionary<int, eint> shaders;
         public readonly UnmanagedDictionary<int, eint> meshes;
 
         private readonly Allocation system;
@@ -37,6 +38,7 @@ namespace Rendering
             cameras = new();
             renderers = new();
             materials = new();
+            shaders = new();
             meshes = new();
         }
 
@@ -44,6 +46,7 @@ namespace Rendering
         {
             type.destroy.Invoke(system);
             materials.Dispose();
+            shaders.Dispose();
             meshes.Dispose();
             cameras.Dispose();
 
@@ -73,11 +76,11 @@ namespace Rendering
             return type.beginRender.Invoke(system);
         }
 
-        public unsafe readonly void Render(ReadOnlySpan<eint> renderers, eint material, eint mesh, eint camera)
+        public unsafe readonly void Render(ReadOnlySpan<eint> renderers, eint material, eint shader, eint mesh, eint camera)
         {
             fixed (eint* entitiesPtr = renderers)
             {
-                type.render.Invoke(system, (nint)entitiesPtr, renderers.Length, material, mesh, camera);
+                type.render.Invoke(system, (nint)entitiesPtr, renderers.Length, material, shader, mesh, camera);
             }
         }
 

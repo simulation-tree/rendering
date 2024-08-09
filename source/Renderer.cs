@@ -21,7 +21,7 @@ namespace Rendering
         public Renderer(World world, Mesh mesh, Material material, Camera camera)
         {
             entity = new(world);
-            entity.AddComponent(IsRenderer.Create(mesh, material, camera));
+            entity.AddComponent(new IsRenderer(mesh, material, camera));
         }
 
         public readonly void Dispose()

@@ -8,16 +8,16 @@ namespace Rendering
     /// </summary>
     public unsafe readonly struct RenderFunction
     {
-        private readonly delegate* unmanaged<Allocation, nint, int, eint, eint, eint, void> function;
+        private readonly delegate* unmanaged<Allocation, nint, int, eint, eint, eint, eint, void> function;
 
-        public RenderFunction(delegate* unmanaged<Allocation, nint, int, eint, eint, eint, void> function)
+        public RenderFunction(delegate* unmanaged<Allocation, nint, int, eint, eint, eint, eint, void> function)
         {
             this.function = function;
         }
 
-        public readonly void Invoke(Allocation system, nint entities, int entityCount, eint material, eint mesh, eint camera)
+        public readonly void Invoke(Allocation system, nint entities, int entityCount, eint material, eint shader, eint mesh, eint camera)
         {
-            function(system, entities, entityCount, material, mesh, camera);
+            function(system, entities, entityCount, material, shader, mesh, camera);
         }
     }
 }

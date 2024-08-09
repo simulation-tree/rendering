@@ -1,14 +1,20 @@
-﻿using Simulation;
+﻿using Shaders;
+using Simulation;
 
 namespace Rendering.Components
 {
     public struct IsMaterial
     {
-        public eint shader;
+        private eint shader;
 
-        public IsMaterial(eint shader)
+        public IsMaterial(Shader shader)
         {
-            this.shader = shader;
+            this.shader = shader.entity.value;
+        }
+
+        public readonly Shader Get(World world)
+        {
+            return new(world, shader);
         }
     }
 }

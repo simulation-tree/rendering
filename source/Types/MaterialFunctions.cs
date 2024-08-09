@@ -14,21 +14,27 @@ public static class MaterialFunctions
     public static Shader GetShader<T>(this T material) where T : IMaterial
     {
         IsMaterial component = material.GetComponent<T, IsMaterial>();
-        return new(material.World, component.shader);
+        return component.Get(material.World);
     }
 
     public static void SetShader<T>(this T material, Shader shader) where T : IMaterial
     {
         ref IsMaterial component = ref material.GetComponentRef<T, IsMaterial>();
-        component.shader = shader.entity.value;
+        component = new(shader);
     }
 
+    /// <summary>
+    /// All values that bind an entity component to a uniform property.
+    /// </summary>
     public static ReadOnlySpan<MaterialComponentBinding> GetComponentBindings<T>(this T material) where T : IMaterial
     {
         UnmanagedList<MaterialComponentBinding> bindings = material.GetList<T, MaterialComponentBinding>();
         return bindings.AsSpan();
     }
 
+    /// <summary>
+    /// All values that bind a texture entity to a sampler property.
+    /// </summary>
     public static ReadOnlySpan<MaterialTextureBinding> GetTextureBindings<T>(this T material) where T : IMaterial
     {
         UnmanagedList<MaterialTextureBinding> bindings = material.GetList<T, MaterialTextureBinding>();
@@ -50,10 +56,21 @@ public static class MaterialFunctions
         componentBindings.Add(new(key, stage, componentType));
     }
 
-    public static void AddComponentBinding<T, B>(this T material, DescriptorResourceKey key, ShaderStage stage) where T : IMaterial where B : unmanaged
+    public static void AddComponentBinding<T, C>(this T material, DescriptorResourceKey key, ShaderStage stage) where T : IMaterial where C : unmanaged
     {
-        RuntimeType componentType = RuntimeType.Get<B>();
+        RuntimeType componentType = RuntimeType.Get<C>();
         AddComponentBinding(material, key, stage, componentType);
+    }
+
+    public static void AddComponentBinding<T>(this T material, byte binding, byte set, ShaderStage stage, RuntimeType componentType) where T : IMaterial
+    {
+        AddComponentBinding(material, new(binding, set), stage, componentType);
+    }
+
+    public static void AddComponentBinding<T, C>(this T material, byte binding, byte set, ShaderStage stage) where T : IMaterial where C : unmanaged
+    {
+        RuntimeType componentType = RuntimeType.Get<C>();
+        AddComponentBinding(material, new(binding, set), stage, componentType);
     }
 
     public static bool SetComponentBinding<T>(this T material, DescriptorResourceKey key, RuntimeType componentType, ShaderStage stage) where T : IMaterial
@@ -73,9 +90,9 @@ public static class MaterialFunctions
         return false;
     }
 
-    public static bool SetComponentBinding<T, B>(this T material, DescriptorResourceKey key, ShaderStage stage) where T : IMaterial where B : unmanaged
+    public static bool SetComponentBinding<T, C>(this T material, DescriptorResourceKey key, ShaderStage stage) where T : IMaterial where C : unmanaged
     {
-        RuntimeType componentType = RuntimeType.Get<B>();
+        RuntimeType componentType = RuntimeType.Get<C>();
         return SetComponentBinding(material, key, componentType, stage);
     }
 
@@ -113,6 +130,16 @@ public static class MaterialFunctions
         }
 
         textureBindings.Add(new(key, texture.entity.value, region));
+    }
+
+    public static void AddTextureBinding<T>(this T material, byte binding, byte set, Texture texture) where T : IMaterial
+    {
+        AddTextureBinding(material, new(binding, set), texture);
+    }
+
+    public static void AddTextureBinding<T>(this T material, byte binding, byte set, Texture texture, Vector4 region) where T : IMaterial
+    {
+        AddTextureBinding(material, new(binding, set), texture, region);
     }
 
     public static void SetTextureBinding<T>(this T material, DescriptorResourceKey key, Texture texture) where T : IMaterial

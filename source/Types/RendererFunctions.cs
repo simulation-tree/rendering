@@ -13,7 +13,9 @@ public static class RendererFunctions
     public static void SetMaterial<T>(this T entity, Material material) where T : IRenderer
     {
         ref IsRenderer component = ref entity.GetComponentRef<T, IsRenderer>();
-        component.material = material.entity.value;
+        Mesh existingMesh = new(entity.World, component.mesh);
+        Camera existingCamera = new(entity.World, component.camera);
+        component = new(existingMesh, material, existingCamera);
     }
 
     public static Mesh GetMesh<T>(this T entity) where T : IRenderer
@@ -25,7 +27,9 @@ public static class RendererFunctions
     public static void SetMesh<T>(this T entity, Mesh mesh) where T : IRenderer
     {
         ref IsRenderer component = ref entity.GetComponentRef<T, IsRenderer>();
-        component.mesh = mesh.entity.value;
+        Material existingMaterial = new(entity.World, component.material);
+        Camera existingCamera = new(entity.World, component.camera);
+        component = new(mesh, existingMaterial, existingCamera);
     }
 
     /// <summary>
@@ -40,6 +44,8 @@ public static class RendererFunctions
     public static void SetCamera<T>(this T entity, Camera camera) where T : IRenderer
     {
         ref IsRenderer component = ref entity.GetComponentRef<T, IsRenderer>();
-        component.camera = camera.entity.value;
+        Mesh existingMesh = new(entity.World, component.mesh);
+        Material existingMaterial = new(entity.World, component.material);
+        component = new(existingMesh, existingMaterial, camera);
     }
 }

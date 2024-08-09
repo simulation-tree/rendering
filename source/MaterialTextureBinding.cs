@@ -15,6 +15,9 @@ namespace Materials
         public Vector4 region;
         public Flags flags;
 
+        public readonly byte Binding => key.Binding;
+        public readonly byte Set => key.Set;
+
         public bool Changed
         {
             get => (flags & Flags.Changed) == Flags.Changed;

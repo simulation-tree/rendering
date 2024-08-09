@@ -3,22 +3,17 @@ using Simulation;
 
 namespace Rendering.Components
 {
-    public struct IsRenderer
+    public readonly struct IsRenderer
     {
-        public eint mesh;
-        public eint material;
-        public eint camera;
+        public readonly eint mesh;
+        public readonly eint material;
+        public readonly eint camera;
 
-        private IsRenderer(eint mesh, eint material, eint camera)
+        public IsRenderer(Mesh mesh, Material material, Camera camera)
         {
-            this.mesh = mesh;
-            this.material = material;
-            this.camera = camera;
-        }
-
-        public static IsRenderer Create<MS, MT, C>(MS mesh, MT material, C camera) where MS : IMesh where MT : IMaterial where C : ICamera
-        {
-            return new(mesh.Value, material.Value, camera.Value);
+            this.mesh = mesh.entity.value;
+            this.material = material.entity.value;
+            this.camera = camera.entity.value;
         }
     }
 }

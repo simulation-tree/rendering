@@ -14,6 +14,9 @@ namespace Materials
         public RuntimeType componentType;
         public Flags flags;
 
+        public readonly byte Binding => key.Binding;
+        public readonly byte Set => key.Set;
+
         public bool Changed
         {
             readonly get => (flags & Flags.Changed) != 0;
