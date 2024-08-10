@@ -50,7 +50,7 @@ public static class MaterialFunctions
             ref MaterialComponentBinding existingBinding = ref componentBindings.GetRef(i);
             if (existingBinding.key == key && existingBinding.stage == stage)
             {
-                throw new InvalidOperationException($"Component binding {key} already exists.");
+                throw new InvalidOperationException($"Component binding `{key}` already exists on `{material}`.");
             }
         }
 
@@ -131,7 +131,7 @@ public static class MaterialFunctions
             ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
             if (existingBinding.key == key)
             {
-                throw new InvalidOperationException($"Texture binding {key} already exists.");
+                throw new InvalidOperationException($"Texture binding `{key}` already exists on `{material}`.");
             }
         }
 
@@ -148,12 +148,12 @@ public static class MaterialFunctions
         AddTextureBinding(material, new(binding, set), texture, region);
     }
 
-    public static void SetTextureBinding<T>(this T material, DescriptorResourceKey key, Texture texture) where T : IMaterial
+    public static bool SetTextureBinding<T>(this T material, DescriptorResourceKey key, Texture texture) where T : IMaterial
     {
-        SetTextureBinding(material, key, texture, new(0, 0, 1, 1));
+        return SetTextureBinding(material, key, texture, new(0, 0, 1, 1));
     }
 
-    public static void SetTextureBinding<T>(this T material, DescriptorResourceKey key, Texture texture, Vector4 region) where T : IMaterial
+    public static bool SetTextureBinding<T>(this T material, DescriptorResourceKey key, Texture texture, Vector4 region) where T : IMaterial
     {
         UnmanagedList<MaterialTextureBinding> textureBindings = material.GetList<T, MaterialTextureBinding>();
         for (uint i = 0; i < textureBindings.Count; i++)
@@ -163,11 +163,75 @@ public static class MaterialFunctions
             {
                 existingBinding.texture = texture.GetEntityValue();
                 existingBinding.region = region;
-                return;
+                return true;
             }
         }
 
         AddTextureBinding(material, key, texture, region);
+        return false;
+    }
+
+    public static void SetTextureRegion<T>(this T material, Texture texture, Vector4 region) where T : IMaterial
+    {
+        UnmanagedList<MaterialTextureBinding> textureBindings = material.GetList<T, MaterialTextureBinding>();
+        for (uint i = 0; i < textureBindings.Count; i++)
+        {
+            ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
+            if (existingBinding.texture == texture.GetEntityValue())
+            {
+                existingBinding.region = region;
+                return;
+            }
+        }
+
+        throw new InvalidOperationException($"Texture binding referencing texture `{texture}` does not exist to update region of.");
+    }
+
+    public static bool TryGetTextureBinding<T>(this T material, eint texture, out MaterialTextureBinding binding) where T : IMaterial
+    {
+        UnmanagedList<MaterialTextureBinding> textureBindings = material.GetList<T, MaterialTextureBinding>();
+        for (uint i = 0; i < textureBindings.Count; i++)
+        {
+            ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
+            if (existingBinding.texture == texture)
+            {
+                binding = existingBinding;
+                return true;
+            }
+        }
+
+        binding = default;
+        return false;
+    }
+
+    public static MaterialTextureBinding GetTextureBinding<T>(this T material, uint binding) where T : IMaterial
+    {
+        UnmanagedList<MaterialTextureBinding> textureBindings = material.GetList<T, MaterialTextureBinding>();
+        for (uint i = 0; i < textureBindings.Count; i++)
+        {
+            ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
+            if (existingBinding.Binding == binding)
+            {
+                return existingBinding;
+            }
+        }
+
+        throw new InvalidOperationException($"Texture binding `{binding}` does not exist on `{material}`.");
+    }
+
+    public static MaterialComponentBinding GetComponentBinding<T>(this T material, uint binding) where T : IMaterial
+    {
+        UnmanagedList<MaterialComponentBinding> componentBindings = material.GetList<T, MaterialComponentBinding>();
+        for (uint i = 0; i < componentBindings.Count; i++)
+        {
+            ref MaterialComponentBinding existingBinding = ref componentBindings.GetRef(i);
+            if (existingBinding.Binding == binding)
+            {
+                return existingBinding;
+            }
+        }
+
+        throw new InvalidOperationException($"Component binding `{binding}` does not exist on `{material}`.");
     }
 
     public static bool RemoveTextureBinding<T>(this T material, DescriptorResourceKey key) where T : IMaterial
@@ -201,8 +265,7 @@ public static class MaterialFunctions
                 }
                 else
                 {
-                    throw new InvalidOperationException(
-                        $"Component binding {existingBinding.key} has an invalid size.");
+                    throw new InvalidOperationException($"Component binding `{existingBinding.key}` found but has mismatching size, expected {uniform.size} but was {existingBinding.componentType.Size}.");
                 }
             }
         }

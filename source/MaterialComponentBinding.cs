@@ -17,6 +17,7 @@ namespace Materials
 
         public readonly byte Binding => key.Binding;
         public readonly byte Set => key.Set;
+        public readonly bool IsLocal => entity == default;
 
         public MaterialComponentBinding(DescriptorResourceKey key, eint entity, RuntimeType componentType, ShaderStage stage)
         {
