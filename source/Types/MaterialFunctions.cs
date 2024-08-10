@@ -57,6 +57,23 @@ public static class MaterialFunctions
         componentBindings.Add(new(key, entity, componentType, stage));
     }
 
+    //todo: qol: make this require a start and size, so that the order in which these are added wouldnt matter
+    //and also rename the method to fit "push" data that is unique per entity only
+    public static void AddComponentBinding<T>(this T material, RuntimeType componentType, ShaderStage stage) where T : IMaterial
+    {
+        UnmanagedList<MaterialComponentBinding> componentBindings = material.GetList<T, MaterialComponentBinding>();
+        for (uint i = 0; i < componentBindings.Count; i++)
+        {
+            ref MaterialComponentBinding existingBinding = ref componentBindings.GetRef(i);
+            if (existingBinding.IsLocal && existingBinding.componentType == componentType && existingBinding.stage == stage)
+            {
+                throw new InvalidOperationException($"Component binding `{componentType}` already exists on `{material}`.");
+            }
+        }
+
+        componentBindings.Add(new(default, default, componentType, stage));
+    }
+
     public static void AddComponentBinding<T, C>(this T material, DescriptorResourceKey key, eint entity, ShaderStage stage) where T : IMaterial where C : unmanaged
     {
         RuntimeType componentType = RuntimeType.Get<C>();
