@@ -2,6 +2,7 @@
 using Simulation;
 using System;
 using System.Numerics;
+using Textures;
 
 namespace Materials
 {
@@ -11,17 +12,46 @@ namespace Materials
     public struct MaterialTextureBinding : IEquatable<MaterialTextureBinding>
     {
         public DescriptorResourceKey key;
-        public eint texture;
-        public Vector4 region;
+
+        private uint version;
+        private Vector4 region;
+        private eint textureEntity;
 
         public readonly byte Binding => key.Binding;
         public readonly byte Set => key.Set;
+        public readonly eint TextureEntity => textureEntity;
 
-        public MaterialTextureBinding(DescriptorResourceKey key, eint texture, Vector4 region)
+        /// <summary>
+        /// The version of this binding, updated when region or texture is changed.
+        /// </summary>
+        public readonly uint Version => version;
+
+        public readonly Vector4 Region => region;
+
+        public MaterialTextureBinding(uint version, DescriptorResourceKey key, eint texture, Vector4 region)
         {
+            this.version = version;
             this.key = key;
-            this.texture = texture;
+            this.textureEntity = texture;
             this.region = region;
+        }
+
+        public void SetTexture<T>(T texture) where T : ITexture
+        {
+            textureEntity = texture.GetEntityValue();
+            version++;
+        }
+
+        public void SetRegion(Vector4 region)
+        {
+            this.region = region;
+            version++;
+        }
+
+        public void SetRegion(float x, float y, float width, float height)
+        {
+            region = new Vector4(x, y, width, height);
+            version++;
         }
 
         public readonly override bool Equals(object? obj)
@@ -31,12 +61,12 @@ namespace Materials
 
         public readonly bool Equals(MaterialTextureBinding other)
         {
-            return key.Equals(other.key) && texture.Equals(other.texture) && region.Equals(other.region);
+            return key.Equals(other.key) && textureEntity.Equals(other.textureEntity) && region.Equals(other.region);
         }
 
         public readonly override int GetHashCode()
         {
-            return HashCode.Combine(key, texture, region);
+            return HashCode.Combine(key, textureEntity, region);
         }
 
         public static bool operator ==(MaterialTextureBinding left, MaterialTextureBinding right)

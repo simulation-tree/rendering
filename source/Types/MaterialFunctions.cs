@@ -179,7 +179,7 @@ public static class MaterialFunctions
             }
         }
 
-        textureBindings.Add(new(key, texture.GetEntityValue(), region));
+        textureBindings.Add(new(0, key, texture.GetEntityValue(), region));
     }
 
     public static void AddTextureBinding<T>(this T material, byte binding, byte set, Texture texture) where T : IMaterial
@@ -205,8 +205,8 @@ public static class MaterialFunctions
             ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
             if (existingBinding.key == key)
             {
-                existingBinding.texture = texture.GetEntityValue();
-                existingBinding.region = region;
+                existingBinding.SetTexture(texture);
+                existingBinding.SetRegion(region);
                 return true;
             }
         }
@@ -221,9 +221,9 @@ public static class MaterialFunctions
         for (uint i = 0; i < textureBindings.Count; i++)
         {
             ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
-            if (existingBinding.texture == texture.GetEntityValue())
+            if (existingBinding.TextureEntity == texture.GetEntityValue())
             {
-                existingBinding.region = region;
+                existingBinding.SetRegion(region);
                 return;
             }
         }
@@ -237,7 +237,7 @@ public static class MaterialFunctions
         for (uint i = 0; i < textureBindings.Count; i++)
         {
             ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
-            if (existingBinding.texture == texture)
+            if (existingBinding.TextureEntity == texture)
             {
                 binding = existingBinding;
                 return true;
@@ -248,7 +248,24 @@ public static class MaterialFunctions
         return false;
     }
 
-    public static MaterialTextureBinding GetTextureBinding<T>(this T material, uint binding) where T : IMaterial
+    public static bool TryGetTextureBinding<T>(this T material, byte binding, byte set, out MaterialTextureBinding textureBinding) where T : IMaterial
+    {
+        UnmanagedList<MaterialTextureBinding> textureBindings = material.GetList<T, MaterialTextureBinding>();
+        for (uint i = 0; i < textureBindings.Count; i++)
+        {
+            ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
+            if (existingBinding.Binding == binding && existingBinding.Set == set)
+            {
+                textureBinding = existingBinding;
+                return true;
+            }
+        }
+
+        textureBinding = default;
+        return false;
+    }
+
+    public static ref MaterialTextureBinding GetTextureBindingRef<T>(this T material, uint binding) where T : IMaterial
     {
         UnmanagedList<MaterialTextureBinding> textureBindings = material.GetList<T, MaterialTextureBinding>();
         for (uint i = 0; i < textureBindings.Count; i++)
@@ -256,14 +273,14 @@ public static class MaterialFunctions
             ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
             if (existingBinding.Binding == binding)
             {
-                return existingBinding;
+                return ref existingBinding;
             }
         }
 
         throw new InvalidOperationException($"Texture binding `{binding}` does not exist on `{material}`.");
     }
 
-    public static MaterialComponentBinding GetComponentBinding<T>(this T material, uint binding) where T : IMaterial
+    public static ref MaterialComponentBinding GetComponentBindingRef<T>(this T material, uint binding) where T : IMaterial
     {
         UnmanagedList<MaterialComponentBinding> componentBindings = material.GetList<T, MaterialComponentBinding>();
         for (uint i = 0; i < componentBindings.Count; i++)
@@ -271,7 +288,7 @@ public static class MaterialFunctions
             ref MaterialComponentBinding existingBinding = ref componentBindings.GetRef(i);
             if (existingBinding.Binding == binding)
             {
-                return existingBinding;
+                return ref existingBinding;
             }
         }
 
