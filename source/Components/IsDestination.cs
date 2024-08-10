@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using Unmanaged;
 
 namespace Rendering.Components
@@ -11,6 +12,12 @@ namespace Rendering.Components
         public FixedString rendererLabel;
 
         public readonly uint Area => width * height;
+
+        [Obsolete("Default constructor not available")]
+        public IsDestination()
+        {
+            throw new NotImplementedException();
+        }
 
         public IsDestination(uint width, uint height, Vector4 region, FixedString rendererLabel)
         {

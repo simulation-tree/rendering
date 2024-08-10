@@ -1,5 +1,6 @@
 ﻿using Rendering;
 using Rendering.Components;
+using Simulation;
 using System;
 using System.Numerics;
 using Unmanaged;
@@ -7,8 +8,13 @@ using Unmanaged.Collections;
 
 public static class DestinationFunctions
 {
-    public static Destination AsDestination<T>(this T entity) where T : IDestination
+    public static Destination AsDestination<T>(this T entity) where T : IEntity
     {
+        if (!entity.ContainsComponent<T, IsDestination>())
+        {
+            entity.Become<T, Destination>();
+        }
+
         return new(entity.World, entity.Value);
     }
 
