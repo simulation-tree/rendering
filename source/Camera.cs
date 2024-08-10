@@ -29,6 +29,16 @@ namespace Rendering
         {
         }
 
+        public Camera(World world, Destination destination, CameraFieldOfView fieldOfView, float minDepth = 0.1f, float maxDepth = 1000f) : 
+            this(world, destination, false, fieldOfView.value, minDepth, maxDepth)
+        {
+        }
+
+        public Camera(World world, Destination destination, CameraOrthographicSize orthographicSize, float minDepth = 0.1f, float maxDepth = 1000f) :
+            this(world, destination, true, orthographicSize.value, minDepth, maxDepth)
+        {
+        }
+
         public Camera(World world, Vector3 position, Quaternion rotation, Destination destination, bool isOrthographic,
             float size, float minDepth = 0.1f, float maxDepth = 1000f)
         {
