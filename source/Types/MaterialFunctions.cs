@@ -63,17 +63,41 @@ public static class MaterialFunctions
         componentBindings.Add(new(key, entity, componentType, stage));
     }
 
-    public static void AddPushBinding<T>(this T material, RuntimeType componentType, uint start = 0, ShaderStage stage = ShaderStage.Vertex) where T : IMaterial
+    /// <summary>
+    /// Adds a binding that links a component on the render entity, to the shader.
+    /// </summary>
+    public static void AddPushBinding<T>(this T material, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex) where T : IMaterial
     {
         UnmanagedList<MaterialPushBinding> componentBindings = material.GetList<T, MaterialPushBinding>();
+        uint start = 0;
         foreach (MaterialPushBinding existingBinding in componentBindings)
         {
             if (existingBinding.componentType == componentType)
             {
                 throw new InvalidOperationException($"Push binding `{componentType}` already exists on `{material}`.");
             }
+
+            start += existingBinding.componentType.Size;
         }
 
+        componentBindings.Add(new(start, componentType, stage));
+    }
+
+    public static void SetPushBinding<T>(this T material, RuntimeType componentType, byte start, ShaderStage stage = ShaderStage.Vertex) where T : IMaterial
+    {
+        UnmanagedList<MaterialPushBinding> componentBindings = material.GetList<T, MaterialPushBinding>();
+        for (uint i = 0; i < componentBindings.Count; i++)
+        {
+            ref MaterialPushBinding existingBinding = ref componentBindings.GetRef(i);
+            if (existingBinding.componentType == componentType)
+            {
+                existingBinding.start = start;
+                existingBinding.stage = stage;
+                return;
+            }
+        }
+
+        //todo: qol: check if it overlaps with another push binding? but what if thats desired on purpose for unions?
         componentBindings.Add(new(start, componentType, stage));
     }
 
