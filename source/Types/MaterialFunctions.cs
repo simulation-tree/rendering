@@ -42,6 +42,12 @@ public static class MaterialFunctions
         return bindings.AsSpan();
     }
 
+    public static ReadOnlySpan<MaterialPushBinding> GetPushBindings<T>(this T material) where T : IMaterial
+    {
+        UnmanagedList<MaterialPushBinding> bindings = material.GetList<T, MaterialPushBinding>();
+        return bindings.AsSpan();
+    }
+
     public static void AddComponentBinding<T>(this T material, DescriptorResourceKey key, eint entity, RuntimeType componentType, ShaderStage stage) where T : IMaterial
     {
         UnmanagedList<MaterialComponentBinding> componentBindings = material.GetList<T, MaterialComponentBinding>();
@@ -57,21 +63,18 @@ public static class MaterialFunctions
         componentBindings.Add(new(key, entity, componentType, stage));
     }
 
-    //todo: qol: make this require a start and size, so that the order in which these are added wouldnt matter
-    //and also rename the method to fit "push" data that is unique per entity only
-    public static void AddComponentBinding<T>(this T material, RuntimeType componentType, ShaderStage stage) where T : IMaterial
+    public static void AddPushBinding<T>(this T material, RuntimeType componentType, uint start = 0, ShaderStage stage = ShaderStage.Vertex) where T : IMaterial
     {
-        UnmanagedList<MaterialComponentBinding> componentBindings = material.GetList<T, MaterialComponentBinding>();
-        for (uint i = 0; i < componentBindings.Count; i++)
+        UnmanagedList<MaterialPushBinding> componentBindings = material.GetList<T, MaterialPushBinding>();
+        foreach (MaterialPushBinding existingBinding in componentBindings)
         {
-            ref MaterialComponentBinding existingBinding = ref componentBindings.GetRef(i);
-            if (existingBinding.IsLocal && existingBinding.componentType == componentType && existingBinding.stage == stage)
+            if (existingBinding.componentType == componentType)
             {
-                throw new InvalidOperationException($"Component binding `{componentType}` already exists on `{material}`.");
+                throw new InvalidOperationException($"Push binding `{componentType}` already exists on `{material}`.");
             }
         }
 
-        componentBindings.Add(new(default, default, componentType, stage));
+        componentBindings.Add(new(start, componentType, stage));
     }
 
     public static void AddComponentBinding<T, C>(this T material, DescriptorResourceKey key, eint entity, ShaderStage stage) where T : IMaterial where C : unmanaged

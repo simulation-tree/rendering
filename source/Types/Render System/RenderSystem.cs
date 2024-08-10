@@ -76,11 +76,11 @@ namespace Rendering
             return type.beginRender.Invoke(system);
         }
 
-        public unsafe readonly void Render(ReadOnlySpan<eint> renderers, eint material, eint shader, eint mesh, eint camera)
+        public unsafe readonly void Render(ReadOnlySpan<eint> renderers, eint material, eint shader, eint mesh)
         {
             fixed (eint* entitiesPtr = renderers)
             {
-                type.render.Invoke(system, (nint)entitiesPtr, renderers.Length, material, shader, mesh, camera);
+                type.render.Invoke(system, (nint)entitiesPtr, renderers.Length, material, shader, mesh);
             }
         }
 
