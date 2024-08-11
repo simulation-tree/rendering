@@ -2,7 +2,6 @@
 using Simulation;
 using System;
 using System.Numerics;
-using Transforms.Components;
 using Unmanaged;
 
 namespace Rendering
@@ -47,7 +46,6 @@ namespace Rendering
 
             entity = new(world);
             entity.AddComponent(new IsCamera(minDepth, maxDepth));
-            entity.AddComponent(new IsTransform());
             entity.AddComponent(new CameraOutput(destination, new(0, 0, 1, 1), new(0, 0, 0, 1), order));
             if (isOrthographic)
             {
@@ -57,9 +55,6 @@ namespace Rendering
             {
                 entity.AddComponent(new CameraFieldOfView(size));
             }
-
-            entity.AddComponent(new Position(position));
-            entity.AddComponent(new Rotation(rotation));
         }
 
         public readonly void Dispose()
@@ -67,7 +62,7 @@ namespace Rendering
             entity.Dispose();
         }
 
-        public static Query GetQuery(World world)
+        static Query IEntity.GetQuery(World world)
         {
             return new(world, RuntimeType.Get<IsCamera>());
         }
