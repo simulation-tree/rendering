@@ -34,7 +34,7 @@ namespace Rendering
             return entity.ToString();
         }
 
-        public static Query GetQuery(World world)
+        Query IEntity.GetQuery(World world)
         {
             return new(world, RuntimeType.Get<IsRenderer>());
         }

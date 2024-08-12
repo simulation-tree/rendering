@@ -30,7 +30,7 @@ namespace Rendering
             entity.Dispose();
         }
 
-        static Query IEntity.GetQuery(World world)
+        Query IEntity.GetQuery(World world)
         {
             return new(world, RuntimeType.Get<IsDestination>());
         }
