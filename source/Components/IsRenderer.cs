@@ -3,11 +3,11 @@ using Simulation;
 
 namespace Rendering.Components
 {
-    public readonly struct IsRenderer
+    public struct IsRenderer
     {
-        public readonly eint mesh;
-        public readonly eint material;
-        public readonly eint camera;
+        public eint mesh;
+        public eint material;
+        public eint camera;
 
         public IsRenderer(Mesh mesh, Material material, Camera camera)
         {

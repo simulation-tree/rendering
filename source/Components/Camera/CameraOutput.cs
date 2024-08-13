@@ -1,4 +1,5 @@
-﻿using Simulation;
+﻿using Data;
+using Simulation;
 using System.Numerics;
 
 namespace Rendering.Components
@@ -7,10 +8,10 @@ namespace Rendering.Components
     {
         public eint destination;
         public Vector4 region;
-        public Vector4 clearColor;
+        public Color clearColor;
         public sbyte order;
 
-        public CameraOutput(eint destination, Vector4 region, Vector4 clearColor, sbyte order)
+        public CameraOutput(eint destination, Vector4 region, Color clearColor, sbyte order)
         {
             this.destination = destination;
             this.region = region;
@@ -18,7 +19,7 @@ namespace Rendering.Components
             this.order = order;
         }
 
-        public CameraOutput(Destination destination, Vector4 region, Vector4 clearColor, sbyte order)
+        public CameraOutput(Destination destination, Vector4 region, Color clearColor, sbyte order)
         {
             this.destination = destination.GetEntityValue();
             this.region = region;

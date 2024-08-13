@@ -1,7 +1,8 @@
 {
     "name": "Rendering",
-    "rootNamespace": "",
+    "rootNamespace": "Rendering",
     "references": [
+        "GUID:c4627681352bfa84086b642b92338a83",
         "GUID:c371d02cd52f86741983f8c78b22bfcd",
         "GUID:4113109be4ef3694cb51be0e4cc260cb",
         "GUID:bc3cf45cf908ea148ba1bb4d6ee47f3a",
