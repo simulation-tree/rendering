@@ -71,7 +71,7 @@ public static class DestinationFunctions
         {
             if (extensions[i].text == extension)
             {
-                throw new InvalidOperationException($"Extension '{extension}' already attached to destination");
+                throw new InvalidOperationException($"Extension `{extension.ToString()}` is already attached to destination `{entity}`");
             }
         }
 

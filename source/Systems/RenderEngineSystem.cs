@@ -55,9 +55,9 @@ namespace Rendering.Systems
         /// Makes the given render system type available for use at runtime,
         /// for destinations that reference its label.
         /// </summary>
-        public void RegisterSystem<T>() where T : IRenderSystem
+        public void RegisterSystem<T>() where T : unmanaged, IRenderSystem
         {
-            FixedString label = T.Label;
+            FixedString label = new T().Label;
             if (availableSystemTypes.ContainsKey(label))
             {
                 throw new InvalidOperationException($"Label '{label}' already has a render system registered for.");

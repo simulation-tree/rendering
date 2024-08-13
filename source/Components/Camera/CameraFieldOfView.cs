@@ -2,12 +2,12 @@
 
 namespace Rendering.Components
 {
-    public readonly struct CameraFieldOfView
+    public struct CameraFieldOfView
     {
         /// <summary>
         /// Value in radians.
         /// </summary>
-        public readonly float value;
+        public float value;
 
         public CameraFieldOfView(float value)
         {

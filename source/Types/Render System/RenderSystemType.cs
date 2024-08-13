@@ -50,9 +50,10 @@ namespace Rendering
             }
         }
 
-        public static RenderSystemType Create<T>() where T : IRenderSystem
+        public static RenderSystemType Create<T>() where T : unmanaged, IRenderSystem
         {
-            return new(T.Label, T.GetFunctions());
+            T v = default;
+            return new(v.Label, v.GetFunctions());
         }
     }
 }

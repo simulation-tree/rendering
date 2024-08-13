@@ -13,11 +13,13 @@ namespace Rendering.Components
 
         public readonly uint Area => width * height;
 
+#if NET
         [Obsolete("Default constructor not available")]
         public IsDestination()
         {
             throw new NotImplementedException();
         }
+#endif
 
         public IsDestination(uint width, uint height, Vector4 region, FixedString rendererLabel)
         {

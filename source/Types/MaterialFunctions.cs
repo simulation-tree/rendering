@@ -311,7 +311,7 @@ public static class MaterialFunctions
         return false;
     }
 
-    public static ref MaterialComponentBinding TryGetProperty<T>(this T material, ShaderUniformProperty uniform, out bool contains) where T : IMaterial
+    public unsafe static ref MaterialComponentBinding TryGetProperty<T>(this T material, ShaderUniformProperty uniform, out bool contains) where T : IMaterial
     {
         UnmanagedList<MaterialComponentBinding> componentBindings = material.GetList<T, MaterialComponentBinding>();
         for (uint i = 0; i < componentBindings.Count; i++)
@@ -332,10 +332,10 @@ public static class MaterialFunctions
         }
 
         contains = false;
-        return ref Unsafe.NullRef<MaterialComponentBinding>();
+        return ref *(MaterialComponentBinding*)null;
     }
 
-    public static ref MaterialTextureBinding TryGetProperty<T>(this T material, ShaderSamplerProperty sampler, out bool contains) where T : IMaterial
+    public unsafe static ref MaterialTextureBinding TryGetProperty<T>(this T material, ShaderSamplerProperty sampler, out bool contains) where T : IMaterial
     {
         UnmanagedList<MaterialTextureBinding> textureBindings = material.GetList<T, MaterialTextureBinding>();
         for (uint i = 0; i < textureBindings.Count; i++)
@@ -349,6 +349,6 @@ public static class MaterialFunctions
         }
 
         contains = false;
-        return ref Unsafe.NullRef<MaterialTextureBinding>();
+        return ref *(MaterialTextureBinding*)null;
     }
 }

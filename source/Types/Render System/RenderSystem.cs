@@ -23,17 +23,20 @@ namespace Rendering
 
         public readonly bool IsSurfaceAvailable => hasSurface;
 
+#if NET
         [Obsolete("Default constructor not supported", true)]
         public RenderSystem()
         {
             throw new NotImplementedException();
         }
+#endif
 
         internal RenderSystem(CreateResult result, RenderSystemType type)
         {
             this.system = result.system;
             this.library = result.library;
             this.type = type;
+            hasSurface = false;
 
             cameras = new();
             renderers = new();

@@ -6,12 +6,21 @@
     /// </summary>
     public unsafe readonly struct FinishFunction
     {
+#if NET
         private readonly delegate* unmanaged<void> function;
 
         public FinishFunction(delegate* unmanaged<void> function)
         {
             this.function = function;
         }
+#else
+        private readonly delegate*<void> function;
+
+        public FinishFunction(delegate*<void> function)
+        {
+            this.function = function;
+        }
+#endif
 
         public readonly void Invoke()
         {

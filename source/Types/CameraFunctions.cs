@@ -9,7 +9,7 @@ public static class CameraFunctions
     [Conditional("DEBUG")]
     public static void ThrowIfOrthographic<T>(this T camera) where T : ICamera
     {
-        if (!camera.IsOrthographic())
+        if (camera.IsOrthographic())
         {
             throw new InvalidOperationException("The camera is not orthographic.");
         }
@@ -18,7 +18,7 @@ public static class CameraFunctions
     [Conditional("DEBUG")]
     public static void ThrowIfPerspective<T>(this T camera) where T : ICamera
     {
-        if (camera.IsOrthographic())
+        if (!camera.IsOrthographic())
         {
             throw new InvalidOperationException("The camera is not perspective.");
         }

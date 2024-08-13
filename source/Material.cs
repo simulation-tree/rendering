@@ -14,10 +14,13 @@ namespace Rendering
         eint IEntity.Value => entity.value;
         World IEntity.World => entity.world;
 
+#if NET
+        [Obsolete("Default constructor not available", true)]
         public Material()
         {
             throw new InvalidOperationException("Cannot create a material without a world.");
         }
+#endif
 
         public Material(World world, eint existingEntity)
         {
