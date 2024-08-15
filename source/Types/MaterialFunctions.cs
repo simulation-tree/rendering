@@ -1,5 +1,4 @@
-﻿using Materials;
-using Rendering;
+﻿using Rendering;
 using Rendering.Components;
 using Shaders;
 using Simulation;

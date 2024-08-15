@@ -118,23 +118,24 @@ namespace Rendering.Systems
             {
                 IsRenderer component = r.Component1;
                 eint cameraEntity = component.camera;
+                eint material = component.material;
                 eint destinationEntity = world.GetComponent<CameraOutput>(cameraEntity).destination;
                 if (renderSystems.TryGetValue(destinationEntity, out RenderSystem renderSystem))
                 {
+                    //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
+                    eint mesh = component.mesh;
+                    eint shader = world.GetComponent<IsMaterial>(material).shader;
+                    if (shader == default) continue;
+
                     if (!renderSystem.renderers.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
                     {
                         groups = new();
                         renderSystem.renderers.Add(cameraEntity, groups);
                     }
 
-                    //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
-                    eint material = component.material;
-                    eint mesh = component.mesh;
                     int hash = HashCode.Combine(material, mesh);
                     if (!groups.TryGetValue(hash, out UnmanagedList<eint> renderers))
                     {
-                        eint shader = world.GetComponent<IsMaterial>(material).shader;
-
                         renderers = new();
                         groups.Add(hash, renderers);
                         renderSystem.materials.Add(hash, material);
@@ -158,7 +159,6 @@ namespace Rendering.Systems
                 //todo: iterate with respect to each camera's sorting order
                 foreach (eint camera in renderSystem.cameras)
                 {
-                    //todo: efficiency: is this continue necessary here? can it be assured that it will never fail?
                     if (!renderSystem.renderers.TryGetValue(camera, out UnmanagedDictionary<int, UnmanagedList<eint>> groups)) continue;
 
                     foreach (int hash in groups.Keys)

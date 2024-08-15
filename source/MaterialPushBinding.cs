@@ -1,7 +1,7 @@
 ﻿using Shaders;
 using Unmanaged;
 
-namespace Materials
+namespace Rendering.Components
 {
     /// <summary>
     /// Links a component on the render entity to a push constant in the shader.

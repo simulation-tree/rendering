@@ -4,7 +4,7 @@ using System;
 using System.Numerics;
 using Textures;
 
-namespace Materials
+namespace Rendering.Components
 {
     /// <summary>
     /// A shader property that refers to a texture entity.
@@ -32,7 +32,7 @@ namespace Materials
         {
             this.version = version;
             this.key = key;
-            this.textureEntity = texture;
+            textureEntity = texture;
             this.region = region;
         }
 

@@ -3,7 +3,7 @@ using Simulation;
 using System;
 using Unmanaged;
 
-namespace Materials
+namespace Rendering.Components
 {
     /// <summary>
     /// Links a component to a uniform buffer object.

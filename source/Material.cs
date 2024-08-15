@@ -1,4 +1,5 @@
-﻿using Materials;
+﻿using Data.Components;
+using Data.Events;
 using Rendering.Components;
 using Shaders;
 using Simulation;
@@ -34,6 +35,32 @@ namespace Rendering
             entity.CreateList<Entity, MaterialPushBinding>();
             entity.CreateList<Entity, MaterialComponentBinding>();
             entity.CreateList<Entity, MaterialTextureBinding>();
+        }
+
+        public Material(World world, ReadOnlySpan<char> address)
+        {
+            entity = new(world);
+            entity.AddComponent(new IsMaterial(default));
+            entity.AddComponent(new IsDataRequest(address));
+            entity.CreateList<Entity, MaterialPushBinding>();
+            entity.CreateList<Entity, MaterialComponentBinding>();
+            entity.CreateList<Entity, MaterialTextureBinding>();
+
+            world.Submit(new DataUpdate());
+            world.Poll();
+        }
+
+        public Material(World world, FixedString address)
+        {
+            entity = new(world);
+            entity.AddComponent(new IsMaterial(default));
+            entity.AddComponent(new IsDataRequest(address));
+            entity.CreateList<Entity, MaterialPushBinding>();
+            entity.CreateList<Entity, MaterialComponentBinding>();
+            entity.CreateList<Entity, MaterialTextureBinding>();
+
+            world.Submit(new DataUpdate());
+            world.Poll();
         }
 
         public readonly void Dispose()
