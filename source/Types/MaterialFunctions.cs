@@ -14,14 +14,23 @@ public static class MaterialFunctions
 {
     public static Shader GetShader<T>(this T material) where T : IMaterial
     {
+        World world = material.GetWorld();
         IsMaterial component = material.GetComponent<T, IsMaterial>();
-        return new(material.World, component.shader);
+        return new(world, world.GetReference(material.GetEntityValue(), component.shaderReference));
     }
 
     public static void SetShader<T>(this T material, Shader shader) where T : IMaterial
     {
+        World world = material.GetWorld();
         ref IsMaterial component = ref material.GetComponentRef<T, IsMaterial>();
-        component = new(shader);
+        if (world.TryGetReference(material.GetEntityValue(), component.shaderReference, out eint previousShader))
+        {
+            world.SetReference(material.GetEntityValue(), component.shaderReference, shader.GetEntityValue());
+        }
+        else
+        {
+            component.shaderReference = world.AddReference(material.GetEntityValue(), shader.GetEntityValue());
+        }
     }
 
     public static bool IsRequesting<T>(this T material) where T : IMaterial

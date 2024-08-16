@@ -126,7 +126,7 @@ namespace Rendering.Systems
                     {
                         //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
                         eint mesh = component.mesh;
-                        eint shader = world.GetComponent<IsMaterial>(material).shader;
+                        eint shader = world.GetReference(material, world.GetComponent<IsMaterial>(material).shaderReference);
                         if (shader == default) continue;
 
                         if (!renderSystem.renderers.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))

@@ -39,7 +39,7 @@ namespace Rendering.Systems
             foreach (var x in query)
             {
                 ref IsMaterial component = ref x.Component1;
-                if (component.shader == default)
+                if (component.shaderReference == default)
                 {
                     FixedString address = x.Component2.address;
                     if (!cachedShaders.TryGetValue(address, out Shader shader))
@@ -87,7 +87,7 @@ namespace Rendering.Systems
                         }
                     }
 
-                    component.shader = shader.GetEntityValue();
+                    component.shaderReference = world.AddReference(x.entity, shader.GetEntityValue());
                 }
             }
 

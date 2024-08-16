@@ -1,15 +1,12 @@
-﻿using Shaders;
-using Simulation;
-
-namespace Rendering.Components
+﻿namespace Rendering.Components
 {
     public struct IsMaterial
     {
-        public eint shader;
+        public uint shaderReference;
 
-        public IsMaterial(Shader shader)
+        public IsMaterial(uint shaderReference)
         {
-            this.shader = shader.GetEntityValue();
+            this.shaderReference = shaderReference;
         }
     }
 }

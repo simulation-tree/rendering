@@ -31,7 +31,7 @@ namespace Rendering
         public Material(World world, Shader shader)
         {
             entity = new(world);
-            entity.AddComponent(new IsMaterial(shader));
+            entity.AddComponent(new IsMaterial(world.AddReference(entity.GetEntityValue(), shader.GetEntityValue())));
             entity.CreateList<Entity, MaterialPushBinding>();
             entity.CreateList<Entity, MaterialComponentBinding>();
             entity.CreateList<Entity, MaterialTextureBinding>();
