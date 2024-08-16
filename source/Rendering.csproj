@@ -1,29 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<BaseOutputPath>bin~\</BaseOutputPath>
+		<BaseIntermediateOutputPath>obj~\</BaseIntermediateOutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <IsAotCompatible>True</IsAotCompatible>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<IsAotCompatible>True</IsAotCompatible>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <IsAotCompatible>True</IsAotCompatible>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<IsAotCompatible>True</IsAotCompatible>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\meshes\source\Meshes.csproj" />
-    <ProjectReference Include="..\..\serialization\source\Serialization.csproj" />
-    <ProjectReference Include="..\..\shaders\Shaders.csproj" />
-    <ProjectReference Include="..\..\simulation\source\Simulation.csproj" />
-    <ProjectReference Include="..\..\textures\Textures.csproj" />
-    <ProjectReference Include="..\..\data\source\Data.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\meshes\source\Meshes.csproj" />
+		<ProjectReference Include="..\..\serialization\source\Serialization.csproj" />
+		<ProjectReference Include="..\..\shaders\Shaders.csproj" />
+		<ProjectReference Include="..\..\simulation\source\Simulation.csproj" />
+		<ProjectReference Include="..\..\textures\Textures.csproj" />
+		<ProjectReference Include="..\..\data\source\Data.csproj" />
+	</ItemGroup>
 
 </Project>
