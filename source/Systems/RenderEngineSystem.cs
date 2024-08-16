@@ -119,31 +119,34 @@ namespace Rendering.Systems
                 IsRenderer component = r.Component1;
                 eint cameraEntity = component.camera;
                 eint material = component.material;
-                eint destinationEntity = world.GetComponent<CameraOutput>(cameraEntity).destination;
-                if (renderSystems.TryGetValue(destinationEntity, out RenderSystem renderSystem))
+                if (world.ContainsEntity(cameraEntity) && world.TryGetComponent(cameraEntity, out CameraOutput output))
                 {
-                    //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
-                    eint mesh = component.mesh;
-                    eint shader = world.GetComponent<IsMaterial>(material).shader;
-                    if (shader == default) continue;
-
-                    if (!renderSystem.renderers.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
+                    eint destinationEntity = output.destination;
+                    if (renderSystems.TryGetValue(destinationEntity, out RenderSystem renderSystem))
                     {
-                        groups = new();
-                        renderSystem.renderers.Add(cameraEntity, groups);
-                    }
+                        //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
+                        eint mesh = component.mesh;
+                        eint shader = world.GetComponent<IsMaterial>(material).shader;
+                        if (shader == default) continue;
 
-                    int hash = HashCode.Combine(material, mesh);
-                    if (!groups.TryGetValue(hash, out UnmanagedList<eint> renderers))
-                    {
-                        renderers = new();
-                        groups.Add(hash, renderers);
-                        renderSystem.materials.Add(hash, material);
-                        renderSystem.shaders.Add(hash, shader);
-                        renderSystem.meshes.Add(hash, mesh);
-                    }
+                        if (!renderSystem.renderers.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
+                        {
+                            groups = new();
+                            renderSystem.renderers.Add(cameraEntity, groups);
+                        }
 
-                    renderers.Add(r.entity);
+                        int hash = HashCode.Combine(material, mesh);
+                        if (!groups.TryGetValue(hash, out UnmanagedList<eint> renderers))
+                        {
+                            renderers = new();
+                            groups.Add(hash, renderers);
+                            renderSystem.materials.Add(hash, material);
+                            renderSystem.shaders.Add(hash, shader);
+                            renderSystem.meshes.Add(hash, mesh);
+                        }
+
+                        renderers.Add(r.entity);
+                    }
                 }
             }
 
