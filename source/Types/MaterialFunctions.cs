@@ -1,4 +1,5 @@
-﻿using Rendering;
+﻿using Data.Components;
+using Rendering;
 using Rendering.Components;
 using Shaders;
 using Simulation;
@@ -21,6 +22,16 @@ public static class MaterialFunctions
     {
         ref IsMaterial component = ref material.GetComponentRef<T, IsMaterial>();
         component = new(shader);
+    }
+
+    public static bool IsRequesting<T>(this T material) where T : IMaterial
+    {
+        return material.ContainsComponent<T, IsDataRequest>();
+    }
+
+    public static FixedString GetRequestAddress<T>(this T material) where T : IMaterial
+    {
+        return material.GetComponent<T, IsDataRequest>().address;
     }
 
     /// <summary>
