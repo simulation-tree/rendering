@@ -1,10 +1,12 @@
-﻿namespace Rendering.Components
+﻿using Simulation;
+
+namespace Rendering.Components
 {
     public struct IsMaterial
     {
-        public uint shaderReference;
+        public rint shaderReference;
 
-        public IsMaterial(uint shaderReference)
+        public IsMaterial(rint shaderReference)
         {
             this.shaderReference = shaderReference;
         }

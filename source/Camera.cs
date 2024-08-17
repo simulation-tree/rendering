@@ -1,14 +1,113 @@
 ﻿using Rendering.Components;
 using Simulation;
 using System;
+using System.Diagnostics;
 using System.Numerics;
-using Unmanaged;
 
 namespace Rendering
 {
     public readonly struct Camera : ICamera, IDisposable
     {
         private readonly Entity entity;
+
+        public readonly (float min, float max) Depth
+        {
+            get
+            {
+                IsCamera component = entity.GetComponent<IsCamera>();
+                return (component.minDepth, component.maxDepth);
+            }
+            set
+            {
+                ref IsCamera component = ref entity.GetComponentRef<IsCamera>();
+                component = new(value.min, value.max);
+            }
+        }
+
+        public readonly float FieldOfView
+        {
+            get
+            {
+                ThrowIfOrthographic();
+                return entity.GetComponent<CameraFieldOfView>().value;
+            }
+            set
+            {
+                ThrowIfOrthographic();
+                ref CameraFieldOfView fieldOfView = ref entity.GetComponentRef<CameraFieldOfView>();
+                fieldOfView = new(value);
+            }
+        }
+
+        public readonly float OrthographicSize
+        {
+            get
+            {
+                ThrowIfPerspective();
+                return entity.GetComponent<CameraOrthographicSize>().value;
+            }
+            set
+            {
+                ThrowIfPerspective();
+                ref CameraOrthographicSize orthographicSize = ref entity.GetComponentRef<CameraOrthographicSize>();
+                orthographicSize = new(value);
+            }
+        }
+
+        public readonly bool IsOrthographic
+        {
+            get
+            {
+                return entity.ContainsComponent<CameraOrthographicSize>();
+            }
+        }
+
+        public readonly bool IsPerspective
+        {
+            get
+            {
+                return entity.ContainsComponent<CameraFieldOfView>();
+            }
+        }
+
+        public readonly sbyte Order
+        {
+            get
+            {
+                return entity.GetComponent<CameraOutput>().order;
+            }
+            set
+            {
+                ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
+                output.order = value;
+            }
+        }
+
+        public readonly Vector4 OutputRegion
+        {
+            get
+            {
+                return entity.GetComponent<CameraOutput>().region;
+            }
+            set
+            {
+                ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
+                output.region = value;
+            }
+        }
+
+        public readonly Destination Destination
+        {
+            get
+            {
+                return new(entity.world, entity.GetComponent<CameraOutput>().destination);
+            }
+            set
+            {
+                ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
+                output.destination = ((Entity)value).value;
+            }
+        }
 
         World IEntity.World => entity.world;
         eint IEntity.Value => entity.value;
@@ -45,7 +144,7 @@ namespace Rendering
             entity.AddComponent(new IsCamera(minDepth, maxDepth));
         }
 
-        public Camera(World world, Destination destination, CameraFieldOfView fieldOfView, float minDepth = 0.1f, float maxDepth = 1000f) : 
+        public Camera(World world, Destination destination, CameraFieldOfView fieldOfView, float minDepth = 0.1f, float maxDepth = 1000f) :
             this(world, destination, false, fieldOfView.value, minDepth, maxDepth)
         {
         }
@@ -64,6 +163,29 @@ namespace Rendering
         Query IEntity.GetQuery(World world)
         {
             return Query.Create<IsCamera, CameraOutput>(world);
+        }
+
+        [Conditional("DEBUG")]
+        private readonly void ThrowIfOrthographic()
+        {
+            if (IsOrthographic)
+            {
+                throw new InvalidOperationException("Cannot get field of view for an orthographic camera.");
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private readonly void ThrowIfPerspective()
+        {
+            if (IsPerspective)
+            {
+                throw new InvalidOperationException("Cannot get orthographic size for a perspective camera.");
+            }
+        }
+
+        public static implicit operator Entity(Camera camera)
+        {
+            return camera.entity;
         }
     }
 }

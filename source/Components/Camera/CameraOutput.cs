@@ -21,7 +21,7 @@ namespace Rendering.Components
 
         public CameraOutput(Destination destination, Vector4 region, Color clearColor, sbyte order)
         {
-            this.destination = destination.GetEntityValue();
+            this.destination = ((Entity)destination).value;
             this.region = region;
             this.clearColor = clearColor;
             this.order = order;

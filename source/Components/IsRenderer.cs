@@ -1,19 +1,18 @@
-﻿using Meshes;
-using Simulation;
+﻿using Simulation;
 
 namespace Rendering.Components
 {
     public struct IsRenderer
     {
-        public eint mesh;
-        public eint material;
-        public eint camera;
+        public rint mesh;
+        public rint material;
+        public rint camera;
 
-        public IsRenderer(Mesh mesh, Material material, Camera camera)
+        public IsRenderer(rint mesh, rint material, rint camera)
         {
-            this.mesh = mesh.GetEntityValue();
-            this.material = material.GetEntityValue();
-            this.camera = camera.GetEntityValue();
+            this.mesh = mesh;
+            this.material = material;
+            this.camera = camera;
         }
     }
 }

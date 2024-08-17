@@ -117,17 +117,20 @@ namespace Rendering.Systems
             foreach (var r in rendererQuery)
             {
                 IsRenderer component = r.Component1;
-                eint cameraEntity = component.camera;
-                eint material = component.material;
+                rint cameraReference = component.camera;
+                rint materialReference = component.material;
+                eint cameraEntity = world.GetReference(r.entity, cameraReference);
+                eint materialEntity = world.GetReference(r.entity, materialReference);
                 if (world.ContainsEntity(cameraEntity) && world.TryGetComponent(cameraEntity, out CameraOutput output))
                 {
                     eint destinationEntity = output.destination;
                     if (renderSystems.TryGetValue(destinationEntity, out RenderSystem renderSystem))
                     {
                         //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
-                        eint mesh = component.mesh;
-                        eint shader = world.GetReference(material, world.GetComponent<IsMaterial>(material).shaderReference);
-                        if (shader == default) continue;
+                        rint meshReference = component.mesh;
+                        eint meshEntity = world.GetReference(r.entity, meshReference);
+                        eint shaderEntity = world.GetReference(materialEntity, world.GetComponent<IsMaterial>(materialEntity).shaderReference);
+                        if (shaderEntity == default) continue;
 
                         if (!renderSystem.renderers.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
                         {
@@ -135,14 +138,14 @@ namespace Rendering.Systems
                             renderSystem.renderers.Add(cameraEntity, groups);
                         }
 
-                        int hash = HashCode.Combine(material, mesh);
+                        int hash = HashCode.Combine(materialEntity, meshEntity);
                         if (!groups.TryGetValue(hash, out UnmanagedList<eint> renderers))
                         {
                             renderers = new();
                             groups.Add(hash, renderers);
-                            renderSystem.materials.Add(hash, material);
-                            renderSystem.shaders.Add(hash, shader);
-                            renderSystem.meshes.Add(hash, mesh);
+                            renderSystem.materials.Add(hash, materialEntity);
+                            renderSystem.shaders.Add(hash, shaderEntity);
+                            renderSystem.meshes.Add(hash, meshEntity);
                         }
 
                         renderers.Add(r.entity);

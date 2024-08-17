@@ -36,9 +36,17 @@ namespace Rendering.Components
             this.region = region;
         }
 
-        public void SetTexture<T>(T texture) where T : ITexture
+        public MaterialTextureBinding(uint version, DescriptorResourceKey key, Texture texture, Vector4 region)
         {
-            textureEntity = texture.GetEntityValue();
+            this.version = version;
+            this.key = key;
+            textureEntity = ((Entity)texture).value;
+            this.region = region;
+        }
+
+        public void SetTexture(Texture texture)
+        {
+            textureEntity = ((Entity)texture).value;
             version++;
         }
 

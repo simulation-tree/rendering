@@ -59,7 +59,9 @@ namespace Rendering.Systems
                                 eint fragmentRequest = world.CreateEntity();
                                 world.AddComponent(fragmentRequest, new IsDataRequest(fragmentAddress));
                                 eint shaderEntity = world.CreateEntity();
-                                world.AddComponent(shaderEntity, new IsShader(vertexRequest, fragmentRequest));
+                                rint vertexReference = world.AddReference(shaderEntity, vertexRequest);
+                                rint fragmentReference = world.AddReference(shaderEntity, fragmentRequest);
+                                world.AddComponent(shaderEntity, new IsShader(vertexReference, fragmentReference));
                                 world.CreateList<ShaderPushConstant>(shaderEntity);
                                 world.CreateList<ShaderVertexInputAttribute>(shaderEntity);
                                 world.CreateList<ShaderUniformProperty>(shaderEntity);
@@ -87,7 +89,7 @@ namespace Rendering.Systems
                         }
                     }
 
-                    component.shaderReference = world.AddReference(x.entity, shader.GetEntityValue());
+                    component.shaderReference = world.AddReference(x.entity, ((Entity)shader).value);
                 }
             }
 
