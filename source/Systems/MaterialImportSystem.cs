@@ -52,22 +52,10 @@ namespace Rendering.Systems
                             bool hasFragmentProperty = jsonObject.Contains("fragment");
                             if (hasVertexProperty && hasFragmentProperty)
                             {
+                                //todo: test materials and shaders loading from json
                                 ReadOnlySpan<char> vertexAddress = jsonObject.GetText("vertex");
                                 ReadOnlySpan<char> fragmentAddress = jsonObject.GetText("fragment");
-                                eint vertexRequest = world.CreateEntity();
-                                world.AddComponent(vertexRequest, new IsDataRequest(vertexAddress));
-                                eint fragmentRequest = world.CreateEntity();
-                                world.AddComponent(fragmentRequest, new IsDataRequest(fragmentAddress));
-                                eint shaderEntity = world.CreateEntity();
-                                rint vertexReference = world.AddReference(shaderEntity, vertexRequest);
-                                rint fragmentReference = world.AddReference(shaderEntity, fragmentRequest);
-                                world.AddComponent(shaderEntity, new IsShader(vertexReference, fragmentReference));
-                                world.CreateList<ShaderPushConstant>(shaderEntity);
-                                world.CreateList<ShaderVertexInputAttribute>(shaderEntity);
-                                world.CreateList<ShaderUniformProperty>(shaderEntity);
-                                world.CreateList<ShaderSamplerProperty>(shaderEntity);
-                                askForData = true;
-                                shader = new(world, shaderEntity);
+                                shader = new(world, vertexAddress, fragmentAddress);
                                 cachedShaders.Add(address, shader);
                             }
                             else if (!hasVertexProperty && !hasFragmentProperty)
@@ -95,9 +83,9 @@ namespace Rendering.Systems
 
             if (askForData)
             {
-                world.Submit(new DataUpdate());
-                world.Submit(new ShaderUpdate());
-                world.Poll();
+            //    world.Submit(new DataUpdate());
+            //    world.Submit(new ShaderUpdate());
+            //    world.Poll();
             }
         }
 

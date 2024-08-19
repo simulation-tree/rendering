@@ -1,5 +1,6 @@
 ﻿using Rendering.Components;
 using Rendering.Events;
+using Shaders.Components;
 using Simulation;
 using System;
 using Unmanaged;
@@ -129,8 +130,9 @@ namespace Rendering.Systems
                         //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
                         rint meshReference = component.mesh;
                         eint meshEntity = world.GetReference(r.entity, meshReference);
-                        eint shaderEntity = world.GetReference(materialEntity, world.GetComponent<IsMaterial>(materialEntity).shaderReference);
-                        if (shaderEntity == default) continue;
+                        rint shaderReference = world.GetComponent<IsMaterial>(materialEntity).shaderReference;
+                        eint shaderEntity = world.GetReference(materialEntity, shaderReference);
+                        if (shaderEntity == default || !world.ContainsComponent<IsShader>()) continue; //not yet loaded
 
                         if (!renderSystem.renderers.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
                         {

@@ -70,9 +70,6 @@ namespace Rendering
             entity.CreateList<MaterialPushBinding>();
             entity.CreateList<MaterialComponentBinding>();
             entity.CreateList<MaterialTextureBinding>();
-
-            world.Submit(new DataUpdate());
-            world.Poll();
         }
 
         public Material(World world, FixedString address)
@@ -83,9 +80,6 @@ namespace Rendering
             entity.CreateList<MaterialPushBinding>();
             entity.CreateList<MaterialComponentBinding>();
             entity.CreateList<MaterialTextureBinding>();
-
-            world.Submit(new DataUpdate());
-            world.Poll();
         }
 
         public readonly void Dispose()
