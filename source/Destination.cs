@@ -7,7 +7,7 @@ using Unmanaged.Collections;
 
 namespace Rendering
 {
-    public readonly struct Destination : IDestination, IDisposable
+    public readonly struct Destination : IEntity, IDisposable
     {
         private readonly Entity entity;
 
