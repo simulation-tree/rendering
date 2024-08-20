@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace Rendering
 {
-    public readonly struct Camera : ICamera, IDisposable
+    public readonly struct Camera : IEntity, IDisposable
     {
         private readonly Entity entity;
 

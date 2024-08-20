@@ -1,5 +1,4 @@
 ﻿using Data.Components;
-using Data.Events;
 using Rendering.Components;
 using Shaders;
 using Simulation;
@@ -11,7 +10,7 @@ using Unmanaged.Collections;
 
 namespace Rendering
 {
-    public readonly struct Material : IMaterial, IDisposable
+    public readonly struct Material : IEntity, IDisposable
     {
         private readonly Entity entity;
 

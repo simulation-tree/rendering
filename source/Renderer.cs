@@ -6,7 +6,7 @@ using Unmanaged;
 
 namespace Rendering
 {
-    public readonly struct Renderer : IRenderer, IDisposable
+    public readonly struct Renderer : IEntity, IDisposable
     {
         private readonly Entity entity;
 
