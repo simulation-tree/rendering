@@ -19,7 +19,7 @@ namespace Rendering
             get
             {
                 IsMaterial component = entity.GetComponent<IsMaterial>();
-                return new(entity.world, entity.GetReference(component.shaderReference));
+                return new(entity, entity.GetReference(component.shaderReference));
             }
             set
             {
@@ -35,8 +35,8 @@ namespace Rendering
             }
         }
 
-        eint IEntity.Value => entity.value;
-        World IEntity.World => entity.world;
+        eint IEntity.Value => entity;
+        World IEntity.World => entity;
 
 #if NET
         [Obsolete("Default constructor not available", true)]
@@ -282,7 +282,7 @@ namespace Rendering
             for (uint i = 0; i < textureBindings.Count; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
-                if (existingBinding.TextureEntity == ((Entity)texture).value)
+                if (existingBinding.TextureEntity == (Entity)texture)
                 {
                     existingBinding.SetRegion(region);
                     return;

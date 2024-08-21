@@ -2,8 +2,6 @@
 using Data.Events;
 using Rendering.Components;
 using Shaders;
-using Shaders.Components;
-using Shaders.Events;
 using Simulation;
 using System;
 using Unmanaged;
@@ -34,8 +32,6 @@ namespace Rendering.Systems
         private void OnUpdate(DataUpdate update)
         {
             query.Update();
-            Span<(FixedString name, FixedString value)> defaultValues = stackalloc (FixedString, FixedString)[4];
-            bool askForData = false;
             foreach (var x in query)
             {
                 ref IsMaterial component = ref x.Component1;
@@ -77,36 +73,9 @@ namespace Rendering.Systems
                         }
                     }
 
-                    component.shaderReference = world.AddReference(x.entity, ((Entity)shader).value);
+                    component.shaderReference = world.AddReference(x.entity, shader);
                 }
             }
-
-            if (askForData)
-            {
-            //    world.Submit(new DataUpdate());
-            //    world.Submit(new ShaderUpdate());
-            //    world.Poll();
-            }
-        }
-
-        private int ReadDefaultPushBindings(eint dataEntity, Span<(FixedString name, FixedString value)> defaultValues)
-        {
-            int count = 0;
-            using BinaryReader reader = new(world.GetList<byte>(dataEntity).AsSpan());
-            using JSONObject jsonObject = reader.ReadObject<JSONObject>();
-            if (jsonObject.Contains("pushBindings"))
-            {
-                JSONArray pushBindingsArray = jsonObject.GetArray("pushBindings");
-                for (uint i = 0; i < pushBindingsArray.Count; i++)
-                {
-                    JSONObject pushBindingObject = pushBindingsArray[i].Object;
-                    FixedString name = pushBindingObject.GetText("name");
-                    FixedString defaultValue = pushBindingObject.GetText("default");
-                    defaultValues[count++] = (name, defaultValue);
-                }
-            }
-
-            return count;
         }
     }
 }

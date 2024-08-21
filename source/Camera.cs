@@ -100,17 +100,17 @@ namespace Rendering
         {
             get
             {
-                return new(entity.world, entity.GetComponent<CameraOutput>().destination);
+                return new(entity, entity.GetComponent<CameraOutput>().destination);
             }
             set
             {
                 ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
-                output.destination = ((Entity)value).value;
+                output.destination = (Entity)value;
             }
         }
 
-        World IEntity.World => entity.world;
-        eint IEntity.Value => entity.value;
+        World IEntity.World => entity;
+        eint IEntity.Value => entity;
 
 #if NET
         [Obsolete("Default constructor not available", true)]

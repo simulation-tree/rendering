@@ -40,13 +40,13 @@ namespace Rendering.Components
         {
             this.version = version;
             this.key = key;
-            textureEntity = ((Entity)texture).value;
+            textureEntity = (Entity)texture;
             this.region = region;
         }
 
         public void SetTexture(Texture texture)
         {
-            textureEntity = ((Entity)texture).value;
+            textureEntity = (Entity)texture;
             version++;
         }
 

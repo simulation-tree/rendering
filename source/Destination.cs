@@ -52,8 +52,8 @@ namespace Rendering
         public readonly Vector4 DestinationRegion => entity.GetComponent<IsDestination>().region;
 
 
-        World IEntity.World => entity.world;
-        eint IEntity.Value => entity.value;
+        World IEntity.World => entity;
+        eint IEntity.Value => entity;
 
         public Destination(World world, eint existingEntity)
         {
@@ -64,7 +64,7 @@ namespace Rendering
         {
             entity = new(world);
             entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), renderer));
-            world.CreateList<Extension>(entity.value);
+            world.CreateList<Extension>(entity);
         }
 
         public readonly void Dispose()

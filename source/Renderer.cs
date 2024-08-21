@@ -22,7 +22,7 @@ namespace Rendering
             {
                 IsRenderer component = entity.GetComponent<IsRenderer>();
                 eint materialEntity = entity.GetReference(component.material);
-                return new(entity.world, materialEntity);
+                return new(entity, materialEntity);
             }
             set
             {
@@ -44,7 +44,7 @@ namespace Rendering
             {
                 IsRenderer component = entity.GetComponent<IsRenderer>();
                 eint meshEntity = entity.GetReference(component.mesh);
-                return new(entity.world, meshEntity);
+                return new(entity, meshEntity);
             }
             set
             {
@@ -66,7 +66,7 @@ namespace Rendering
             {
                 IsRenderer component = entity.GetComponent<IsRenderer>();
                 eint cameraEntity = entity.GetReference(component.camera);
-                return new(entity.world, cameraEntity);
+                return new(entity, cameraEntity);
             }
             set
             {
@@ -82,8 +82,8 @@ namespace Rendering
             }
         }
 
-        eint IEntity.Value => entity.value;
-        World IEntity.World => entity.world;
+        eint IEntity.Value => entity;
+        World IEntity.World => entity;
 
         public Renderer(World world, eint existingEntity)
         {
@@ -116,7 +116,7 @@ namespace Rendering
 
         public static implicit operator Entity(Renderer renderer)
         {
-            return new(renderer.entity.world, renderer.entity.value);
+            return renderer.entity;
         }
     }
 }
