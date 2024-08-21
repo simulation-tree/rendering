@@ -1,6 +1,6 @@
 ﻿using Unmanaged;
 
-namespace Rendering
+namespace Rendering.Functions
 {
     public unsafe readonly struct SurfaceCreatedFunction
     {

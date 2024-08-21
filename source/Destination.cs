@@ -25,7 +25,7 @@ namespace Rendering
             }
             set
             {
-                ref IsDestination isDestination = ref entity.GetComponentRef<IsDestination>();
+                ref IsDestination isDestination = ref entity.GetComponent<IsDestination>();
                 isDestination.width = value.width;
                 isDestination.height = value.height;
             }

@@ -1,4 +1,4 @@
-﻿namespace Rendering
+﻿namespace Rendering.Functions
 {
     /// <summary>
     /// Disposes and cleans up any resources for this render system type.

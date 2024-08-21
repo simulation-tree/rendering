@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rendering.Functions;
+using System;
 using Unmanaged;
 
 namespace Rendering

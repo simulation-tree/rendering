@@ -26,7 +26,7 @@ namespace Rendering
             }
             set
             {
-                ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
+                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
                 if (entity.ContainsReference(component.material))
                 {
                     entity.SetReference(component.material, value);
@@ -48,7 +48,7 @@ namespace Rendering
             }
             set
             {
-                ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
+                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
                 if (entity.ContainsReference(component.mesh))
                 {
                     entity.SetReference(component.mesh, value);
@@ -70,7 +70,7 @@ namespace Rendering
             }
             set
             {
-                ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
+                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
                 if (entity.ContainsReference(component.camera))
                 {
                     entity.SetReference(component.camera, value);

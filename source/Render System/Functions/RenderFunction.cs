@@ -1,7 +1,7 @@
 ﻿using Simulation;
 using Unmanaged;
 
-namespace Rendering
+namespace Rendering.Functions
 {
     /// <summary>
     /// Renders a batch of entities using the same material, mesh and camera combination.

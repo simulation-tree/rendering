@@ -23,7 +23,7 @@ namespace Rendering
             }
             set
             {
-                ref IsMaterial component = ref entity.GetComponentRef<IsMaterial>();
+                ref IsMaterial component = ref entity.GetComponent<IsMaterial>();
                 if (entity.ContainsReference(component.shaderReference))
                 {
                     entity.SetReference(component.shaderReference, value);

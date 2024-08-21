@@ -19,7 +19,7 @@ namespace Rendering
             }
             set
             {
-                ref IsCamera component = ref entity.GetComponentRef<IsCamera>();
+                ref IsCamera component = ref entity.GetComponent<IsCamera>();
                 component = new(value.min, value.max);
             }
         }
@@ -34,7 +34,7 @@ namespace Rendering
             set
             {
                 ThrowIfOrthographic();
-                ref CameraFieldOfView fieldOfView = ref entity.GetComponentRef<CameraFieldOfView>();
+                ref CameraFieldOfView fieldOfView = ref entity.GetComponent<CameraFieldOfView>();
                 fieldOfView = new(value);
             }
         }
@@ -49,7 +49,7 @@ namespace Rendering
             set
             {
                 ThrowIfPerspective();
-                ref CameraOrthographicSize orthographicSize = ref entity.GetComponentRef<CameraOrthographicSize>();
+                ref CameraOrthographicSize orthographicSize = ref entity.GetComponent<CameraOrthographicSize>();
                 orthographicSize = new(value);
             }
         }
@@ -78,7 +78,7 @@ namespace Rendering
             }
             set
             {
-                ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
+                ref CameraOutput output = ref entity.GetComponent<CameraOutput>();
                 output.order = value;
             }
         }
@@ -91,7 +91,7 @@ namespace Rendering
             }
             set
             {
-                ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
+                ref CameraOutput output = ref entity.GetComponent<CameraOutput>();
                 output.region = value;
             }
         }
@@ -104,7 +104,7 @@ namespace Rendering
             }
             set
             {
-                ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
+                ref CameraOutput output = ref entity.GetComponent<CameraOutput>();
                 output.destination = (Entity)value;
             }
         }

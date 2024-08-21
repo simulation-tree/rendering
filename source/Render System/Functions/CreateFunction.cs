@@ -1,4 +1,4 @@
-﻿namespace Rendering
+﻿namespace Rendering.Functions
 {
     /// <summary>
     /// Creates a system instance for an existing destination entity.
