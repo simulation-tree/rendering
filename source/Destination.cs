@@ -106,9 +106,9 @@ namespace Rendering
 
         public readonly void AddExtension(FixedString extension)
         {
-            Span<char> span = stackalloc char[extension.Length];
-            extension.CopyTo(span);
-            AddExtension(span);
+            Span<char> span = stackalloc char[FixedString.MaxLength];
+            int length = extension.ToString(span);
+            AddExtension(span[..length]);
         }
 
         public static implicit operator Entity(Destination destination)
