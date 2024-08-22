@@ -1,4 +1,5 @@
-﻿using Rendering.Components;
+﻿using Meshes.Components;
+using Rendering.Components;
 using Rendering.Events;
 using Shaders.Components;
 using Simulation;
@@ -132,7 +133,9 @@ namespace Rendering.Systems
                         eint meshEntity = world.GetReference(r.entity, meshReference);
                         rint shaderReference = world.GetComponent<IsMaterial>(materialEntity).shaderReference;
                         eint shaderEntity = world.GetReference(materialEntity, shaderReference);
-                        if (shaderEntity == default || !world.ContainsComponent<IsShader>()) continue; //not yet loaded
+
+                        if (shaderEntity == default || !world.ContainsComponent<IsShader>(shaderEntity)) continue; //shader not yet loaded
+                        if (meshEntity == default || !world.ContainsComponent<IsMesh>(meshEntity)) continue; //mesh not yet loaded
 
                         if (!renderSystem.renderers.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
                         {

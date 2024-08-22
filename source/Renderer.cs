@@ -44,7 +44,7 @@ namespace Rendering
             {
                 IsRenderer component = entity.GetComponent<IsRenderer>();
                 eint meshEntity = entity.GetReference(component.mesh);
-                return new(entity, meshEntity);
+                return new Entity(entity, meshEntity).As<Mesh>();
             }
             set
             {

@@ -309,7 +309,7 @@ namespace Rendering
             return false;
         }
 
-        public readonly bool TryGetTextureBinding(byte binding, byte set, out MaterialTextureBinding textureBinding)
+        public readonly bool TryGetTextureBinding(byte binding, byte set, out uint index)
         {
             DescriptorResourceKey key = new(binding, set);
             UnmanagedList<MaterialTextureBinding> textureBindings = entity.GetList<MaterialTextureBinding>();
@@ -318,12 +318,12 @@ namespace Rendering
                 ref MaterialTextureBinding existingBinding = ref textureBindings.GetRef(i);
                 if (existingBinding.key.Equals(key))
                 {
-                    textureBinding = existingBinding;
+                    index = i;
                     return true;
                 }
             }
 
-            textureBinding = default;
+            index = default;
             return false;
         }
 
