@@ -150,6 +150,12 @@ namespace Rendering
             componentBindings.Add(new(start, componentType, stage));
         }
 
+        public readonly void AddPushBinding<T>(ShaderStage stage = ShaderStage.Vertex) where T : unmanaged
+        {
+            RuntimeType componentType = RuntimeType.Get<T>();
+            AddPushBinding(componentType, stage);
+        }
+
         public readonly void SetPushBinding(RuntimeType componentType, byte start, ShaderStage stage = ShaderStage.Vertex)
         {
             UnmanagedList<MaterialPushBinding> componentBindings = entity.GetList<MaterialPushBinding>();
@@ -184,12 +190,18 @@ namespace Rendering
             componentBindings.Add(new(key, entity, componentType, stage));
         }
 
-        public readonly void AddComponentBinding<T>(byte binding, byte set, T entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex) where T : IEntity
+        public readonly void AddComponentBinding<E>(byte binding, byte set, E entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex) where E : IEntity
         {
             AddComponentBinding(binding, set, entity.Value, componentType, stage);
         }
 
         public readonly void AddComponentBinding<C>(byte binding, byte set, eint entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
+        {
+            RuntimeType componentType = RuntimeType.Get<C>();
+            AddComponentBinding(binding, set, entity, componentType, stage);
+        }
+
+        public readonly void AddComponentBinding<C>(byte binding, byte set, Entity entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
         {
             RuntimeType componentType = RuntimeType.Get<C>();
             AddComponentBinding(binding, set, entity, componentType, stage);

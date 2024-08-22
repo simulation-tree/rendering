@@ -16,6 +16,12 @@ namespace Rendering
             set => entity.IsEnabled = value;
         }
 
+        public readonly Entity Parent
+        {
+            get => entity.Parent;
+            set => entity.Parent = value;
+        }
+
         public readonly Material Material
         {
             get
