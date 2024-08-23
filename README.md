@@ -3,9 +3,9 @@ Defines the types needed for 3D rendering implementations.
 
 ### Destinations
 These are entities that are known to be rendered to, and are referenced by cameras. They're expected
-to be implemented by extending them into actual render destinations such as [`windows`](https://github.com/game-simulations/windows).
+to be implemented with individual window libraries, like in [`windows`](https://github.com/game-simulations/windows).
 
-Destinations are first presented separately from rendering. They also require a label on them, with that label's handler registered with the `RenderEngineSystem`. This system updates upon the `RenderUpdate` event (which should be submitted last):
+Destinations are then presented separately from appearing. They also require a label on them, with that label's handler registered with the `RenderEngineSystem`. The render engine system then updates upon the `RenderUpdate` event (which should be submitted last) and draws all enabled destinations:
 ```cs
 using RenderEngineSystem renderEngine = new(world);
 renderEngine.RegisterSystem<CustomRenderer>();
@@ -21,14 +21,14 @@ camera.SetPosition(0, 0, -10);
 Whenever they get updated, they will have a `CameraProjection` component added to them to reflect
 the view and projection matrices.
 
-### Materials and shader binding
-Materials contain information about how to bind entity or texture data to [`shaders`](https://github.com/game-simulations/shaders).
+### Binding data to shaders
+Its the materials entities that contain information about how to bind entity or texture data to [`shaders`](https://github.com/game-simulations/shaders):
 ```cs
-Shader shader = new(world, "Program/shader.vert", "Program/shader.frag");
-Texture texture = new(world, "Program/texture.png");
+Shader shader = new(world, "*/Shaders/shader.vert.glsl", "*/Shaders/shader.frag.glsl");
+Texture texture = new(world, "*/Textures/texture.png");
 Material material = new(world, shader);
-material.AddPushBinding(RuntimeType.Get<Color>());
-material.AddComponentBinding(0, 0, camera, RuntimeType.Get<CameraProjection>());
+material.AddPushBinding<Color>(); //component expected on the renderer entity
+material.AddComponentBinding<CameraProjection>(0, 0, camera);
 material.AddTextureBinding(1, 0, texture);
 ```
 Where the shader has these uniform buffers and push constants defined:
@@ -44,6 +44,19 @@ layout(binding = 0) uniform CameraInfo { //bound to CameraProjection, from the c
 ```
 ```glsl
 layout(binding = 1) uniform sampler2D textureSampler; //bound to the texture entity
+```
+
+### Loading materials from files
+The included method expects material files to be json, with a "vertex" and "fragment" key pointing
+to shader addresses:
+```cs
+Material material = new(world, "*/Materials/Unlit.material.json");
+```
+```json
+{
+    "vertex": "*/Shaders/unlit.vert.glsl",
+    "fragment": "*/Shaders/unlit.frag.glsl"
+}
 ```
 
 ### Renderers
