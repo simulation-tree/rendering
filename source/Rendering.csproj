@@ -22,9 +22,9 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\meshes\source\Meshes.csproj" />
 		<ProjectReference Include="..\..\serialization\source\Serialization.csproj" />
-		<ProjectReference Include="..\..\shaders\Shaders.csproj" />
+		<ProjectReference Include="..\..\shaders\source\Shaders.csproj" />
 		<ProjectReference Include="..\..\simulation\source\Simulation.csproj" />
-		<ProjectReference Include="..\..\textures\Textures.csproj" />
+		<ProjectReference Include="..\..\textures\source\Textures.csproj" />
 		<ProjectReference Include="..\..\data\source\Data.csproj" />
 	</ItemGroup>
 
