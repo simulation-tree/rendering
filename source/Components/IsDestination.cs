@@ -12,6 +12,18 @@ namespace Rendering.Components
         public FixedString rendererLabel;
 
         public readonly uint Area => width * height;
+        
+        public (uint x, uint y) Size
+        {
+            readonly get => (width, height);
+            set
+            {
+                width = value.x;
+                height = value.y;
+            }
+        }
+
+        public readonly float AspectRatio => width / (float)height;
 
 #if NET
         [Obsolete("Default constructor not available")]
