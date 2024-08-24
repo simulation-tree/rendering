@@ -59,7 +59,7 @@ namespace Rendering.Systems
         /// </summary>
         public void RegisterSystem<T>() where T : unmanaged, IRenderSystem
         {
-            FixedString label = new T().Label;
+            FixedString label = default(T).Label;
             if (availableSystemTypes.ContainsKey(label))
             {
                 throw new InvalidOperationException($"Label '{label}' already has a render system registered for.");
