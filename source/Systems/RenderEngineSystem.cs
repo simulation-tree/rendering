@@ -148,9 +148,9 @@ namespace Rendering.Systems
                         {
                             renderers = new();
                             groups.Add(hash, renderers);
-                            renderSystem.materials.Add(hash, materialEntity);
-                            renderSystem.shaders.Add(hash, shaderEntity);
-                            renderSystem.meshes.Add(hash, meshEntity);
+                            renderSystem.materials[hash] = materialEntity;
+                            renderSystem.shaders[hash] = shaderEntity;
+                            renderSystem.meshes[hash] = meshEntity;
                         }
 
                         renderers.Add(r.entity);

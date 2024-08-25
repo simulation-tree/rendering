@@ -72,6 +72,11 @@ namespace Rendering
             entity.Dispose();
         }
 
+        public readonly override string ToString()
+        {
+            return entity.ToString();
+        }
+
         Query IEntity.GetQuery(World world)
         {
             return new(world, RuntimeType.Get<IsDestination>());
