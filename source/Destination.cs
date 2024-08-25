@@ -64,7 +64,7 @@ namespace Rendering
         {
             entity = new(world);
             entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), renderer));
-            world.CreateList<Extension>(entity);
+            entity.CreateArray<Extension>(0);
         }
 
         public readonly void Dispose()
@@ -85,11 +85,11 @@ namespace Rendering
         public readonly int CopyExtensionNamesTo(Span<FixedString> buffer)
         {
             //todo: should be possible to cast the unmanaged list directly into the desired type, the extension and FixedString are same size
-            UnmanagedList<Extension> extensions = entity.GetList<Extension>();
-            int count = (int)Math.Min(extensions.Count, buffer.Length);
+            Span<Extension> extensions = entity.GetArray<Extension>();
+            int count = (int)Math.Min(extensions.Length, buffer.Length);
             for (int i = 0; i < count; i++)
             {
-                buffer[i] = extensions[(uint)i].text;
+                buffer[i] = extensions[i].text;
             }
 
             return count;
@@ -97,16 +97,18 @@ namespace Rendering
 
         public readonly void AddExtension(ReadOnlySpan<char> extension)
         {
-            UnmanagedList<Extension> extensions = entity.GetList<Extension>();
-            for (uint i = 0; i < extensions.Count; i++)
+            Span<Extension> extensions = entity.GetArray<Extension>();
+            for (uint i = 0; i < extensions.Length; i++)
             {
-                if (extensions[i].text == extension)
+                if (extensions[(int)i].text == extension)
                 {
                     throw new InvalidOperationException($"Extension `{extension.ToString()}` is already attached to destination `{entity}`");
                 }
             }
 
-            extensions.Add(new Extension(extension));
+            uint extensionCount = (uint)extensions.Length;
+            extensions = entity.ResizeArray<Extension>(extensionCount + 1);
+            extensions[(int)extensionCount] = new Extension(extension);
         }
 
         public readonly void AddExtension(FixedString extension)

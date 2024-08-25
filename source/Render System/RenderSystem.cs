@@ -1,5 +1,6 @@
 ﻿using Simulation;
 using System;
+using System.Formats.Asn1;
 using Unmanaged;
 using Unmanaged.Collections;
 
@@ -13,7 +14,7 @@ namespace Rendering
         private bool hasSurface;
         public readonly nint library;
         public readonly UnmanagedList<eint> cameras;
-        public readonly UnmanagedDictionary<eint, UnmanagedDictionary<int, UnmanagedList<eint>>> renderers;
+        public readonly UnmanagedDictionary<eint, UnmanagedDictionary<int, UnmanagedList<eint>>> renderersPerCamera;
         public readonly UnmanagedDictionary<int, eint> materials;
         public readonly UnmanagedDictionary<int, eint> shaders;
         public readonly UnmanagedDictionary<int, eint> meshes;
@@ -39,7 +40,7 @@ namespace Rendering
             hasSurface = false;
 
             cameras = new();
-            renderers = new();
+            renderersPerCamera = new();
             materials = new();
             shaders = new();
             meshes = new();
@@ -53,9 +54,9 @@ namespace Rendering
             meshes.Dispose();
             cameras.Dispose();
 
-            foreach (eint cameraEntity in renderers.Keys)
+            foreach (eint cameraEntity in renderersPerCamera.Keys)
             {
-                UnmanagedDictionary<int, UnmanagedList<eint>> groups = renderers[cameraEntity];
+                UnmanagedDictionary<int, UnmanagedList<eint>> groups = renderersPerCamera[cameraEntity];
                 foreach (int hash in groups.Keys)
                 {
                     UnmanagedList<eint> renderers = groups[hash];
@@ -65,7 +66,7 @@ namespace Rendering
                 groups.Dispose();
             }
 
-            renderers.Dispose();
+            renderersPerCamera.Dispose();
         }
 
         public void SurfaceCreated(nint surface)

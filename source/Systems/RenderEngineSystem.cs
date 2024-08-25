@@ -31,10 +31,17 @@ namespace Rendering.Systems
 
         public override void Dispose()
         {
-            foreach (eint destinationEntity in renderSystems.Keys)
+            //foreach (eint destinationEntity in renderSystems.Keys)
+            //{
+            //    RenderSystem system = renderSystems[destinationEntity];
+            //    system.Dispose();
+            //}
+
+            for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
             {
-                RenderSystem system = renderSystems[destinationEntity];
-                system.Dispose();
+                eint destinationEntity = knownDestinations[i];
+                RenderSystem destinationRenderer = renderSystems[destinationEntity];
+                destinationRenderer.Dispose();
             }
 
             renderSystems.Dispose();
@@ -77,15 +84,15 @@ namespace Rendering.Systems
             //reset lists
             foreach (eint destinationEntity in knownDestinations)
             {
-                ref RenderSystem renderSystem = ref renderSystems.GetRef(destinationEntity);
+                ref RenderSystem renderSystem = ref renderSystems[destinationEntity];
                 renderSystem.cameras.Clear();
 
-                foreach (eint cameraEntity in renderSystem.renderers.Keys)
+                foreach (eint cameraEntity in renderSystem.renderersPerCamera.Keys)
                 {
-                    UnmanagedDictionary<int, UnmanagedList<eint>> groups = renderSystem.renderers[cameraEntity];
-                    foreach (int hash in groups.Keys)
+                    UnmanagedDictionary<int, UnmanagedList<eint>> renderersPerCamera = renderSystem.renderersPerCamera[cameraEntity];
+                    foreach (int hash in renderersPerCamera.Keys)
                     {
-                        UnmanagedList<eint> renderers = groups[hash];
+                        UnmanagedList<eint> renderers = renderersPerCamera[hash];
                         renderers.Clear();
                     }
                 }
@@ -137,10 +144,10 @@ namespace Rendering.Systems
                         if (shaderEntity == default || !world.ContainsComponent<IsShader>(shaderEntity)) continue; //shader not yet loaded
                         if (meshEntity == default || !world.ContainsComponent<IsMesh>(meshEntity)) continue; //mesh not yet loaded
 
-                        if (!renderSystem.renderers.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
+                        if (!renderSystem.renderersPerCamera.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
                         {
                             groups = new();
-                            renderSystem.renderers.Add(cameraEntity, groups);
+                            renderSystem.renderersPerCamera.Add(cameraEntity, groups);
                         }
 
                         int hash = HashCode.Combine(materialEntity, meshEntity);
@@ -148,9 +155,9 @@ namespace Rendering.Systems
                         {
                             renderers = new();
                             groups.Add(hash, renderers);
-                            renderSystem.materials[hash] = materialEntity;
-                            renderSystem.shaders[hash] = shaderEntity;
-                            renderSystem.meshes[hash] = meshEntity;
+                            renderSystem.materials.AddOrSet(hash, materialEntity);
+                            renderSystem.shaders.AddOrSet(hash, shaderEntity);
+                            renderSystem.meshes.AddOrSet(hash, meshEntity);
                         }
 
                         renderers.Add(r.entity);
@@ -170,7 +177,7 @@ namespace Rendering.Systems
                 //todo: iterate with respect to each camera's sorting order
                 foreach (eint camera in renderSystem.cameras)
                 {
-                    if (!renderSystem.renderers.TryGetValue(camera, out UnmanagedDictionary<int, UnmanagedList<eint>> groups)) continue;
+                    if (!renderSystem.renderersPerCamera.TryGetValue(camera, out UnmanagedDictionary<int, UnmanagedList<eint>> groups)) continue;
 
                     foreach (int hash in groups.Keys)
                     {
