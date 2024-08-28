@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace Rendering
 {
-    public readonly struct Camera : IEntity, IDisposable
+    public readonly struct Camera : IEntity
     {
         private readonly Entity entity;
 
@@ -153,11 +153,6 @@ namespace Rendering
             this(world, destination, true, orthographicSize.value, minDepth, maxDepth)
         {
 
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
         }
 
         Query IEntity.GetQuery(World world)

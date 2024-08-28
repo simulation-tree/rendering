@@ -6,11 +6,10 @@ using System;
 using System.Numerics;
 using Textures;
 using Unmanaged;
-using Unmanaged.Collections;
 
 namespace Rendering
 {
-    public readonly struct Material : IEntity, IDisposable
+    public readonly struct Material : IEntity
     {
         private readonly Entity entity;
 
@@ -91,11 +90,6 @@ namespace Rendering
             entity.CreateArray<MaterialPushBinding>(0);
             entity.CreateArray<MaterialComponentBinding>(0);
             entity.CreateArray<MaterialTextureBinding>(0);
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
         }
 
         public readonly override string ToString()

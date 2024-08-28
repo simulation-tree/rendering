@@ -3,11 +3,10 @@ using Simulation;
 using System;
 using System.Numerics;
 using Unmanaged;
-using Unmanaged.Collections;
 
 namespace Rendering
 {
-    public readonly struct Destination : IEntity, IDisposable
+    public readonly struct Destination : IEntity
     {
         private readonly Entity entity;
 
@@ -65,11 +64,6 @@ namespace Rendering
             entity = new(world);
             entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), renderer));
             entity.CreateArray<Extension>(0);
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
         }
 
         public readonly override string ToString()

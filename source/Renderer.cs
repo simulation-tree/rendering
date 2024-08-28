@@ -6,7 +6,7 @@ using Unmanaged;
 
 namespace Rendering
 {
-    public readonly struct Renderer : IEntity, IDisposable
+    public readonly struct Renderer : IEntity
     {
         private readonly Entity entity;
 
@@ -103,11 +103,6 @@ namespace Rendering
             rint materialReference = entity.AddReference(material);
             rint cameraReference = entity.AddReference(camera);
             entity.AddComponent(new IsRenderer(meshReference, materialReference, cameraReference));
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
         }
 
         public readonly override string ToString()
