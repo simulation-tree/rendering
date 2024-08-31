@@ -14,12 +14,12 @@ namespace Rendering
         {
             get
             {
-                IsCamera component = entity.GetComponent<IsCamera>();
+                IsCamera component = entity.GetComponentRef<IsCamera>();
                 return (component.minDepth, component.maxDepth);
             }
             set
             {
-                ref IsCamera component = ref entity.GetComponent<IsCamera>();
+                ref IsCamera component = ref entity.GetComponentRef<IsCamera>();
                 component = new(value.min, value.max);
             }
         }
@@ -29,7 +29,7 @@ namespace Rendering
             get
             {
                 ThrowIfOrthographic();
-                return ref entity.GetComponent<CameraFieldOfView>().value;
+                return ref entity.GetComponentRef<CameraFieldOfView>().value;
             }
         }
 
@@ -38,24 +38,24 @@ namespace Rendering
             get
             {
                 ThrowIfPerspective();
-                return ref entity.GetComponent<CameraOrthographicSize>().value;
+                return ref entity.GetComponentRef<CameraOrthographicSize>().value;
             }
         }
 
         public readonly bool IsOrthographic => entity.ContainsComponent<CameraOrthographicSize>();
         public readonly bool IsPerspective => entity.ContainsComponent<CameraFieldOfView>();
-        public readonly ref sbyte Order => ref entity.GetComponent<CameraOutput>().order;
-        public readonly ref Vector4 OutputRegion => ref entity.GetComponent<CameraOutput>().region;
+        public readonly ref sbyte Order => ref entity.GetComponentRef<CameraOutput>().order;
+        public readonly ref Vector4 OutputRegion => ref entity.GetComponentRef<CameraOutput>().region;
 
         public readonly Destination Destination
         {
             get
             {
-                return new(entity, entity.GetComponent<CameraOutput>().destination);
+                return new(entity, entity.GetComponentRef<CameraOutput>().destination);
             }
             set
             {
-                ref CameraOutput output = ref entity.GetComponent<CameraOutput>();
+                ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
                 output.destination = (Entity)value;
             }
         }

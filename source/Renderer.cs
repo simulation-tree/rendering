@@ -26,13 +26,13 @@ namespace Rendering
         {
             get
             {
-                IsRenderer component = entity.GetComponent<IsRenderer>();
+                IsRenderer component = entity.GetComponentRef<IsRenderer>();
                 uint materialEntity = entity.GetReference(component.material);
                 return new(entity, materialEntity);
             }
             set
             {
-                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
+                ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
                 if (entity.ContainsReference(component.material))
                 {
                     entity.SetReference(component.material, value);
@@ -48,13 +48,13 @@ namespace Rendering
         {
             get
             {
-                IsRenderer component = entity.GetComponent<IsRenderer>();
+                IsRenderer component = entity.GetComponentRef<IsRenderer>();
                 uint meshEntity = entity.GetReference(component.mesh);
                 return new Entity(entity, meshEntity).As<Mesh>();
             }
             set
             {
-                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
+                ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
                 if (entity.ContainsReference(component.mesh))
                 {
                     entity.SetReference(component.mesh, value);
@@ -70,13 +70,13 @@ namespace Rendering
         {
             get
             {
-                IsRenderer component = entity.GetComponent<IsRenderer>();
+                IsRenderer component = entity.GetComponentRef<IsRenderer>();
                 uint cameraEntity = entity.GetReference(component.camera);
                 return new(entity, cameraEntity);
             }
             set
             {
-                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
+                ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
                 if (entity.ContainsReference(component.camera))
                 {
                     entity.SetReference(component.camera, value);

@@ -17,12 +17,12 @@ namespace Rendering
         {
             get
             {
-                IsMaterial component = entity.GetComponent<IsMaterial>();
+                IsMaterial component = entity.GetComponentRef<IsMaterial>();
                 return new(entity, entity.GetReference(component.shaderReference));
             }
             set
             {
-                ref IsMaterial component = ref entity.GetComponent<IsMaterial>();
+                ref IsMaterial component = ref entity.GetComponentRef<IsMaterial>();
                 if (entity.ContainsReference(component.shaderReference))
                 {
                     entity.SetReference(component.shaderReference, value);
@@ -109,7 +109,7 @@ namespace Rendering
 
         public readonly FixedString GetRequestAddress()
         {
-            return entity.GetComponent<IsDataRequest>().address;
+            return entity.GetComponentRef<IsDataRequest>().address;
         }
 
         /// <summary>

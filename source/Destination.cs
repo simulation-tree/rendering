@@ -19,12 +19,12 @@ namespace Rendering
         {
             get
             {
-                IsDestination isDestination = entity.GetComponent<IsDestination>();
+                IsDestination isDestination = entity.GetComponentRef<IsDestination>();
                 return (isDestination.width, isDestination.height);
             }
             set
             {
-                ref IsDestination isDestination = ref entity.GetComponent<IsDestination>();
+                ref IsDestination isDestination = ref entity.GetComponentRef<IsDestination>();
                 isDestination.width = value.width;
                 isDestination.height = value.height;
             }
@@ -48,7 +48,7 @@ namespace Rendering
             }
         }
 
-        public readonly Vector4 DestinationRegion => entity.GetComponent<IsDestination>().region;
+        public readonly Vector4 DestinationRegion => entity.GetComponentRef<IsDestination>().region;
 
         World IEntity.World => entity;
         uint IEntity.Value => entity;
@@ -118,7 +118,6 @@ namespace Rendering
         {
             (uint width, uint height) = Size;
             Vector2 screenPoint = position / new Vector2(width, height);
-            screenPoint.Y = 1 - screenPoint.Y;
             return screenPoint;
         }
 
