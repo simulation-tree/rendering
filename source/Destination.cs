@@ -15,7 +15,7 @@ namespace Rendering
         /// <summary>
         /// Retrieves the size of the destination.
         /// </summary>
-        public readonly (uint width, uint height) DestinationSize
+        public readonly (uint width, uint height) Size
         {
             get
             {
@@ -30,11 +30,11 @@ namespace Rendering
             }
         }
 
-        public readonly uint DestinationArea
+        public readonly uint Area
         {
             get
             {
-                (uint width, uint height) = DestinationSize;
+                (uint width, uint height) = Size;
                 return width * height;
             }
         }
@@ -43,13 +43,12 @@ namespace Rendering
         {
             get
             {
-                (uint width, uint height) = DestinationSize;
+                (uint width, uint height) = Size;
                 return (float)width / height;
             }
         }
 
         public readonly Vector4 DestinationRegion => entity.GetComponent<IsDestination>().region;
-
 
         World IEntity.World => entity;
         uint IEntity.Value => entity;
@@ -80,7 +79,7 @@ namespace Rendering
         {
             //todo: should be possible to cast the unmanaged list directly into the desired type, the extension and FixedString are same size
             Span<Extension> extensions = entity.GetArray<Extension>();
-            int count = (int)Math.Min(extensions.Length, buffer.Length);
+            int count = Math.Min(extensions.Length, buffer.Length);
             for (int i = 0; i < count; i++)
             {
                 buffer[i] = extensions[i].text;
@@ -110,6 +109,17 @@ namespace Rendering
             Span<char> span = stackalloc char[FixedString.MaxLength];
             int length = extension.ToString(span);
             AddExtension(span[..length]);
+        }
+
+        /// <summary>
+        /// Converts the given position on the destination surface to [0, 1] screen coordinates.
+        /// </summary>
+        public readonly Vector2 GetScreenPointFromPosition(Vector2 position)
+        {
+            (uint width, uint height) = Size;
+            Vector2 screenPoint = position / new Vector2(width, height);
+            screenPoint.Y = 1 - screenPoint.Y;
+            return screenPoint;
         }
 
         public static implicit operator Entity(Destination destination)

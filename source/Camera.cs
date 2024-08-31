@@ -111,68 +111,6 @@ namespace Rendering
             return Query.Create<IsCamera, CameraOutput>(world);
         }
 
-        /// <summary>
-        /// Calculates raycast inputs from the given mouse positon.
-        /// </summary>
-        public readonly (Vector3 origin, Vector3 direction) GetRayFromMousePosition(Vector2 mousePosition)
-        {
-            (uint width, uint height) = Destination.DestinationSize;
-            Vector2 normalizedMousePosition = mousePosition / new Vector2(width, height);
-            normalizedMousePosition.X = normalizedMousePosition.X * 2 - 1;
-            normalizedMousePosition.Y = 1 - normalizedMousePosition.Y * 2;
-            CameraProjection cameraMatrices = entity.GetComponent<CameraProjection>();
-            Matrix4x4 projection = cameraMatrices.projection;
-            Matrix4x4 view = cameraMatrices.view;
-            Matrix4x4.Invert(projection, out Matrix4x4 invProjection);
-            Matrix4x4.Invert(view, out Matrix4x4 invView);
-            Vector4 nearPointNDC = new(normalizedMousePosition, 0f, 1f);
-            Vector4 farPointNDC = new(normalizedMousePosition, 1f, 1f);
-            Vector4 nearPointView = Vector4.Transform(nearPointNDC, invProjection);
-            Vector4 farPointView = Vector4.Transform(farPointNDC, invProjection);
-            nearPointView /= nearPointView.W;
-            farPointView /= farPointView.W;
-            Vector4 nearPointWorld = Vector4.Transform(nearPointView, invView);
-            Vector4 farPointWorld = Vector4.Transform(farPointView, invView);
-            Vector3 origin = new(nearPointWorld.X, nearPointWorld.Y, nearPointWorld.Z);
-            Vector3 direction = Vector3.Normalize(new Vector3(farPointWorld.X, farPointWorld.Y, farPointWorld.Z) - origin);
-            return (origin, direction);
-        }
-
-        /// <summary>
-        /// Calculates position in world space from the given screen point,
-        /// with an optional distance parameter.
-        /// </summary>
-        public readonly Vector3 GetWorldPositionFromScreenPoint(Vector2 screenPoint, float distance = 0f)
-        {
-            CameraProjection cameraMatrices = entity.GetComponent<CameraProjection>();
-            Matrix4x4 projection = cameraMatrices.projection;
-            Matrix4x4 view = cameraMatrices.view;
-            Matrix4x4.Invert(projection, out Matrix4x4 invProjection);
-            Matrix4x4.Invert(view, out Matrix4x4 invView);
-            Vector4 nearPointNDC = new(screenPoint, 0f, 1f);
-            Vector4 farPointNDC = new(screenPoint, 1f, 1f);
-            Vector4 nearPointView = Vector4.Transform(nearPointNDC, invProjection);
-            Vector4 farPointView = Vector4.Transform(farPointNDC, invProjection);
-            nearPointView /= nearPointView.W;
-            farPointView /= farPointView.W;
-            Vector4 nearPointWorld = Vector4.Transform(nearPointView, invView);
-            Vector4 farPointWorld = Vector4.Transform(farPointView, invView);
-            Vector3 origin = new(nearPointWorld.X, nearPointWorld.Y, nearPointWorld.Z);
-            Vector3 direction = Vector3.Normalize(new Vector3(farPointWorld.X, farPointWorld.Y, farPointWorld.Z) - origin);
-            return origin + direction * distance;
-        }
-
-        /// <summary>
-        /// Retrieves the given mouse position as 0-1 coordinates on the screen.
-        /// </summary>
-        public readonly Vector2 GetScreenPointFromMousePosition(Vector2 mousePosition)
-        {
-            (uint width, uint height) = Destination.DestinationSize;
-            Vector2 screenPoint = mousePosition / new Vector2(width, height);
-            screenPoint.Y = 1 - screenPoint.Y;
-            return screenPoint;
-        }
-
         [Conditional("DEBUG")]
         private readonly void ThrowIfOrthographic()
         {
