@@ -46,7 +46,7 @@ namespace Rendering
         {
             fixed (FixedString* names = extensionNames)
             {
-                CreateResult result = create.Invoke(destination, (nint)names, extensionNames.Length);
+                CreateResult result = create.Invoke(destination, names, extensionNames.Length);
                 return new(result, this);
             }
         }

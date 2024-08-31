@@ -1,5 +1,4 @@
-﻿using Simulation;
-using Unmanaged;
+﻿using Unmanaged;
 
 namespace Rendering.Functions
 {
@@ -9,22 +8,22 @@ namespace Rendering.Functions
     public unsafe readonly struct RenderFunction
     {
 #if NET
-        private readonly delegate* unmanaged<Allocation, nint, int, eint, eint, eint, void> function;
+        private readonly delegate* unmanaged<Allocation, void*, int, uint, uint, uint, void> function;
 
-        public RenderFunction(delegate* unmanaged<Allocation, nint, int, eint, eint, eint, void> function)
+        public RenderFunction(delegate* unmanaged<Allocation, void*, int, uint, uint, uint, void> function)
         {
             this.function = function;
         }
 #else
-        private readonly delegate*<Allocation, nint, int, eint, eint, eint, void> function;
+        private readonly delegate*<Allocation, void*, int, uint, uint, uint, void> function;
 
-        public RenderFunction(delegate*<Allocation, nint, int, eint, eint, eint, void> function)
+        public RenderFunction(delegate*<Allocation, void*, int, uint, uint, uint, void> function)
         {
             this.function = function;
         }
 #endif
 
-        public readonly void Invoke(Allocation system, nint entities, int entityCount, eint material, eint shader, eint mesh)
+        public readonly void Invoke(Allocation system, void* entities, int entityCount, uint material, uint shader, uint mesh)
         {
             function(system, entities, entityCount, material, shader, mesh);
         }

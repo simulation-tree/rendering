@@ -14,9 +14,9 @@ namespace Rendering.Systems
         private readonly Query<IsDestination> destinationQuery;
         private readonly Query<IsRenderer> rendererQuery;
         private readonly Query<IsCamera> cameraQuery;
-        private readonly UnmanagedList<eint> knownDestinations;
+        private readonly UnmanagedList<uint> knownDestinations;
         private readonly UnmanagedDictionary<FixedString, RenderSystemType> availableSystemTypes;
-        private readonly UnmanagedDictionary<eint, RenderSystem> renderSystems;
+        private readonly UnmanagedDictionary<uint, RenderSystem> renderSystems;
 
         public RenderEngineSystem(World world) : base(world)
         {
@@ -31,7 +31,7 @@ namespace Rendering.Systems
 
         public override void Dispose()
         {
-            //foreach (eint destinationEntity in renderSystems.Keys)
+            //foreach (uint destinationEntity in renderSystems.Keys)
             //{
             //    RenderSystem system = renderSystems[destinationEntity];
             //    system.Dispose();
@@ -39,7 +39,7 @@ namespace Rendering.Systems
 
             for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
             {
-                eint destinationEntity = knownDestinations[i];
+                uint destinationEntity = knownDestinations[i];
                 RenderSystem destinationRenderer = renderSystems[destinationEntity];
                 destinationRenderer.Dispose();
             }
@@ -82,17 +82,17 @@ namespace Rendering.Systems
             CreateNewSystems();
 
             //reset lists
-            foreach (eint destinationEntity in knownDestinations)
+            foreach (uint destinationEntity in knownDestinations)
             {
                 ref RenderSystem renderSystem = ref renderSystems[destinationEntity];
                 renderSystem.cameras.Clear();
 
-                foreach (eint cameraEntity in renderSystem.renderersPerCamera.Keys)
+                foreach (uint cameraEntity in renderSystem.renderersPerCamera.Keys)
                 {
-                    UnmanagedDictionary<int, UnmanagedList<eint>> renderersPerCamera = renderSystem.renderersPerCamera[cameraEntity];
+                    UnmanagedDictionary<int, UnmanagedList<uint>> renderersPerCamera = renderSystem.renderersPerCamera[cameraEntity];
                     foreach (int hash in renderersPerCamera.Keys)
                     {
-                        UnmanagedList<eint> renderers = renderersPerCamera[hash];
+                        UnmanagedList<uint> renderers = renderersPerCamera[hash];
                         renderers.Clear();
                     }
                 }
@@ -109,8 +109,8 @@ namespace Rendering.Systems
             foreach (var r in cameraQuery)
             {
                 //todo: efficiency: asking to fetch a camera component more than once
-                eint cameraEntity = r.entity;
-                eint destination = world.GetComponent<CameraOutput>(cameraEntity).destination;
+                uint cameraEntity = r.entity;
+                uint destination = world.GetComponent<CameraOutput>(cameraEntity).destination;
                 if (renderSystems.TryGetValue(destination, out RenderSystem destinationRenderer))
                 {
                     destinationRenderer.cameras.Add(cameraEntity);
@@ -128,30 +128,30 @@ namespace Rendering.Systems
                 IsRenderer component = r.Component1;
                 rint cameraReference = component.camera;
                 rint materialReference = component.material;
-                eint cameraEntity = world.GetReference(r.entity, cameraReference);
-                eint materialEntity = world.GetReference(r.entity, materialReference);
+                uint cameraEntity = world.GetReference(r.entity, cameraReference);
+                uint materialEntity = world.GetReference(r.entity, materialReference);
                 if (world.ContainsEntity(cameraEntity) && world.TryGetComponent(cameraEntity, out CameraOutput output))
                 {
-                    eint destinationEntity = output.destination;
+                    uint destinationEntity = output.destination;
                     if (renderSystems.TryGetValue(destinationEntity, out RenderSystem renderSystem))
                     {
                         //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
                         rint meshReference = component.mesh;
-                        eint meshEntity = world.GetReference(r.entity, meshReference);
+                        uint meshEntity = world.GetReference(r.entity, meshReference);
                         rint shaderReference = world.GetComponent<IsMaterial>(materialEntity).shaderReference;
-                        eint shaderEntity = world.GetReference(materialEntity, shaderReference);
+                        uint shaderEntity = world.GetReference(materialEntity, shaderReference);
 
                         if (shaderEntity == default || !world.ContainsComponent<IsShader>(shaderEntity)) continue; //shader not yet loaded
                         if (meshEntity == default || !world.ContainsComponent<IsMesh>(meshEntity)) continue; //mesh not yet loaded
 
-                        if (!renderSystem.renderersPerCamera.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<eint>> groups))
+                        if (!renderSystem.renderersPerCamera.TryGetValue(cameraEntity, out UnmanagedDictionary<int, UnmanagedList<uint>> groups))
                         {
                             groups = new();
                             renderSystem.renderersPerCamera.Add(cameraEntity, groups);
                         }
 
                         int hash = HashCode.Combine(materialEntity, meshEntity);
-                        if (!groups.TryGetValue(hash, out UnmanagedList<eint> renderers))
+                        if (!groups.TryGetValue(hash, out UnmanagedList<uint> renderers))
                         {
                             renderers = new();
                             groups.Add(hash, renderers);
@@ -166,7 +166,7 @@ namespace Rendering.Systems
             }
 
             //render all
-            foreach (eint destinationEntity in knownDestinations)
+            foreach (uint destinationEntity in knownDestinations)
             {
                 if (!world.ContainsComponent<SurfaceReference>(destinationEntity)) continue;
                 if (world.GetComponent<IsDestination>(destinationEntity).Area == 0) continue;
@@ -175,19 +175,19 @@ namespace Rendering.Systems
                 if (renderSystem.BeginRender() == 1) continue;
 
                 //todo: iterate with respect to each camera's sorting order
-                foreach (eint camera in renderSystem.cameras)
+                foreach (uint camera in renderSystem.cameras)
                 {
-                    if (!renderSystem.renderersPerCamera.TryGetValue(camera, out UnmanagedDictionary<int, UnmanagedList<eint>> groups)) continue;
+                    if (!renderSystem.renderersPerCamera.TryGetValue(camera, out UnmanagedDictionary<int, UnmanagedList<uint>> groups)) continue;
 
                     foreach (int hash in groups.Keys)
                     {
-                        UnmanagedList<eint> renderers = groups[hash];
+                        UnmanagedList<uint> renderers = groups[hash];
                         uint rendererCount = renderers.Count;
 
                         //make sure renderer entries that no longer exist are not in this list
                         for (uint r = rendererCount - 1; r != uint.MaxValue; r--)
                         {
-                            eint rendererEntity = renderers[r];
+                            uint rendererEntity = renderers[r];
                             if (!world.ContainsEntity(rendererEntity))
                             {
                                 renderers.RemoveAt(r);
@@ -197,9 +197,9 @@ namespace Rendering.Systems
                         rendererCount = renderers.Count;
                         if (rendererCount > 0)
                         {
-                            eint material = renderSystem.materials[hash];
-                            eint mesh = renderSystem.meshes[hash];
-                            eint shader = renderSystem.shaders[hash];
+                            uint material = renderSystem.materials[hash];
+                            uint mesh = renderSystem.meshes[hash];
+                            uint shader = renderSystem.shaders[hash];
                             renderSystem.Render(renderers.AsSpan(), material, shader, mesh);
                         }
                     }
@@ -216,7 +216,7 @@ namespace Rendering.Systems
             int extensionNamesLength = 0;
             foreach (var r in destinationQuery)
             {
-                eint destinationEntity = r.entity;
+                uint destinationEntity = r.entity;
                 if (knownDestinations.Contains(destinationEntity)) continue;
 
                 IsDestination component = r.Component1;
@@ -241,7 +241,7 @@ namespace Rendering.Systems
         {
             for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
             {
-                eint destinationEntity = knownDestinations[i];
+                uint destinationEntity = knownDestinations[i];
                 if (!world.ContainsEntity(destinationEntity))
                 {
                     RenderSystem destinationRenderer = renderSystems.Remove(destinationEntity);

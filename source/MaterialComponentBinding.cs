@@ -11,14 +11,14 @@ namespace Rendering.Components
     public struct MaterialComponentBinding : IEquatable<MaterialComponentBinding>
     {
         public DescriptorResourceKey key;
-        public eint entity;
+        public uint entity;
         public RuntimeType componentType;
         public ShaderStage stage;
 
         public readonly byte Binding => key.Binding;
         public readonly byte Set => key.Set;
 
-        public MaterialComponentBinding(DescriptorResourceKey key, eint entity, RuntimeType componentType, ShaderStage stage)
+        public MaterialComponentBinding(DescriptorResourceKey key, uint entity, RuntimeType componentType, ShaderStage stage)
         {
             this.key = key;
             this.entity = entity;
@@ -44,7 +44,7 @@ namespace Rendering.Components
         /// <summary>
         /// Gets a property element that references a component of type <typeparamref name="T"/>.
         /// </summary>
-        public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, eint entity, ShaderStage stage) where T : unmanaged
+        public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, uint entity, ShaderStage stage) where T : unmanaged
         {
             return new MaterialComponentBinding(key, entity, RuntimeType.Get<T>(), stage);
         }

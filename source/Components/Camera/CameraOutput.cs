@@ -6,12 +6,12 @@ namespace Rendering.Components
 {
     public struct CameraOutput
     {
-        public eint destination;
+        public uint destination;
         public Vector4 region;
         public Color clearColor;
         public sbyte order;
 
-        public CameraOutput(eint destination, Vector4 region, Color clearColor, sbyte order)
+        public CameraOutput(uint destination, Vector4 region, Color clearColor, sbyte order)
         {
             this.destination = destination;
             this.region = region;

@@ -27,7 +27,7 @@ namespace Rendering
             get
             {
                 IsRenderer component = entity.GetComponent<IsRenderer>();
-                eint materialEntity = entity.GetReference(component.material);
+                uint materialEntity = entity.GetReference(component.material);
                 return new(entity, materialEntity);
             }
             set
@@ -49,7 +49,7 @@ namespace Rendering
             get
             {
                 IsRenderer component = entity.GetComponent<IsRenderer>();
-                eint meshEntity = entity.GetReference(component.mesh);
+                uint meshEntity = entity.GetReference(component.mesh);
                 return new Entity(entity, meshEntity).As<Mesh>();
             }
             set
@@ -71,7 +71,7 @@ namespace Rendering
             get
             {
                 IsRenderer component = entity.GetComponent<IsRenderer>();
-                eint cameraEntity = entity.GetReference(component.camera);
+                uint cameraEntity = entity.GetReference(component.camera);
                 return new(entity, cameraEntity);
             }
             set
@@ -88,10 +88,10 @@ namespace Rendering
             }
         }
 
-        eint IEntity.Value => entity;
+        uint IEntity.Value => entity;
         World IEntity.World => entity;
 
-        public Renderer(World world, eint existingEntity)
+        public Renderer(World world, uint existingEntity)
         {
             entity = new(world, existingEntity);
         }

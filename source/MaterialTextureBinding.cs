@@ -15,11 +15,11 @@ namespace Rendering.Components
 
         private uint version;
         private Vector4 region;
-        private eint textureEntity;
+        private uint textureEntity;
 
         public readonly byte Binding => key.Binding;
         public readonly byte Set => key.Set;
-        public readonly eint TextureEntity => textureEntity;
+        public readonly uint TextureEntity => textureEntity;
 
         /// <summary>
         /// The version of this binding, updated when region or texture is changed.
@@ -28,7 +28,7 @@ namespace Rendering.Components
 
         public readonly Vector4 Region => region;
 
-        public MaterialTextureBinding(uint version, DescriptorResourceKey key, eint texture, Vector4 region)
+        public MaterialTextureBinding(uint version, DescriptorResourceKey key, uint texture, Vector4 region)
         {
             this.version = version;
             this.key = key;

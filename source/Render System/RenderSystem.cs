@@ -13,11 +13,11 @@ namespace Rendering
     {
         private bool hasSurface;
         public readonly nint library;
-        public readonly UnmanagedList<eint> cameras;
-        public readonly UnmanagedDictionary<eint, UnmanagedDictionary<int, UnmanagedList<eint>>> renderersPerCamera;
-        public readonly UnmanagedDictionary<int, eint> materials;
-        public readonly UnmanagedDictionary<int, eint> shaders;
-        public readonly UnmanagedDictionary<int, eint> meshes;
+        public readonly UnmanagedList<uint> cameras;
+        public readonly UnmanagedDictionary<uint, UnmanagedDictionary<int, UnmanagedList<uint>>> renderersPerCamera;
+        public readonly UnmanagedDictionary<int, uint> materials;
+        public readonly UnmanagedDictionary<int, uint> shaders;
+        public readonly UnmanagedDictionary<int, uint> meshes;
 
         private readonly Allocation system;
         private readonly RenderSystemType type;
@@ -54,12 +54,12 @@ namespace Rendering
             meshes.Dispose();
             cameras.Dispose();
 
-            foreach (eint cameraEntity in renderersPerCamera.Keys)
+            foreach (uint cameraEntity in renderersPerCamera.Keys)
             {
-                UnmanagedDictionary<int, UnmanagedList<eint>> groups = renderersPerCamera[cameraEntity];
+                UnmanagedDictionary<int, UnmanagedList<uint>> groups = renderersPerCamera[cameraEntity];
                 foreach (int hash in groups.Keys)
                 {
-                    UnmanagedList<eint> renderers = groups[hash];
+                    UnmanagedList<uint> renderers = groups[hash];
                     renderers.Dispose();
                 }
 
@@ -80,11 +80,11 @@ namespace Rendering
             return type.beginRender.Invoke(system);
         }
 
-        public unsafe readonly void Render(ReadOnlySpan<eint> renderers, eint material, eint shader, eint mesh)
+        public unsafe readonly void Render(ReadOnlySpan<uint> renderers, uint material, uint shader, uint mesh)
         {
-            fixed (eint* entitiesPtr = renderers)
+            fixed (uint* entitiesPtr = renderers)
             {
-                type.render.Invoke(system, (nint)entitiesPtr, renderers.Length, material, shader, mesh);
+                type.render.Invoke(system, entitiesPtr, renderers.Length, material, shader, mesh);
             }
         }
 

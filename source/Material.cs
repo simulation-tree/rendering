@@ -46,7 +46,7 @@ namespace Rendering
 
         public readonly ReadOnlySpan<MaterialPushBinding> PushBindings => entity.GetArray<MaterialPushBinding>();
 
-        eint IEntity.Value => entity;
+        uint IEntity.Value => entity;
         World IEntity.World => entity;
 
 #if NET
@@ -57,7 +57,7 @@ namespace Rendering
         }
 #endif
 
-        public Material(World world, eint existingEntity)
+        public Material(World world, uint existingEntity)
         {
             entity = new(world, existingEntity);
         }
@@ -160,7 +160,7 @@ namespace Rendering
             componentBindings[(int)bindingCount] = new(start, componentType, stage);
         }
 
-        public readonly void AddComponentBinding(byte binding, byte set, eint entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex)
+        public readonly void AddComponentBinding(byte binding, byte set, uint entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex)
         {
             DescriptorResourceKey key = new(binding, set);
             Span<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
@@ -183,7 +183,7 @@ namespace Rendering
             AddComponentBinding(binding, set, entity.Value, componentType, stage);
         }
 
-        public readonly void AddComponentBinding<C>(byte binding, byte set, eint entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
+        public readonly void AddComponentBinding<C>(byte binding, byte set, uint entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
         {
             RuntimeType componentType = RuntimeType.Get<C>();
             AddComponentBinding(binding, set, entity, componentType, stage);
@@ -195,7 +195,7 @@ namespace Rendering
             AddComponentBinding(binding, set, entity, componentType, stage);
         }
 
-        public readonly bool SetComponentBinding(byte binding, byte set, eint entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex)
+        public readonly bool SetComponentBinding(byte binding, byte set, uint entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex)
         {
             DescriptorResourceKey key = new(binding, set);
             Span<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
@@ -215,7 +215,7 @@ namespace Rendering
             return false;
         }
 
-        public readonly bool SetComponentBinding<C>(byte binding, byte set, eint entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
+        public readonly bool SetComponentBinding<C>(byte binding, byte set, uint entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
         {
             RuntimeType componentType = RuntimeType.Get<C>();
             return SetComponentBinding(binding, set, entity, componentType, stage);
@@ -300,13 +300,13 @@ namespace Rendering
             throw new InvalidOperationException($"Texture binding referencing texture `{texture}` does not exist to update region of.");
         }
 
-        public readonly bool TryGetTextureBinding(eint texture, out MaterialTextureBinding binding)
+        public readonly bool TryGetTextureBinding(uint textureEntity, out MaterialTextureBinding binding)
         {
             Span<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
             for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[(int)i];
-                if (existingBinding.TextureEntity == texture)
+                if (existingBinding.TextureEntity == textureEntity)
                 {
                     binding = existingBinding;
                     return true;

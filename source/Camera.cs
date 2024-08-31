@@ -110,7 +110,7 @@ namespace Rendering
         }
 
         World IEntity.World => entity;
-        eint IEntity.Value => entity;
+        uint IEntity.Value => entity;
 
 #if NET
         [Obsolete("Default constructor not available", true)]
@@ -120,7 +120,7 @@ namespace Rendering
         }
 #endif
 
-        public Camera(World world, eint existingEntity)
+        public Camera(World world, uint existingEntity)
         {
             entity = new(world, existingEntity);
         }

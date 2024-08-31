@@ -52,9 +52,9 @@ namespace Rendering
 
 
         World IEntity.World => entity;
-        eint IEntity.Value => entity;
+        uint IEntity.Value => entity;
 
-        public Destination(World world, eint existingEntity)
+        public Destination(World world, uint existingEntity)
         {
             entity = new(world, existingEntity);
         }
