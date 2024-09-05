@@ -1,6 +1,4 @@
-﻿using Simulation;
-using System;
-using System.Formats.Asn1;
+﻿using System;
 using Unmanaged;
 using Unmanaged.Collections;
 
@@ -80,12 +78,9 @@ namespace Rendering
             return type.beginRender.Invoke(system);
         }
 
-        public unsafe readonly void Render(ReadOnlySpan<uint> renderers, uint material, uint shader, uint mesh)
+        public unsafe readonly void Render(USpan<uint> renderers, uint material, uint shader, uint mesh)
         {
-            fixed (uint* entitiesPtr = renderers)
-            {
-                type.render.Invoke(system, entitiesPtr, renderers.Length, material, shader, mesh);
-            }
+            type.render.Invoke(system, renderers, material, shader, mesh);
         }
 
         public readonly uint EndRender()

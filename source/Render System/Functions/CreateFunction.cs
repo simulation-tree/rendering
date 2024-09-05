@@ -1,4 +1,6 @@
-﻿namespace Rendering.Functions
+﻿using Unmanaged;
+
+namespace Rendering.Functions
 {
     /// <summary>
     /// Creates a system instance for an existing destination entity.
@@ -6,24 +8,24 @@
     public unsafe readonly struct CreateFunction
     {
 #if NET
-        private readonly delegate* unmanaged<Destination, void*, int, CreateResult> function;
+        private readonly delegate* unmanaged<Destination, FixedString*, uint, CreateResult> function;
 
-        public CreateFunction(delegate* unmanaged<Destination, void*, int, CreateResult> function)
+        public CreateFunction(delegate* unmanaged<Destination, FixedString*, uint, CreateResult> function)
         {
             this.function = function;
         }
 #else
-        private readonly delegate*<Destination, void*, int, CreateResult> function;
+        private readonly delegate*<Destination, FixedString*, uint, CreateResult> function;
 
-        public CreateFunction(delegate*<Destination, void*, int, CreateResult> function)
+        public CreateFunction(delegate*<Destination, FixedString*, uint, CreateResult> function)
         {
             this.function = function;
         }
 #endif
 
-        public readonly CreateResult Invoke(Destination destination, void* names, int nameCount)
+        public readonly CreateResult Invoke(Destination destination, USpan<FixedString> extensionNames)
         {
-            return function(destination, names, nameCount);
+            return function(destination, extensionNames.pointer, extensionNames.length);
         }
     }
 }

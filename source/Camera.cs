@@ -3,12 +3,13 @@ using Simulation;
 using System;
 using System.Diagnostics;
 using System.Numerics;
+using Unmanaged;
 
 namespace Rendering
 {
     public readonly struct Camera : IEntity
     {
-        private readonly Entity entity;
+        public readonly Entity entity;
 
         public readonly (float min, float max) Depth
         {
@@ -51,17 +52,36 @@ namespace Rendering
         {
             get
             {
-                return new(entity, entity.GetComponentRef<CameraOutput>().destination);
+                rint destinationReference = entity.GetComponent<CameraOutput>().destinationReference;
+                uint destinationEntity = entity.GetReference(destinationReference);
+                return new(entity.world, destinationEntity);
             }
             set
             {
                 ref CameraOutput output = ref entity.GetComponentRef<CameraOutput>();
-                output.destination = (Entity)value;
+                ref rint destinationReference = ref output.destinationReference;
+                if (destinationReference == default)
+                {
+                    destinationReference = entity.AddReference(value);
+                }
+                else
+                {
+                    uint destinationEntity = entity.GetReference(destinationReference);
+                    if (destinationEntity != value.entity.value)
+                    {
+                        entity.SetReference(destinationReference, value);
+                    }
+                    else
+                    {
+                        //same destination
+                    }
+                }
             }
         }
 
-        World IEntity.World => entity;
-        uint IEntity.Value => entity;
+        readonly uint IEntity.Value => entity.value;
+        readonly World IEntity.World => entity.world;
+        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsCamera>(), RuntimeType.Get<CameraOutput>()], []);
 
 #if NET
         [Obsolete("Default constructor not available", true)]
@@ -91,7 +111,8 @@ namespace Rendering
                 entity.AddComponent(new CameraFieldOfView(size));
             }
 
-            entity.AddComponent(new CameraOutput(destination, new(0, 0, 1, 1), new(0, 0, 0, 1), order));
+            rint destinationReference = entity.AddReference(destination);
+            entity.AddComponent(new CameraOutput(destinationReference, new(0, 0, 1, 1), new(0, 0, 0, 1), order));
             entity.AddComponent(new IsCamera(minDepth, maxDepth));
         }
 
@@ -104,11 +125,6 @@ namespace Rendering
             this(world, destination, true, orthographicSize.value, minDepth, maxDepth)
         {
 
-        }
-
-        readonly Query IEntity.GetQuery(World world)
-        {
-            return Query.Create<IsCamera, CameraOutput>(world);
         }
 
         [Conditional("DEBUG")]
@@ -127,11 +143,6 @@ namespace Rendering
             {
                 throw new InvalidOperationException("Cannot get orthographic size for a perspective camera.");
             }
-        }
-
-        public static implicit operator Entity(Camera camera)
-        {
-            return camera.entity;
         }
     }
 }

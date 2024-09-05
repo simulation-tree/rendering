@@ -42,13 +42,10 @@ namespace Rendering
         /// <summary>
         /// Constructs an instance of this type.
         /// </summary>
-        public unsafe readonly RenderSystem Create(Destination destination, ReadOnlySpan<FixedString> extensionNames)
+        public unsafe readonly RenderSystem Create(Destination destination, USpan<FixedString> extensionNames)
         {
-            fixed (FixedString* names = extensionNames)
-            {
-                CreateResult result = create.Invoke(destination, names, extensionNames.Length);
-                return new(result, this);
-            }
+            CreateResult result = create.Invoke(destination, extensionNames);
+            return new(result, this);
         }
 
         public static RenderSystemType Create<T>() where T : unmanaged, IRenderSystem

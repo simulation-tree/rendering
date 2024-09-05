@@ -1,14 +1,13 @@
 ﻿using Meshes;
 using Rendering.Components;
 using Simulation;
-using System;
 using Unmanaged;
 
 namespace Rendering
 {
     public readonly struct Renderer : IEntity
     {
-        private readonly Entity entity;
+        public readonly Entity entity;
 
         public readonly bool IsEnabled
         {
@@ -28,7 +27,7 @@ namespace Rendering
             {
                 IsRenderer component = entity.GetComponentRef<IsRenderer>();
                 uint materialEntity = entity.GetReference(component.material);
-                return new(entity, materialEntity);
+                return new(entity.world, materialEntity);
             }
             set
             {
@@ -50,7 +49,7 @@ namespace Rendering
             {
                 IsRenderer component = entity.GetComponentRef<IsRenderer>();
                 uint meshEntity = entity.GetReference(component.mesh);
-                return new Entity(entity, meshEntity).As<Mesh>();
+                return new Entity(entity.world, meshEntity).As<Mesh>();
             }
             set
             {
@@ -72,7 +71,7 @@ namespace Rendering
             {
                 IsRenderer component = entity.GetComponentRef<IsRenderer>();
                 uint cameraEntity = entity.GetReference(component.camera);
-                return new(entity, cameraEntity);
+                return new(entity.world, cameraEntity);
             }
             set
             {
@@ -88,8 +87,9 @@ namespace Rendering
             }
         }
 
-        uint IEntity.Value => entity;
-        World IEntity.World => entity;
+        readonly uint IEntity.Value => entity.value;
+        readonly World IEntity.World => entity.world;
+        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsRenderer>()], []);
 
         public Renderer(World world, uint existingEntity)
         {
@@ -108,16 +108,6 @@ namespace Rendering
         public readonly override string ToString()
         {
             return entity.ToString();
-        }
-
-        Query IEntity.GetQuery(World world)
-        {
-            return new(world, RuntimeType.Get<IsRenderer>());
-        }
-
-        public static implicit operator Entity(Renderer renderer)
-        {
-            return renderer.entity;
         }
     }
 }

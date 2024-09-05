@@ -8,24 +8,24 @@ namespace Rendering.Functions
     public unsafe readonly struct RenderFunction
     {
 #if NET
-        private readonly delegate* unmanaged<Allocation, void*, int, uint, uint, uint, void> function;
+        private readonly delegate* unmanaged<Allocation, uint*, uint, uint, uint, uint, void> function;
 
-        public RenderFunction(delegate* unmanaged<Allocation, void*, int, uint, uint, uint, void> function)
+        public RenderFunction(delegate* unmanaged<Allocation, uint*, uint, uint, uint, uint, void> function)
         {
             this.function = function;
         }
 #else
-        private readonly delegate*<Allocation, void*, int, uint, uint, uint, void> function;
+        private readonly delegate*<Allocation, uint*, uint, uint, uint, uint, void> function;
 
-        public RenderFunction(delegate*<Allocation, void*, int, uint, uint, uint, void> function)
+        public RenderFunction(delegate*<Allocation, uint*, uint, uint, uint, uint, void> function)
         {
             this.function = function;
         }
 #endif
 
-        public readonly void Invoke(Allocation system, void* entities, int entityCount, uint material, uint shader, uint mesh)
+        public readonly void Invoke(Allocation system, USpan<uint> renderers, uint material, uint shader, uint mesh)
         {
-            function(system, entities, entityCount, material, shader, mesh);
+            function(system, renderers.pointer, renderers.length, material, shader, mesh);
         }
     }
 }

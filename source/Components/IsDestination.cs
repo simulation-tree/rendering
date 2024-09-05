@@ -48,5 +48,10 @@ namespace Rendering.Components
             this.region = region;
             this.rendererLabel = rendererLabel;
         }
+
+        public readonly Vector2 SizeAsVector2()
+        {
+            return new(width, height);
+        }
     }
 }

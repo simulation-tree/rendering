@@ -11,18 +11,18 @@ namespace Rendering.Systems
 {
     public class RenderEngineSystem : SystemBase
     {
-        private readonly Query<IsDestination> destinationQuery;
-        private readonly Query<IsRenderer> rendererQuery;
-        private readonly Query<IsCamera> cameraQuery;
+        private readonly ComponentQuery<IsDestination> destinationQuery;
+        private readonly ComponentQuery<IsRenderer> rendererQuery;
+        private readonly ComponentQuery<IsCamera> cameraQuery;
         private readonly UnmanagedList<uint> knownDestinations;
         private readonly UnmanagedDictionary<FixedString, RenderSystemType> availableSystemTypes;
         private readonly UnmanagedDictionary<uint, RenderSystem> renderSystems;
 
         public RenderEngineSystem(World world) : base(world)
         {
-            destinationQuery = new(world);
-            rendererQuery = new(world);
-            cameraQuery = new(world);
+            destinationQuery = new();
+            rendererQuery = new();
+            cameraQuery = new();
             knownDestinations = new();
             availableSystemTypes = new();
             renderSystems = new();
@@ -105,13 +105,14 @@ namespace Rendering.Systems
             }
 
             //find cameras
-            cameraQuery.Update();
+            cameraQuery.Update(world);
             foreach (var r in cameraQuery)
             {
                 //todo: efficiency: asking to fetch a camera component more than once
                 uint cameraEntity = r.entity;
-                uint destination = world.GetComponent<CameraOutput>(cameraEntity).destination;
-                if (renderSystems.TryGetValue(destination, out RenderSystem destinationRenderer))
+                rint destinationReference = world.GetComponent<CameraOutput>(cameraEntity).destinationReference;
+                uint destinationEntity = world.GetReference(cameraEntity, destinationReference);
+                if (renderSystems.TryGetValue(destinationEntity, out RenderSystem destinationRenderer))
                 {
                     destinationRenderer.cameras.Add(cameraEntity);
                 }
@@ -122,7 +123,7 @@ namespace Rendering.Systems
             }
 
             //find renderers
-            rendererQuery.Update(Query.Option.OnlyEnabledEntities);
+            rendererQuery.Update(world, true);
             foreach (var r in rendererQuery)
             {
                 IsRenderer component = r.Component1;
@@ -132,7 +133,8 @@ namespace Rendering.Systems
                 uint materialEntity = world.GetReference(r.entity, materialReference);
                 if (world.ContainsEntity(cameraEntity) && world.TryGetComponent(cameraEntity, out CameraOutput output))
                 {
-                    uint destinationEntity = output.destination;
+                    rint destinationReference = output.destinationReference;
+                    uint destinationEntity = world.GetReference(cameraEntity, destinationReference);
                     if (renderSystems.TryGetValue(destinationEntity, out RenderSystem renderSystem))
                     {
                         //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
@@ -211,9 +213,9 @@ namespace Rendering.Systems
 
         private void CreateNewSystems()
         {
-            destinationQuery.Update();
-            Span<FixedString> extensionNames = stackalloc FixedString[32];
-            int extensionNamesLength = 0;
+            destinationQuery.Update(world);
+            USpan<FixedString> extensionNames = stackalloc FixedString[32];
+            uint extensionNamesLength = 0;
             foreach (var r in destinationQuery)
             {
                 uint destinationEntity = r.entity;
@@ -225,7 +227,7 @@ namespace Rendering.Systems
                 extensionNamesLength = destination.CopyExtensionNamesTo(extensionNames);
                 if (availableSystemTypes.TryGetValue(label, out RenderSystemType systemCreator))
                 {
-                    RenderSystem system = systemCreator.Create(destination, extensionNames[..extensionNamesLength]);
+                    RenderSystem system = systemCreator.Create(destination, extensionNames.Slice(0, extensionNamesLength));
                     renderSystems.Add(destinationEntity, system);
                     knownDestinations.Add(destinationEntity);
                     world.AddComponent(destinationEntity, new RenderSystemInUse(system.library));

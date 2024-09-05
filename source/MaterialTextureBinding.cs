@@ -1,5 +1,4 @@
 ﻿using Shaders;
-using Simulation;
 using System;
 using System.Numerics;
 using Textures;
@@ -40,13 +39,13 @@ namespace Rendering.Components
         {
             this.version = version;
             this.key = key;
-            textureEntity = (Entity)texture;
+            textureEntity = texture.entity.value;
             this.region = region;
         }
 
         public void SetTexture(Texture texture)
         {
-            textureEntity = (Entity)texture;
+            textureEntity = texture.entity.value;
             version++;
         }
 

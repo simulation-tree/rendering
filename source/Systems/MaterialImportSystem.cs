@@ -12,12 +12,12 @@ namespace Rendering.Systems
 {
     public class MaterialImportSystem : SystemBase
     {
-        private readonly Query<IsMaterial, IsDataRequest> query;
+        private readonly ComponentQuery<IsMaterial, IsDataRequest> query;
         private readonly UnmanagedDictionary<FixedString, Shader> cachedShaders;
 
         public MaterialImportSystem(World world) : base(world)
         {
-            query = new(world);
+            query = new();
             cachedShaders = new();
             Subscribe<DataUpdate>(OnUpdate);
         }
@@ -31,7 +31,7 @@ namespace Rendering.Systems
 
         private void OnUpdate(DataUpdate update)
         {
-            query.Update();
+            query.Update(world);
             foreach (var x in query)
             {
                 ref IsMaterial component = ref x.Component1;
@@ -49,8 +49,8 @@ namespace Rendering.Systems
                             if (hasVertexProperty && hasFragmentProperty)
                             {
                                 //todo: test materials and shaders loading from json
-                                ReadOnlySpan<char> vertexAddress = jsonObject.GetText("vertex");
-                                ReadOnlySpan<char> fragmentAddress = jsonObject.GetText("fragment");
+                                USpan<char> vertexAddress = jsonObject.GetText("vertex");
+                                USpan<char> fragmentAddress = jsonObject.GetText("fragment");
                                 shader = new(world, vertexAddress, fragmentAddress);
                                 cachedShaders.Add(address, shader);
                             }

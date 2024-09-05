@@ -1,6 +1,7 @@
 ﻿using Rendering.Components;
 using Simulation;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Unmanaged;
 
@@ -8,9 +9,7 @@ namespace Rendering
 {
     public readonly struct Destination : IEntity
     {
-        private readonly Entity entity;
-
-        public readonly bool IsDestroyed => entity.IsDestroyed;
+        public readonly Entity entity;
 
         /// <summary>
         /// Retrieves the size of the destination.
@@ -50,8 +49,9 @@ namespace Rendering
 
         public readonly Vector4 DestinationRegion => entity.GetComponentRef<IsDestination>().region;
 
-        World IEntity.World => entity;
-        uint IEntity.Value => entity;
+        readonly uint IEntity.Value => entity.value;
+        readonly World IEntity.World => entity.world;
+        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsDestination>()], []);
 
         public Destination(World world, uint existingEntity)
         {
@@ -65,22 +65,40 @@ namespace Rendering
             entity.CreateArray<Extension>(0);
         }
 
+        public Destination(World world, Vector2 size, USpan<char> renderer)
+        {
+            entity = new(world);
+            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), new(renderer)));
+            entity.CreateArray<Extension>(0);
+        }
+
+        public readonly Vector2 SizeAsVector2()
+        {
+            (uint width, uint height) = Size;
+            return new Vector2(width, height);
+        }
+
         public readonly override string ToString()
         {
             return entity.ToString();
         }
 
-        Query IEntity.GetQuery(World world)
+        public readonly override bool Equals([NotNullWhen(true)] object? obj)
         {
-            return new(world, RuntimeType.Get<IsDestination>());
+            return obj is Destination destination && entity == destination.entity;
         }
 
-        public readonly int CopyExtensionNamesTo(Span<FixedString> buffer)
+        public readonly override int GetHashCode()
+        {
+            return entity.GetHashCode();
+        }
+
+        public readonly uint CopyExtensionNamesTo(USpan<FixedString> buffer)
         {
             //todo: should be possible to cast the unmanaged list directly into the desired type, the extension and FixedString are same size
-            Span<Extension> extensions = entity.GetArray<Extension>();
-            int count = Math.Min(extensions.Length, buffer.Length);
-            for (int i = 0; i < count; i++)
+            USpan<Extension> extensions = entity.GetArray<Extension>();
+            uint count = Math.Min(extensions.length, buffer.length);
+            for (uint i = 0; i < count; i++)
             {
                 buffer[i] = extensions[i].text;
             }
@@ -88,27 +106,27 @@ namespace Rendering
             return count;
         }
 
-        public readonly void AddExtension(ReadOnlySpan<char> extension)
+        public readonly void AddExtension(USpan<char> extension)
         {
-            Span<Extension> extensions = entity.GetArray<Extension>();
-            for (uint i = 0; i < extensions.Length; i++)
+            USpan<Extension> extensions = entity.GetArray<Extension>();
+            for (uint i = 0; i < extensions.length; i++)
             {
-                if (extensions[(int)i].text == extension)
+                if (extensions[i].text.Equals(extension))
                 {
                     throw new InvalidOperationException($"Extension `{extension.ToString()}` is already attached to destination `{entity}`");
                 }
             }
 
-            uint extensionCount = (uint)extensions.Length;
+            uint extensionCount = extensions.length;
             extensions = entity.ResizeArray<Extension>(extensionCount + 1);
-            extensions[(int)extensionCount] = new Extension(extension);
+            extensions[extensionCount] = new Extension(extension);
         }
 
         public readonly void AddExtension(FixedString extension)
         {
-            Span<char> span = stackalloc char[FixedString.MaxLength];
-            int length = extension.ToString(span);
-            AddExtension(span[..length]);
+            USpan<char> span = stackalloc char[(int)FixedString.MaxLength];
+            uint length = extension.CopyTo(span);
+            AddExtension(span.Slice(0, length));
         }
 
         /// <summary>
@@ -121,9 +139,14 @@ namespace Rendering
             return screenPoint;
         }
 
-        public static implicit operator Entity(Destination destination)
+        public static bool operator ==(Destination a, Destination b)
         {
-            return destination.entity;
+            return a.entity == b.entity;
+        }
+
+        public static bool operator !=(Destination a, Destination b)
+        {
+            return a.entity != b.entity;
         }
 
         public readonly struct Extension
@@ -135,7 +158,7 @@ namespace Rendering
                 this.text = text;
             }
 
-            public Extension(ReadOnlySpan<char> text)
+            public Extension(USpan<char> text)
             {
                 this.text = new(text);
             }
