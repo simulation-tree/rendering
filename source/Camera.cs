@@ -98,7 +98,7 @@ namespace Rendering
 
         public Camera(World world, Destination destination, bool isOrthographic, float size, float minDepth = 0.1f, float maxDepth = 1000f)
         {
-            uint cameraCount = world.CountEntities<IsCamera>();
+            uint cameraCount = world.CountEntitiesWithComponent<IsCamera>();
             sbyte order = (sbyte)cameraCount;
 
             entity = new(world);
