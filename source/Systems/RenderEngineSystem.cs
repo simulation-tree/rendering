@@ -127,8 +127,8 @@ namespace Rendering.Systems
             foreach (var r in rendererQuery)
             {
                 IsRenderer component = r.Component1;
-                rint cameraReference = component.camera;
-                rint materialReference = component.material;
+                rint cameraReference = component.cameraReference;
+                rint materialReference = component.materialReference;
                 uint cameraEntity = world.GetReference(r.entity, cameraReference);
                 uint materialEntity = world.GetReference(r.entity, materialReference);
                 if (world.ContainsEntity(cameraEntity) && world.TryGetComponent(cameraEntity, out CameraOutput output))
@@ -138,7 +138,7 @@ namespace Rendering.Systems
                     if (renderSystems.TryGetValue(destinationEntity, out RenderSystem renderSystem))
                     {
                         //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
-                        rint meshReference = component.mesh;
+                        rint meshReference = component.meshReference;
                         uint meshEntity = world.GetReference(r.entity, meshReference);
                         rint shaderReference = world.GetComponent<IsMaterial>(materialEntity).shaderReference;
                         uint shaderEntity = world.GetReference(materialEntity, shaderReference);

@@ -26,19 +26,19 @@ namespace Rendering
             get
             {
                 IsRenderer component = entity.GetComponentRef<IsRenderer>();
-                uint materialEntity = entity.GetReference(component.material);
+                uint materialEntity = entity.GetReference(component.materialReference);
                 return new(entity.world, materialEntity);
             }
             set
             {
                 ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
-                if (entity.ContainsReference(component.material))
+                if (entity.ContainsReference(component.materialReference))
                 {
-                    entity.SetReference(component.material, value);
+                    entity.SetReference(component.materialReference, value);
                 }
                 else
                 {
-                    component.material = entity.AddReference(value);
+                    component.materialReference = entity.AddReference(value);
                 }
             }
         }
@@ -48,19 +48,19 @@ namespace Rendering
             get
             {
                 IsRenderer component = entity.GetComponentRef<IsRenderer>();
-                uint meshEntity = entity.GetReference(component.mesh);
+                uint meshEntity = entity.GetReference(component.meshReference);
                 return new Entity(entity.world, meshEntity).As<Mesh>();
             }
             set
             {
                 ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
-                if (entity.ContainsReference(component.mesh))
+                if (entity.ContainsReference(component.meshReference))
                 {
-                    entity.SetReference(component.mesh, value);
+                    entity.SetReference(component.meshReference, value);
                 }
                 else
                 {
-                    component.mesh = entity.AddReference(value);
+                    component.meshReference = entity.AddReference(value);
                 }
             }
         }
@@ -70,19 +70,19 @@ namespace Rendering
             get
             {
                 IsRenderer component = entity.GetComponentRef<IsRenderer>();
-                uint cameraEntity = entity.GetReference(component.camera);
+                uint cameraEntity = entity.GetReference(component.cameraReference);
                 return new(entity.world, cameraEntity);
             }
             set
             {
                 ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
-                if (entity.ContainsReference(component.camera))
+                if (entity.ContainsReference(component.cameraReference))
                 {
-                    entity.SetReference(component.camera, value);
+                    entity.SetReference(component.cameraReference, value);
                 }
                 else
                 {
-                    component.camera = entity.AddReference(value);
+                    component.cameraReference = entity.AddReference(value);
                 }
             }
         }

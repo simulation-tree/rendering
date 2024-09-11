@@ -4,15 +4,15 @@ namespace Rendering.Components
 {
     public struct IsRenderer
     {
-        public rint mesh;
-        public rint material;
-        public rint camera;
+        public rint meshReference;
+        public rint materialReference;
+        public rint cameraReference;
 
         public IsRenderer(rint mesh, rint material, rint camera)
         {
-            this.mesh = mesh;
-            this.material = material;
-            this.camera = camera;
+            this.meshReference = mesh;
+            this.materialReference = material;
+            this.cameraReference = camera;
         }
     }
 }
