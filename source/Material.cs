@@ -48,7 +48,7 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsMaterial>()], [RuntimeType.Get<MaterialPushBinding>(), RuntimeType.Get<MaterialComponentBinding>(), RuntimeType.Get<MaterialTextureBinding>()]);
+        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsMaterial>().AddArrayTypes<MaterialPushBinding, MaterialComponentBinding, MaterialTextureBinding>();
 
 #if NET
         [Obsolete("Default constructor not available", true)]

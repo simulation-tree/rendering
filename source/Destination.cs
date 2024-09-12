@@ -51,7 +51,7 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsDestination>()], []);
+        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsDestination>().AddArrayType<Extension>();
 
         public Destination(World world, uint existingEntity)
         {
@@ -62,14 +62,14 @@ namespace Rendering
         {
             entity = new(world);
             entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), renderer));
-            entity.CreateArray<Extension>(0);
+            entity.CreateArray<Extension>();
         }
 
         public Destination(World world, Vector2 size, USpan<char> renderer)
         {
             entity = new(world);
             entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), new(renderer)));
-            entity.CreateArray<Extension>(0);
+            entity.CreateArray<Extension>();
         }
 
         public readonly Vector2 SizeAsVector2()

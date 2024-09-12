@@ -3,7 +3,6 @@ using Simulation;
 using System;
 using System.Diagnostics;
 using System.Numerics;
-using Unmanaged;
 
 namespace Rendering
 {
@@ -81,7 +80,7 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsCamera>(), RuntimeType.Get<CameraOutput>()], []);
+        readonly Definition IEntity.Definition => new Definition().AddComponentTypes<IsCamera, CameraOutput>();
 
 #if NET
         [Obsolete("Default constructor not available", true)]
@@ -111,7 +110,7 @@ namespace Rendering
                 entity.AddComponent(new CameraFieldOfView(size));
             }
 
-            rint destinationReference = entity.AddReference(destination);
+            rint destinationReference = destination == default ? default : entity.AddReference(destination);
             entity.AddComponent(new CameraOutput(destinationReference, new(0, 0, 1, 1), new(0, 0, 0, 1), order));
             entity.AddComponent(new IsCamera(minDepth, maxDepth));
         }

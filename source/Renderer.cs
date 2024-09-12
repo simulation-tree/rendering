@@ -89,7 +89,7 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new([RuntimeType.Get<IsRenderer>()], []);
+        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsRenderer>();
 
         public Renderer(World world, uint existingEntity)
         {
