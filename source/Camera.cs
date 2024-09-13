@@ -143,5 +143,10 @@ namespace Rendering
                 throw new InvalidOperationException("Cannot get orthographic size for a perspective camera.");
             }
         }
+
+        public static implicit operator Entity(Camera camera)
+        {
+            return camera.entity;
+        }
     }
 }
