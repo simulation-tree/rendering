@@ -15,6 +15,7 @@ namespace Rendering.Components
         private uint version;
         private Vector4 region;
         private uint textureEntity;
+        private TextureFiltering filtering;
 
         public readonly byte Binding => key.Binding;
         public readonly byte Set => key.Set;
@@ -27,20 +28,24 @@ namespace Rendering.Components
 
         public readonly Vector4 Region => region;
 
-        public MaterialTextureBinding(uint version, DescriptorResourceKey key, uint texture, Vector4 region)
+        public readonly TextureFiltering Filter => filtering;
+
+        public MaterialTextureBinding(uint version, DescriptorResourceKey key, uint texture, Vector4 region, TextureFiltering filtering)
         {
             this.version = version;
             this.key = key;
             textureEntity = texture;
             this.region = region;
+            this.filtering = filtering;
         }
 
-        public MaterialTextureBinding(uint version, DescriptorResourceKey key, Texture texture, Vector4 region)
+        public MaterialTextureBinding(uint version, DescriptorResourceKey key, Texture texture, Vector4 region, TextureFiltering filtering)
         {
             this.version = version;
             this.key = key;
             textureEntity = texture.entity.value;
             this.region = region;
+            this.filtering = filtering;
         }
 
         public void SetTexture(Texture texture)
@@ -58,6 +63,12 @@ namespace Rendering.Components
         public void SetRegion(float x, float y, float width, float height)
         {
             region = new Vector4(x, y, width, height);
+            version++;
+        }
+
+        public void SetFiltering(TextureFiltering filtering)
+        {
+            this.filtering = filtering;
             version++;
         }
 

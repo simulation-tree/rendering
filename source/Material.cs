@@ -238,7 +238,7 @@ namespace Rendering
             return false;
         }
 
-        public readonly void AddTextureBinding(byte binding, byte set, Texture texture, Vector4 region)
+        public readonly void AddTextureBinding(byte binding, byte set, Texture texture, Vector4 region, TextureFiltering filtering = TextureFiltering.Linear)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
@@ -253,15 +253,15 @@ namespace Rendering
 
             uint bindingCount = textureBindings.Length;
             textureBindings = entity.ResizeArray<MaterialTextureBinding>(bindingCount + 1);
-            textureBindings[bindingCount] = new(0, key, texture, region);
+            textureBindings[bindingCount] = new(0, key, texture, region, filtering);
         }
 
-        public readonly void AddTextureBinding(byte binding, byte set, Texture texture)
+        public readonly void AddTextureBinding(byte binding, byte set, Texture texture, TextureFiltering filtering = TextureFiltering.Linear)
         {
-            AddTextureBinding(binding, set, texture, new(0, 0, 1, 1));
+            AddTextureBinding(binding, set, texture, new(0, 0, 1, 1), filtering);
         }
 
-        public readonly bool SetTextureBinding(byte binding, byte set, Texture texture, Vector4 region)
+        public readonly bool SetTextureBinding(byte binding, byte set, Texture texture, Vector4 region, TextureFiltering filtering = TextureFiltering.Linear)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
@@ -272,6 +272,7 @@ namespace Rendering
                 {
                     existingBinding.SetTexture(texture);
                     existingBinding.SetRegion(region);
+                    existingBinding.SetFiltering(filtering);
                     return true;
                 }
             }
