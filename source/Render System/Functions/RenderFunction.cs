@@ -25,7 +25,7 @@ namespace Rendering.Functions
 
         public readonly void Invoke(Allocation system, USpan<uint> renderers, uint material, uint shader, uint mesh)
         {
-            function(system, renderers.pointer, renderers.length, material, shader, mesh);
+            function(system, renderers.pointer, renderers.Length, material, shader, mesh);
         }
     }
 }

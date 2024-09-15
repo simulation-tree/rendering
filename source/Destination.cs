@@ -97,7 +97,7 @@ namespace Rendering
         {
             //todo: should be possible to cast the unmanaged list directly into the desired type, the extension and FixedString are same size
             USpan<Extension> extensions = entity.GetArray<Extension>();
-            uint count = Math.Min(extensions.length, buffer.length);
+            uint count = Math.Min(extensions.Length, buffer.Length);
             for (uint i = 0; i < count; i++)
             {
                 buffer[i] = extensions[i].text;
@@ -109,7 +109,7 @@ namespace Rendering
         public readonly void AddExtension(USpan<char> extension)
         {
             USpan<Extension> extensions = entity.GetArray<Extension>();
-            for (uint i = 0; i < extensions.length; i++)
+            for (uint i = 0; i < extensions.Length; i++)
             {
                 if (extensions[i].text.Equals(extension))
                 {
@@ -117,7 +117,7 @@ namespace Rendering
                 }
             }
 
-            uint extensionCount = extensions.length;
+            uint extensionCount = extensions.Length;
             extensions = entity.ResizeArray<Extension>(extensionCount + 1);
             extensions[extensionCount] = new Extension(extension);
         }

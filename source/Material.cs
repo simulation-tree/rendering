@@ -125,7 +125,7 @@ namespace Rendering
                 start += existingBinding.componentType.Size;
             }
 
-            uint bindingCount = componentBindings.length;
+            uint bindingCount = componentBindings.Length;
             componentBindings = entity.ResizeArray<MaterialPushBinding>(bindingCount + 1);
             componentBindings[bindingCount] = new(start, componentType, stage);
         }
@@ -139,7 +139,7 @@ namespace Rendering
         public readonly void SetPushBinding(RuntimeType componentType, byte start, ShaderStage stage = ShaderStage.Vertex)
         {
             USpan<MaterialPushBinding> componentBindings = entity.GetArray<MaterialPushBinding>();
-            for (uint i = 0; i < componentBindings.length; i++)
+            for (uint i = 0; i < componentBindings.Length; i++)
             {
                 ref MaterialPushBinding existingBinding = ref componentBindings[i];
                 if (existingBinding.componentType == componentType)
@@ -151,7 +151,7 @@ namespace Rendering
             }
 
             //todo: qol: check if it overlaps with another push binding? but what if thats desired on purpose for unions?
-            uint bindingCount = componentBindings.length;
+            uint bindingCount = componentBindings.Length;
             componentBindings = entity.ResizeArray<MaterialPushBinding>(bindingCount + 1);
             componentBindings[bindingCount] = new(start, componentType, stage);
         }
@@ -160,7 +160,7 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
-            for (uint i = 0; i < componentBindings.length; i++)
+            for (uint i = 0; i < componentBindings.Length; i++)
             {
                 ref MaterialComponentBinding existingBinding = ref componentBindings[i];
                 if (existingBinding.key.Equals(key) && existingBinding.stage == stage)
@@ -169,7 +169,7 @@ namespace Rendering
                 }
             }
 
-            uint bindingCount = componentBindings.length;
+            uint bindingCount = componentBindings.Length;
             componentBindings = this.entity.ResizeArray<MaterialComponentBinding>(bindingCount + 1);
             componentBindings[bindingCount] = new(key, entity, componentType, stage);
         }
@@ -195,7 +195,7 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
-            for (uint i = 0; i < componentBindings.length; i++)
+            for (uint i = 0; i < componentBindings.Length; i++)
             {
                 ref MaterialComponentBinding existingBinding = ref componentBindings[i];
                 if (existingBinding.key.Equals(key) && existingBinding.stage == stage)
@@ -205,7 +205,7 @@ namespace Rendering
                 }
             }
 
-            uint bindingCount = componentBindings.length;
+            uint bindingCount = componentBindings.Length;
             componentBindings = this.entity.ResizeArray<MaterialComponentBinding>(bindingCount + 1);
             componentBindings[bindingCount] = new(key, entity, componentType, stage);
             return false;
@@ -221,13 +221,13 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = entity.GetArray<MaterialComponentBinding>();
-            for (uint i = 0; i < componentBindings.length; i++)
+            for (uint i = 0; i < componentBindings.Length; i++)
             {
                 ref MaterialComponentBinding existingBinding = ref componentBindings[i];
                 if (existingBinding.key.Equals(key) && existingBinding.stage == stage)
                 {
                     //move last element into this index
-                    uint lastIndex = componentBindings.length - 1;
+                    uint lastIndex = componentBindings.Length - 1;
                     ref MaterialComponentBinding lastBinding = ref componentBindings[lastIndex];
                     existingBinding = lastBinding;
                     this.entity.ResizeArray<MaterialComponentBinding>(lastIndex);
@@ -242,7 +242,7 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.length; i++)
+            for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.key.Equals(key))
@@ -251,7 +251,7 @@ namespace Rendering
                 }
             }
 
-            uint bindingCount = textureBindings.length;
+            uint bindingCount = textureBindings.Length;
             textureBindings = entity.ResizeArray<MaterialTextureBinding>(bindingCount + 1);
             textureBindings[bindingCount] = new(0, key, texture, region);
         }
@@ -265,7 +265,7 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.length; i++)
+            for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.key.Equals(key))
@@ -283,7 +283,7 @@ namespace Rendering
         public readonly void SetTextureRegion(Texture texture, Vector4 region)
         {
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.length; i++)
+            for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.TextureEntity == texture.entity.value)
@@ -299,7 +299,7 @@ namespace Rendering
         public readonly bool TryGetTextureBinding(uint textureEntity, out MaterialTextureBinding binding)
         {
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.length; i++)
+            for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.TextureEntity == textureEntity)
@@ -317,7 +317,7 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.length; i++)
+            for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.key.Equals(key))
@@ -335,7 +335,7 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.length; i++)
+            for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.key == key)
@@ -351,7 +351,7 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = entity.GetArray<MaterialComponentBinding>();
-            for (uint i = 0; i < componentBindings.length; i++)
+            for (uint i = 0; i < componentBindings.Length; i++)
             {
                 ref MaterialComponentBinding existingBinding = ref componentBindings[i];
                 if (existingBinding.key == key)
@@ -367,12 +367,12 @@ namespace Rendering
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.length; i++)
+            for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.key.Equals(key))
                 {
-                    uint lastIndex = textureBindings.length - 1;
+                    uint lastIndex = textureBindings.Length - 1;
                     ref MaterialTextureBinding lastBinding = ref textureBindings[lastIndex];
                     existingBinding = lastBinding;
                     entity.ResizeArray<MaterialTextureBinding>(lastIndex);
@@ -386,7 +386,7 @@ namespace Rendering
         public unsafe readonly ref MaterialComponentBinding TryGetProperty(ShaderUniformProperty uniform, out bool contains)
         {
             USpan<MaterialComponentBinding> componentBindings = entity.GetArray<MaterialComponentBinding>();
-            for (uint i = 0; i < componentBindings.length; i++)
+            for (uint i = 0; i < componentBindings.Length; i++)
             {
                 ref MaterialComponentBinding existingBinding = ref componentBindings[i];
                 if (existingBinding.key == uniform.key)
@@ -410,7 +410,7 @@ namespace Rendering
         public unsafe readonly ref MaterialTextureBinding TryGetProperty(ShaderSamplerProperty sampler, out bool contains)
         {
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.length; i++)
+            for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.key == sampler.key)

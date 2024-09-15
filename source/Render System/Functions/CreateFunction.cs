@@ -25,7 +25,7 @@ namespace Rendering.Functions
 
         public readonly CreateResult Invoke(Destination destination, USpan<FixedString> extensionNames)
         {
-            return function(destination, extensionNames.pointer, extensionNames.length);
+            return function(destination, extensionNames.pointer, extensionNames.Length);
         }
     }
 }
