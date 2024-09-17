@@ -111,7 +111,7 @@ namespace Rendering
             }
 
             rint destinationReference = destination == default ? default : entity.AddReference(destination);
-            entity.AddComponent(new CameraOutput(destinationReference, new(0, 0, 1, 1), new(0, 0, 0, 1), order));
+            entity.AddComponent(new CameraOutput(destinationReference, new(0, 0, 1, 1), new(0, 0, 0, 0), order));
             entity.AddComponent(new IsCamera(minDepth, maxDepth));
         }
 
