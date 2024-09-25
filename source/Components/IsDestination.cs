@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data;
+using System;
 using System.Numerics;
 using Unmanaged;
 
@@ -9,6 +10,7 @@ namespace Rendering.Components
         public uint width;
         public uint height;
         public Vector4 region;
+        public Color clearColor;
         public FixedString rendererLabel;
 
         public readonly uint Area => width * height;
@@ -33,19 +35,21 @@ namespace Rendering.Components
         }
 #endif
 
-        public IsDestination(uint width, uint height, Vector4 region, FixedString rendererLabel)
+        public IsDestination(uint width, uint height, Vector4 region, Color clearColor, FixedString rendererLabel)
         {
             this.width = width;
             this.height = height;
             this.region = region;
+            this.clearColor = clearColor;
             this.rendererLabel = rendererLabel;
         }
 
-        public IsDestination(Vector2 size, Vector4 region, FixedString rendererLabel)
+        public IsDestination(Vector2 size, Vector4 region, Color clearColor, FixedString rendererLabel)
         {
             width = (uint)size.X;
             height = (uint)size.Y;
             this.region = region;
+            this.clearColor = clearColor;
             this.rendererLabel = rendererLabel;
         }
 

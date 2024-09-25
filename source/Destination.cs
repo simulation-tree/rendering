@@ -1,4 +1,5 @@
-﻿using Rendering.Components;
+﻿using Data;
+using Rendering.Components;
 using Simulation;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -47,7 +48,8 @@ namespace Rendering
             }
         }
 
-        public readonly Vector4 DestinationRegion => entity.GetComponentRef<IsDestination>().region;
+        public readonly ref Vector4 DestinationRegion => ref entity.GetComponentRef<IsDestination>().region;
+        public readonly ref Color ClearColor => ref entity.GetComponentRef<IsDestination>().clearColor;
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
@@ -61,14 +63,14 @@ namespace Rendering
         public Destination(World world, Vector2 size, FixedString renderer)
         {
             entity = new(world);
-            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), renderer));
+            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black, renderer));
             entity.CreateArray<Extension>();
         }
 
         public Destination(World world, Vector2 size, USpan<char> renderer)
         {
             entity = new(world);
-            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), new(renderer)));
+            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black, new(renderer)));
             entity.CreateArray<Extension>();
         }
 

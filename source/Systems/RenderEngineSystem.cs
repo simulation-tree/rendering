@@ -171,10 +171,12 @@ namespace Rendering.Systems
             foreach (uint destinationEntity in knownDestinations)
             {
                 if (!world.ContainsComponent<SurfaceReference>(destinationEntity)) continue;
-                if (world.GetComponent<IsDestination>(destinationEntity).Area == 0) continue;
+
+                IsDestination component = world.GetComponent<IsDestination>(destinationEntity);
+                if (component.Area == 0) continue;
 
                 RenderSystem renderSystem = renderSystems[destinationEntity];
-                if (renderSystem.BeginRender() == 1) continue;
+                if (renderSystem.BeginRender(component.clearColor) == 1) continue;
 
                 //todo: iterate with respect to each camera's sorting order
                 foreach (uint camera in renderSystem.cameras)

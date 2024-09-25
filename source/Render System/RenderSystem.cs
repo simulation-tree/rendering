@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data;
+using System;
 using Unmanaged;
 using Unmanaged.Collections;
 
@@ -73,9 +74,9 @@ namespace Rendering
             hasSurface = true;
         }
 
-        public readonly uint BeginRender()
+        public readonly uint BeginRender(Color clearColor)
         {
-            return type.beginRender.Invoke(system);
+            return type.beginRender.Invoke(system, clearColor);
         }
 
         public unsafe readonly void Render(USpan<uint> renderers, uint material, uint shader, uint mesh)
