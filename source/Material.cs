@@ -201,10 +201,12 @@ namespace Rendering
                 if (existingBinding.key.Equals(key) && existingBinding.stage == stage)
                 {
                     existingBinding.componentType = componentType;
+                    existingBinding.entity = entity;
                     return true;
                 }
             }
 
+            //todo: why the add here? when the Add function is already present
             uint bindingCount = componentBindings.Length;
             componentBindings = this.entity.ResizeArray<MaterialComponentBinding>(bindingCount + 1);
             componentBindings[bindingCount] = new(key, entity, componentType, stage);
@@ -215,6 +217,12 @@ namespace Rendering
         {
             RuntimeType componentType = RuntimeType.Get<C>();
             return SetComponentBinding(binding, set, entity, componentType, stage);
+        }
+
+        public readonly bool SetComponentBinding<C>(byte binding, byte set, Entity entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
+        {
+            RuntimeType componentType = RuntimeType.Get<C>();
+            return SetComponentBinding(binding, set, entity.GetEntityValue(), componentType, stage);
         }
 
         public readonly bool RemoveComponentBinding(byte binding, byte set, ShaderStage stage)
