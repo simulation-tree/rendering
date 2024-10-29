@@ -1,15 +1,16 @@
 ﻿using Meshes.Components;
 using Rendering.Components;
-using Rendering.Events;
 using Shaders.Components;
 using Simulation;
+using Simulation.Functions;
 using System;
+using System.Runtime.InteropServices;
 using Unmanaged;
 using Unmanaged.Collections;
 
 namespace Rendering.Systems
 {
-    public class RenderEngineSystem : SystemBase
+    public struct RenderEngineSystem : ISystem
     {
         private readonly ComponentQuery<IsDestination> destinationQuery;
         private readonly ComponentQuery<IsRenderer> rendererQuery;
@@ -18,7 +19,33 @@ namespace Rendering.Systems
         private readonly UnmanagedDictionary<FixedString, RenderSystemType> availableSystemTypes;
         private readonly UnmanagedDictionary<uint, RenderSystem> renderSystems;
 
-        public RenderEngineSystem(World world) : base(world)
+        readonly unsafe InitializeFunction ISystem.Initialize => new(&Initialize);
+        readonly unsafe IterateFunction ISystem.Update => new(&Update);
+        readonly unsafe FinalizeFunction ISystem.Finalize => new(&Finalize);
+
+        [UnmanagedCallersOnly]
+        private static void Initialize(SystemContainer container, World world)
+        {
+        }
+
+        [UnmanagedCallersOnly]
+        private static void Update(SystemContainer container, World world, TimeSpan delta)
+        {
+            ref RenderEngineSystem system = ref container.Read<RenderEngineSystem>();
+            system.Update(world);
+        }
+
+        [UnmanagedCallersOnly]
+        private static void Finalize(SystemContainer container, World world)
+        {
+            if (container.World == world)
+            {
+                ref RenderEngineSystem system = ref container.Read<RenderEngineSystem>();
+                system.CleanUp();
+            }
+        }
+
+        public RenderEngineSystem()
         {
             destinationQuery = new();
             rendererQuery = new();
@@ -26,17 +53,10 @@ namespace Rendering.Systems
             knownDestinations = new();
             availableSystemTypes = new();
             renderSystems = new();
-            Subscribe<RenderUpdate>(Update);
         }
 
-        public override void Dispose()
+        private readonly void CleanUp()
         {
-            //foreach (uint destinationEntity in renderSystems.Keys)
-            //{
-            //    RenderSystem system = renderSystems[destinationEntity];
-            //    system.Dispose();
-            //}
-
             for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
             {
                 uint destinationEntity = knownDestinations[i];
@@ -56,15 +76,13 @@ namespace Rendering.Systems
             }
 
             availableSystemTypes.Dispose();
-
-            base.Dispose();
         }
 
         /// <summary>
         /// Makes the given render system type available for use at runtime,
         /// for destinations that reference its label.
         /// </summary>
-        public void RegisterSystem<T>() where T : unmanaged, IRenderSystem
+        public readonly void RegisterRenderSystem<T>() where T : unmanaged, IRenderer
         {
             FixedString label = default(T).Label;
             if (availableSystemTypes.ContainsKey(label))
@@ -76,10 +94,10 @@ namespace Rendering.Systems
             availableSystemTypes.Add(label, systemCreator);
         }
 
-        private void Update(RenderUpdate update)
+        private readonly void Update(World world)
         {
-            RemoveOldSystems();
-            CreateNewSystems();
+            RemoveOldSystems(world);
+            CreateNewSystems(world);
 
             //reset lists
             foreach (uint destinationEntity in knownDestinations)
@@ -213,7 +231,7 @@ namespace Rendering.Systems
             }
         }
 
-        private void CreateNewSystems()
+        private readonly void CreateNewSystems(World world)
         {
             destinationQuery.Update(world);
             USpan<FixedString> extensionNames = stackalloc FixedString[32];
@@ -236,12 +254,12 @@ namespace Rendering.Systems
                 }
                 else
                 {
-                    //throw new InvalidOperationException($"Unknown renderer label '{label}'");
+                    throw new InvalidOperationException($"Unknown renderer label '{label}'");
                 }
             }
         }
 
-        private void RemoveOldSystems()
+        private readonly void RemoveOldSystems(World world)
         {
             for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
             {

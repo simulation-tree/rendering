@@ -8,7 +8,7 @@ using Unmanaged;
 
 namespace Rendering
 {
-    public readonly struct Destination : IEntity
+    public readonly struct Destination : IEntity, IEquatable<Destination>
     {
         public readonly Entity entity;
 
@@ -72,6 +72,11 @@ namespace Rendering
             entity = new(world);
             entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black, new(renderer)));
             entity.CreateArray<Extension>();
+        }
+
+        public readonly void Dispose()
+        {
+            entity.Dispose();
         }
 
         public readonly Vector2 SizeAsVector2()
@@ -139,6 +144,11 @@ namespace Rendering
             (uint width, uint height) = Size;
             Vector2 screenPoint = position / new Vector2(width, height);
             return screenPoint;
+        }
+
+        public readonly bool Equals(Destination other)
+        {
+            return entity == other.entity;
         }
 
         public static bool operator ==(Destination a, Destination b)

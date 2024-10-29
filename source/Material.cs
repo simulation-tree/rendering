@@ -103,6 +103,11 @@ namespace Rendering
             entity.CreateArray<MaterialTextureBinding>(0);
         }
 
+        public readonly void Dispose()
+        {
+            entity.Dispose();
+        }
+
         public readonly override string ToString()
         {
             return entity.ToString();

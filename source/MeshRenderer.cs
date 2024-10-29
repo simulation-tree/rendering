@@ -1,11 +1,10 @@
 ﻿using Meshes;
 using Rendering.Components;
 using Simulation;
-using Unmanaged;
 
 namespace Rendering
 {
-    public readonly struct Renderer : IEntity
+    public readonly struct MeshRenderer : IEntity
     {
         public readonly Entity entity;
 
@@ -87,22 +86,27 @@ namespace Rendering
             }
         }
 
-        readonly uint IEntity.Value => entity.value;
-        readonly World IEntity.World => entity.world;
+        readonly uint IEntity.Value => entity.GetEntityValue();
+        readonly World IEntity.World => entity.GetWorld();
         readonly Definition IEntity.Definition => new Definition().AddComponentType<IsRenderer>();
 
-        public Renderer(World world, uint existingEntity)
+        public MeshRenderer(World world, uint existingEntity)
         {
             entity = new(world, existingEntity);
         }
 
-        public Renderer(World world, Mesh mesh, Material material, Camera camera)
+        public MeshRenderer(World world, Mesh mesh, Material material, Camera camera)
         {
             entity = new(world);
             rint meshReference = entity.AddReference(mesh);
             rint materialReference = entity.AddReference(material);
             rint cameraReference = entity.AddReference(camera);
             entity.AddComponent(new IsRenderer(meshReference, materialReference, cameraReference));
+        }
+
+        public readonly void Dispose()
+        {
+            entity.Dispose();
         }
 
         public readonly override string ToString()

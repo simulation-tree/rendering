@@ -1,35 +1,60 @@
 ﻿using Data.Components;
-using Data.Events;
 using Rendering.Components;
 using Shaders;
 using Simulation;
+using Simulation.Functions;
 using System;
+using System.Runtime.InteropServices;
 using Unmanaged;
 using Unmanaged.Collections;
 using Unmanaged.JSON;
 
 namespace Rendering.Systems
 {
-    public class MaterialImportSystem : SystemBase
+    public readonly struct MaterialImportSystem : ISystem
     {
         private readonly ComponentQuery<IsMaterial, IsDataRequest> query;
         private readonly UnmanagedDictionary<FixedString, Shader> cachedShaders;
 
-        public MaterialImportSystem(World world) : base(world)
+        readonly unsafe InitializeFunction ISystem.Initialize => new(&Initialize);
+        readonly unsafe IterateFunction ISystem.Update => new(&Update);
+        readonly unsafe FinalizeFunction ISystem.Finalize => new(&Finalize);
+
+        [UnmanagedCallersOnly]
+        private static void Initialize(SystemContainer container, World world)
+        {
+        }
+
+        [UnmanagedCallersOnly]
+        private static void Update(SystemContainer container, World world, TimeSpan delta)
+        {
+            ref MaterialImportSystem system = ref container.Read<MaterialImportSystem>();
+            system.Update(world);
+        }
+
+        [UnmanagedCallersOnly]
+        private static void Finalize(SystemContainer container, World world)
+        {
+            if (container.World == world)
+            {
+                ref MaterialImportSystem system = ref container.Read<MaterialImportSystem>();
+                system.CleanUp();
+            }
+        }
+
+        public MaterialImportSystem()
         {
             query = new();
             cachedShaders = new();
-            Subscribe<DataUpdate>(OnUpdate);
         }
 
-        public override void Dispose()
+        private void CleanUp()
         {
             query.Dispose();
             cachedShaders.Dispose();
-            base.Dispose();
         }
 
-        private void OnUpdate(DataUpdate update)
+        private void Update(World world)
         {
             query.Update(world);
             foreach (var x in query)

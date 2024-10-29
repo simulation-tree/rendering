@@ -28,7 +28,7 @@ namespace Rendering.Components
         public readonly float AspectRatio => width / (float)height;
 
 #if NET
-        [Obsolete("Default constructor not available")]
+        [Obsolete("Default constructor not supported")]
         public IsDestination()
         {
             throw new NotImplementedException();

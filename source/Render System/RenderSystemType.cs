@@ -5,7 +5,7 @@ using Unmanaged;
 namespace Rendering
 {
     /// <summary>
-    /// Defines a <see cref="IRenderSystem"/> type using functions.
+    /// Defines a <see cref="IRenderer"/> type using functions.
     /// </summary>
     public readonly struct RenderSystemType : IDisposable
     {
@@ -18,16 +18,16 @@ namespace Rendering
         public readonly BeginRenderFunction beginRender;
         public readonly SystemFunction endRender;
 
-        private RenderSystemType(FixedString label, (CreateFunction, DisposeFunction, RenderFunction, FinishFunction, SurfaceCreatedFunction, BeginRenderFunction, SystemFunction) functions)
+        private RenderSystemType(FixedString label, CreateFunction create, DisposeFunction dispose, RenderFunction render, FinishFunction finish, SurfaceCreatedFunction surfaceCreated, BeginRenderFunction beginRender, SystemFunction endRender)
         {
             this.label = label;
-            this.create = functions.Item1;
-            this.destroy = functions.Item2;
-            this.render = functions.Item3;
-            this.finish = functions.Item4;
-            this.surfaceCreated = functions.Item5;
-            this.beginRender = functions.Item6;
-            this.endRender = functions.Item7;
+            this.create = create;
+            this.destroy = dispose;
+            this.render = render;
+            this.finish = finish;
+            this.surfaceCreated = surfaceCreated;
+            this.beginRender = beginRender;
+            this.endRender = endRender;
         }
 
         /// <summary>
@@ -48,10 +48,10 @@ namespace Rendering
             return new(result, this);
         }
 
-        public static RenderSystemType Create<T>() where T : unmanaged, IRenderSystem
+        public static RenderSystemType Create<T>() where T : unmanaged, IRenderer
         {
             T v = default;
-            return new(v.Label, v.GetFunctions());
+            return new(v.Label, v.Create, v.Dispose, v.Render, v.Finish, v.SurfaceCreated, v.BeginRender, v.EndRender);
         }
     }
 }

@@ -6,7 +6,7 @@ using Unmanaged.Collections;
 namespace Rendering
 {
     /// <summary>
-    /// Represents an unmanaged <see cref="IRenderSystem"/> instance.
+    /// Represents an unmanaged <see cref="IRenderer"/> instance.
     /// </summary>
     public struct RenderSystem : IDisposable
     {

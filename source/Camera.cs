@@ -126,6 +126,11 @@ namespace Rendering
 
         }
 
+        public readonly void Dispose()
+        {
+            entity.Dispose();
+        }
+
         [Conditional("DEBUG")]
         private readonly void ThrowIfOrthographic()
         {
