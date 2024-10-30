@@ -1,4 +1,5 @@
-﻿using Meshes.Components;
+﻿using Collections;
+using Meshes.Components;
 using Rendering.Components;
 using Shaders.Components;
 using Simulation;
@@ -6,7 +7,6 @@ using Simulation.Functions;
 using System;
 using System.Runtime.InteropServices;
 using Unmanaged;
-using Unmanaged.Collections;
 
 namespace Rendering.Systems
 {
@@ -15,9 +15,9 @@ namespace Rendering.Systems
         private readonly ComponentQuery<IsDestination> destinationQuery;
         private readonly ComponentQuery<IsRenderer> rendererQuery;
         private readonly ComponentQuery<IsCamera> cameraQuery;
-        private readonly UnmanagedList<Entity> knownDestinations;
-        private readonly UnmanagedDictionary<FixedString, RenderSystemType> availableSystemTypes;
-        private readonly UnmanagedDictionary<Entity, RenderSystem> renderSystems;
+        private readonly List<Entity> knownDestinations;
+        private readonly Dictionary<FixedString, RenderSystemType> availableSystemTypes;
+        private readonly Dictionary<Entity, RenderSystem> renderSystems;
 
         readonly unsafe InitializeFunction ISystem.Initialize => new(&Initialize);
         readonly unsafe IterateFunction ISystem.Update => new(&Update);
@@ -114,10 +114,10 @@ namespace Rendering.Systems
 
                     foreach (Entity camera in renderSystem.renderersPerCamera.Keys)
                     {
-                        UnmanagedDictionary<int, UnmanagedList<uint>> renderersPerCamera = renderSystem.renderersPerCamera[camera];
+                        Dictionary<int, List<uint>> renderersPerCamera = renderSystem.renderersPerCamera[camera];
                         foreach (int hash in renderersPerCamera.Keys)
                         {
-                            UnmanagedList<uint> renderers = renderersPerCamera[hash];
+                            List<uint> renderers = renderersPerCamera[hash];
                             renderers.Clear();
                         }
                     }
@@ -177,14 +177,14 @@ namespace Rendering.Systems
                         if (shaderEntity == default || !world.ContainsEntity(shaderEntity) || !world.ContainsComponent<IsShader>(shaderEntity)) continue; //shader not yet loaded
                         if (meshEntity == default || !world.ContainsComponent<IsMesh>(meshEntity)) continue; //mesh not yet loaded
 
-                        if (!renderSystem.renderersPerCamera.TryGetValue(camera, out UnmanagedDictionary<int, UnmanagedList<uint>> groups))
+                        if (!renderSystem.renderersPerCamera.TryGetValue(camera, out Dictionary<int, List<uint>> groups))
                         {
                             groups = new();
                             renderSystem.renderersPerCamera.Add(camera, groups);
                         }
 
                         int hash = HashCode.Combine(materialEntity, meshEntity);
-                        if (!groups.TryGetValue(hash, out UnmanagedList<uint> renderers))
+                        if (!groups.TryGetValue(hash, out List<uint> renderers))
                         {
                             renderers = new();
                             groups.Add(hash, renderers);
@@ -215,10 +215,10 @@ namespace Rendering.Systems
                 World world = destination.GetWorld();
                 foreach (Entity camera in renderSystem.cameras)
                 {
-                    if (!renderSystem.renderersPerCamera.TryGetValue(camera, out UnmanagedDictionary<int, UnmanagedList<uint>> groups)) continue;
+                    if (!renderSystem.renderersPerCamera.TryGetValue(camera, out Dictionary<int, List<uint>> groups)) continue;
                     foreach (int hash in groups.Keys)
                     {
-                        UnmanagedList<uint> renderers = groups[hash];
+                        List<uint> renderers = groups[hash];
                         uint rendererCount = renderers.Count;
 
                         //make sure renderer entries that no longer exist are not in this list

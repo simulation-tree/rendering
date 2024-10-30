@@ -1,4 +1,5 @@
-﻿using Data.Components;
+﻿using Collections;
+using Data.Components;
 using Rendering.Components;
 using Shaders;
 using Simulation;
@@ -6,7 +7,6 @@ using Simulation.Functions;
 using System;
 using System.Runtime.InteropServices;
 using Unmanaged;
-using Unmanaged.Collections;
 using Unmanaged.JSON;
 
 namespace Rendering.Systems
@@ -14,7 +14,7 @@ namespace Rendering.Systems
     public readonly struct MaterialImportSystem : ISystem
     {
         private readonly ComponentQuery<IsMaterial, IsDataRequest> query;
-        private readonly UnmanagedDictionary<FixedString, Shader> cachedShaders;
+        private readonly Dictionary<FixedString, Shader> cachedShaders;
 
         readonly unsafe InitializeFunction ISystem.Initialize => new(&Initialize);
         readonly unsafe IterateFunction ISystem.Update => new(&Update);

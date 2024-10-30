@@ -1,8 +1,8 @@
-﻿using Data;
+﻿using Collections;
+using Data;
 using Simulation;
 using System;
 using Unmanaged;
-using Unmanaged.Collections;
 
 namespace Rendering
 {
@@ -13,11 +13,11 @@ namespace Rendering
     {
         private bool hasSurface;
         public readonly nint library;
-        public readonly UnmanagedList<Entity> cameras;
-        public readonly UnmanagedDictionary<Entity, UnmanagedDictionary<int, UnmanagedList<uint>>> renderersPerCamera;
-        public readonly UnmanagedDictionary<int, Entity> materials;
-        public readonly UnmanagedDictionary<int, Entity> shaders;
-        public readonly UnmanagedDictionary<int, Entity> meshes;
+        public readonly List<Entity> cameras;
+        public readonly Dictionary<Entity, Dictionary<int, List<uint>>> renderersPerCamera;
+        public readonly Dictionary<int, Entity> materials;
+        public readonly Dictionary<int, Entity> shaders;
+        public readonly Dictionary<int, Entity> meshes;
 
         private readonly Allocation system;
         private readonly RenderSystemType type;
@@ -56,10 +56,10 @@ namespace Rendering
 
             foreach (Entity camera in renderersPerCamera.Keys)
             {
-                UnmanagedDictionary<int, UnmanagedList<uint>> groups = renderersPerCamera[camera];
+                Dictionary<int, List<uint>> groups = renderersPerCamera[camera];
                 foreach (int hash in groups.Keys)
                 {
-                    UnmanagedList<uint> renderers = groups[hash];
+                    List<uint> renderers = groups[hash];
                     renderers.Dispose();
                 }
 
