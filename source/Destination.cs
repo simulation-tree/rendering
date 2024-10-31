@@ -131,7 +131,7 @@ namespace Rendering
 
         public readonly void AddExtension(FixedString extension)
         {
-            USpan<char> span = stackalloc char[(int)FixedString.MaxLength];
+            USpan<char> span = stackalloc char[(int)FixedString.Capacity];
             uint length = extension.CopyTo(span);
             AddExtension(span.Slice(0, length));
         }
