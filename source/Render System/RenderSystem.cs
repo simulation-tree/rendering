@@ -1,7 +1,7 @@
 ﻿using Collections;
-using Data;
 using Simulation;
 using System;
+using System.Numerics;
 using Unmanaged;
 
 namespace Rendering
@@ -13,8 +13,8 @@ namespace Rendering
     {
         private bool hasSurface;
         public readonly nint library;
-        public readonly List<Entity> cameras;
-        public readonly Dictionary<Entity, Dictionary<int, List<uint>>> renderersPerCamera;
+        public readonly List<Viewport> viewports;
+        public readonly Dictionary<Viewport, Dictionary<int, List<uint>>> renderers;
         public readonly Dictionary<int, Entity> materials;
         public readonly Dictionary<int, Entity> shaders;
         public readonly Dictionary<int, Entity> meshes;
@@ -39,8 +39,8 @@ namespace Rendering
             this.type = type;
             hasSurface = false;
 
-            cameras = new();
-            renderersPerCamera = new();
+            viewports = new();
+            renderers = new();
             materials = new();
             shaders = new();
             meshes = new();
@@ -52,11 +52,11 @@ namespace Rendering
             materials.Dispose();
             shaders.Dispose();
             meshes.Dispose();
-            cameras.Dispose();
+            viewports.Dispose();
 
-            foreach (Entity camera in renderersPerCamera.Keys)
+            foreach (Viewport viewport in renderers.Keys)
             {
-                Dictionary<int, List<uint>> groups = renderersPerCamera[camera];
+                Dictionary<int, List<uint>> groups = renderers[viewport];
                 foreach (int hash in groups.Keys)
                 {
                     List<uint> renderers = groups[hash];
@@ -66,7 +66,7 @@ namespace Rendering
                 groups.Dispose();
             }
 
-            renderersPerCamera.Dispose();
+            renderers.Dispose();
         }
 
         public void SurfaceCreated(nint surface)
@@ -75,7 +75,7 @@ namespace Rendering
             hasSurface = true;
         }
 
-        public readonly uint BeginRender(Color clearColor)
+        public readonly uint BeginRender(Vector4 clearColor)
         {
             return type.beginRender.Invoke(system, clearColor);
         }

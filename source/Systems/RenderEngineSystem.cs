@@ -14,10 +14,11 @@ namespace Rendering.Systems
     {
         private readonly ComponentQuery<IsDestination> destinationQuery;
         private readonly ComponentQuery<IsRenderer> rendererQuery;
-        private readonly ComponentQuery<IsCamera> cameraQuery;
-        private readonly List<Entity> knownDestinations;
+        private readonly ComponentQuery<IsViewport> viewportQuery;
+        private readonly List<Destination> knownDestinations;
         private readonly Dictionary<FixedString, RenderSystemType> availableSystemTypes;
-        private readonly Dictionary<Entity, RenderSystem> renderSystems;
+        private readonly Dictionary<Destination, RenderSystem> renderSystems;
+        private readonly Array<List<Viewport>> viewportEntities;
 
         readonly unsafe InitializeFunction ISystem.Initialize => new(&Initialize);
         readonly unsafe IterateFunction ISystem.Iterate => new(&Update);
@@ -55,25 +56,36 @@ namespace Rendering.Systems
         {
             destinationQuery = new();
             rendererQuery = new();
-            cameraQuery = new();
+            viewportQuery = new();
             knownDestinations = new();
             availableSystemTypes = new();
             renderSystems = new();
+            viewportEntities = new(32);
+            for (uint i = 0; i < viewportEntities.Length; i++)
+            {
+                viewportEntities[i] = new(32);
+            }
         }
 
         private readonly void CleanUp()
         {
+            for (uint i = viewportEntities.Length - 1; i != uint.MaxValue; i--)
+            {
+                viewportEntities[i].Dispose();
+            }
+
             for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
             {
-                Entity destination = knownDestinations[i];
+                Destination destination = knownDestinations[i];
                 RenderSystem destinationRenderer = renderSystems[destination];
                 destinationRenderer.Dispose();
             }
 
+            viewportEntities.Dispose();
             renderSystems.Dispose();
             destinationQuery.Dispose();
             rendererQuery.Dispose();
-            cameraQuery.Dispose();
+            viewportQuery.Dispose();
             knownDestinations.Dispose();
 
             foreach (FixedString label in availableSystemTypes.Keys)
@@ -105,16 +117,16 @@ namespace Rendering.Systems
             CreateNewSystems(world);
 
             //reset lists
-            foreach (Entity destination in knownDestinations)
+            foreach (Destination destination in knownDestinations)
             {
                 if (destination.GetWorld() == world)
                 {
                     ref RenderSystem renderSystem = ref renderSystems[destination];
-                    renderSystem.cameras.Clear();
+                    renderSystem.viewports.Clear();
 
-                    foreach (Entity camera in renderSystem.renderersPerCamera.Keys)
+                    foreach (Viewport viewport in renderSystem.renderers.Keys)
                     {
-                        Dictionary<int, List<uint>> renderersPerCamera = renderSystem.renderersPerCamera[camera];
+                        Dictionary<int, List<uint>> renderersPerCamera = renderSystem.renderers[viewport];
                         foreach (int hash in renderersPerCamera.Keys)
                         {
                             List<uint> renderers = renderersPerCamera[hash];
@@ -123,31 +135,43 @@ namespace Rendering.Systems
                     }
 
                     //notify that surface has been created
-                    if (!renderSystem.IsSurfaceAvailable && destination.TryGetComponent(out SurfaceReference surface))
+                    if (!renderSystem.IsSurfaceAvailable && destination.AsEntity().TryGetComponent(out SurfaceReference surface))
                     {
                         renderSystem.SurfaceCreated(surface.address);
                     }
                 }
             }
 
-            //find cameras
-            cameraQuery.Update(world);
-            foreach (var r in cameraQuery)
+            //find viewports
+            for (uint i = 0; i < viewportEntities.Length; i++)
+            {
+                viewportEntities[i].Clear();
+            }
+
+            viewportQuery.Update(world);
+            foreach (var r in viewportQuery)
             {
                 //todo: efficiency: asking to fetch a camera component more than once
-                uint cameraEntity = r.entity;
-                Entity camera = new(world, cameraEntity);
-                rint destinationReference = camera.GetComponent<CameraOutput>().destinationReference;
-                uint destinationEntity = camera.GetReference(destinationReference);
-                Entity destination = new(world, destinationEntity);
+                uint viewportEntity = r.entity;
+                Viewport viewport = new Entity(world, viewportEntity).As<Viewport>();
+                Destination destination = viewport.Destination;
                 if (renderSystems.TryGetValue(destination, out RenderSystem destinationRenderer))
                 {
-                    destinationRenderer.cameras.Add(camera);
+                    destinationRenderer.viewports.Add(viewport);
                     renderSystems[destination] = destinationRenderer;
                 }
                 else
                 {
                     //system with label not found
+                }
+
+                uint mask = viewport.Mask;
+                for (uint l = 0; l < 32; l++)
+                {
+                    if ((mask & (1 << (int)l)) != 0)
+                    {
+                        viewportEntities[l].Add(viewport);
+                    }
                 }
             }
 
@@ -156,44 +180,45 @@ namespace Rendering.Systems
             foreach (var r in rendererQuery)
             {
                 IsRenderer component = r.Component1;
-                rint cameraReference = component.cameraReference;
-                rint materialReference = component.materialReference;
-                uint cameraEntity = world.GetReference(r.entity, cameraReference);
-                uint materialEntity = world.GetReference(r.entity, materialReference);
-                Entity camera = new(world, cameraEntity);
-                if (!camera.IsDestroyed() && camera.TryGetComponent(out CameraOutput output))
+                uint mask = component.mask;
+                for (uint l = 0; l < 32; l++)
                 {
-                    rint destinationReference = output.destinationReference;
-                    uint destinationEntity = camera.GetReference(destinationReference);
-                    Entity destination = new(world, destinationEntity);
-                    if (renderSystems.TryGetValue(destination, out RenderSystem renderSystem))
+                    if ((mask & (1 << (int)l)) != 0)
                     {
-                        //todo: fault: material or mesh entities are allowed to change, but the hash will remains the same
-                        rint meshReference = component.meshReference;
-                        uint meshEntity = world.GetReference(r.entity, meshReference);
-                        rint shaderReference = world.GetComponent<IsMaterial>(materialEntity).shaderReference;
-                        uint shaderEntity = world.GetReference(materialEntity, shaderReference);
-
-                        if (shaderEntity == default || !world.ContainsEntity(shaderEntity) || !world.ContainsComponent<IsShader>(shaderEntity)) continue; //shader not yet loaded
-                        if (meshEntity == default || !world.ContainsComponent<IsMesh>(meshEntity)) continue; //mesh not yet loaded
-
-                        if (!renderSystem.renderersPerCamera.TryGetValue(camera, out Dictionary<int, List<uint>> groups))
+                        foreach (Viewport viewport in viewportEntities[l])
                         {
-                            groups = new();
-                            renderSystem.renderersPerCamera.Add(camera, groups);
-                        }
+                            Destination destination = viewport.Destination;
+                            if (renderSystems.TryGetValue(destination, out RenderSystem renderSystem))
+                            {
+                                rint materialReference = component.materialReference;
+                                uint materialEntity = world.GetReference(r.entity, materialReference);
+                                rint meshReference = component.meshReference;
+                                uint meshEntity = world.GetReference(r.entity, meshReference);
+                                rint shaderReference = world.GetComponent<IsMaterial>(materialEntity).shaderReference;
+                                uint shaderEntity = world.GetReference(materialEntity, shaderReference);
 
-                        int hash = HashCode.Combine(materialEntity, meshEntity);
-                        if (!groups.TryGetValue(hash, out List<uint> renderers))
-                        {
-                            renderers = new();
-                            groups.Add(hash, renderers);
-                            renderSystem.materials.AddOrSet(hash, new(world, materialEntity));
-                            renderSystem.shaders.AddOrSet(hash, new(world, shaderEntity));
-                            renderSystem.meshes.AddOrSet(hash, new(world, meshEntity));
-                        }
+                                if (shaderEntity == default || !world.ContainsEntity(shaderEntity) || !world.ContainsComponent<IsShader>(shaderEntity)) continue; //shader not yet loaded
+                                if (meshEntity == default || !world.ContainsComponent<IsMesh>(meshEntity)) continue; //mesh not yet loaded
 
-                        renderers.Add(r.entity);
+                                if (!renderSystem.renderers.TryGetValue(viewport, out Dictionary<int, List<uint>> groups))
+                                {
+                                    groups = new();
+                                    renderSystem.renderers.Add(viewport, groups);
+                                }
+
+                                int hash = HashCode.Combine(materialEntity, meshEntity);
+                                if (!groups.TryGetValue(hash, out List<uint> renderers))
+                                {
+                                    renderers = new();
+                                    groups.Add(hash, renderers);
+                                    renderSystem.materials.AddOrSet(hash, new(world, materialEntity));
+                                    renderSystem.shaders.AddOrSet(hash, new(world, shaderEntity));
+                                    renderSystem.meshes.AddOrSet(hash, new(world, meshEntity));
+                                }
+
+                                renderers.Add(r.entity);
+                            }
+                        }
                     }
                 }
             }
@@ -201,11 +226,11 @@ namespace Rendering.Systems
 
         private readonly void RenderAll()
         {
-            foreach (Entity destination in knownDestinations)
+            foreach (Destination destination in knownDestinations)
             {
-                if (!destination.ContainsComponent<SurfaceReference>()) continue;
+                if (!destination.AsEntity().ContainsComponent<SurfaceReference>()) continue;
 
-                IsDestination component = destination.GetComponent<IsDestination>();
+                IsDestination component = destination.AsEntity().GetComponent<IsDestination>();
                 if (component.Area == 0) continue;
 
                 RenderSystem renderSystem = renderSystems[destination];
@@ -213,31 +238,33 @@ namespace Rendering.Systems
 
                 //todo: iterate with respect to each camera's sorting order
                 World world = destination.GetWorld();
-                foreach (Entity camera in renderSystem.cameras)
+                foreach (Viewport viewport in renderSystem.viewports)
                 {
-                    if (!renderSystem.renderersPerCamera.TryGetValue(camera, out Dictionary<int, List<uint>> groups)) continue;
-                    foreach (int hash in groups.Keys)
+                    if (renderSystem.renderers.TryGetValue(viewport, out Dictionary<int, List<uint>> groups))
                     {
-                        List<uint> renderers = groups[hash];
-                        uint rendererCount = renderers.Count;
-
-                        //make sure renderer entries that no longer exist are not in this list
-                        for (uint r = rendererCount - 1; r != uint.MaxValue; r--)
+                        foreach (int hash in groups.Keys)
                         {
-                            uint rendererEntity = renderers[r];
-                            if (!world.ContainsEntity(rendererEntity))
+                            List<uint> renderers = groups[hash];
+                            uint rendererCount = renderers.Count;
+
+                            //make sure renderer entries that no longer exist are not in this list
+                            for (uint r = rendererCount - 1; r != uint.MaxValue; r--)
                             {
-                                renderers.RemoveAt(r);
+                                uint rendererEntity = renderers[r];
+                                if (!world.ContainsEntity(rendererEntity))
+                                {
+                                    renderers.RemoveAt(r);
+                                }
                             }
-                        }
 
-                        rendererCount = renderers.Count;
-                        if (rendererCount > 0)
-                        {
-                            Entity material = renderSystem.materials[hash];
-                            Entity mesh = renderSystem.meshes[hash];
-                            Entity shader = renderSystem.shaders[hash];
-                            renderSystem.Render(renderers.AsSpan(), material.GetEntityValue(), shader.GetEntityValue(), mesh.GetEntityValue());
+                            rendererCount = renderers.Count;
+                            if (rendererCount > 0)
+                            {
+                                Entity material = renderSystem.materials[hash];
+                                Entity mesh = renderSystem.meshes[hash];
+                                Entity shader = renderSystem.shaders[hash];
+                                renderSystem.Render(renderers.AsSpan(), material.GetEntityValue(), shader.GetEntityValue(), mesh.GetEntityValue());
+                            }
                         }
                     }
                 }
@@ -254,7 +281,7 @@ namespace Rendering.Systems
             foreach (var r in destinationQuery)
             {
                 uint destinationEntity = r.entity;
-                Entity destination = new(world, destinationEntity);
+                Destination destination = new(world, destinationEntity);
                 if (knownDestinations.Contains(destination))
                 {
                     continue;
@@ -262,17 +289,17 @@ namespace Rendering.Systems
 
                 IsDestination component = r.Component1;
                 FixedString label = component.rendererLabel;
-                extensionNamesLength = destination.As<Destination>().CopyExtensionNamesTo(extensionNames);
+                extensionNamesLength = destination.CopyExtensionNamesTo(extensionNames);
                 if (availableSystemTypes.TryGetValue(label, out RenderSystemType systemCreator))
                 {
-                    RenderSystem system = systemCreator.Create(destination.As<Destination>(), extensionNames.Slice(0, extensionNamesLength));
+                    RenderSystem system = systemCreator.Create(destination, extensionNames.Slice(0, extensionNamesLength));
                     renderSystems.Add(destination, system);
                     knownDestinations.Add(destination);
                     destination.AddComponent(new RenderSystemInUse(system.library));
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Unknown renderer label '{label}'");
+                    throw new InvalidOperationException($"Unknown renderer label `{label}`");
                 }
             }
         }
@@ -281,7 +308,7 @@ namespace Rendering.Systems
         {
             for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
             {
-                Entity destination = knownDestinations[i];
+                Destination destination = knownDestinations[i];
                 if (destination.IsDestroyed())
                 {
                     RenderSystem destinationRenderer = renderSystems.Remove(destination);

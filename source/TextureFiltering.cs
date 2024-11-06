@@ -1,4 +1,4 @@
-﻿namespace Rendering.Components
+﻿namespace Rendering
 {
     public enum TextureFiltering : byte
     {

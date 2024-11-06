@@ -3,7 +3,7 @@ using System;
 using System.Numerics;
 using Textures;
 
-namespace Rendering.Components
+namespace Rendering
 {
     /// <summary>
     /// A shader property that refers to a texture entity.

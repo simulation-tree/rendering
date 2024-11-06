@@ -6,7 +6,7 @@ namespace Rendering
 {
     public readonly struct MeshRenderer : IEntity
     {
-        public readonly Entity entity;
+        private readonly Entity entity;
 
         public readonly bool IsEnabled
         {
@@ -24,7 +24,7 @@ namespace Rendering
         {
             get
             {
-                IsRenderer component = entity.GetComponentRef<IsRenderer>();
+                IsRenderer component = entity.GetComponent<IsRenderer>();
                 uint materialEntity = entity.GetReference(component.materialReference);
                 return new(entity.world, materialEntity);
             }
@@ -64,25 +64,12 @@ namespace Rendering
             }
         }
 
-        public readonly Camera Camera
+        public readonly ref uint Mask
         {
             get
             {
-                IsRenderer component = entity.GetComponentRef<IsRenderer>();
-                uint cameraEntity = entity.GetReference(component.cameraReference);
-                return new(entity.world, cameraEntity);
-            }
-            set
-            {
                 ref IsRenderer component = ref entity.GetComponentRef<IsRenderer>();
-                if (entity.ContainsReference(component.cameraReference))
-                {
-                    entity.SetReference(component.cameraReference, value);
-                }
-                else
-                {
-                    component.cameraReference = entity.AddReference(value);
-                }
+                return ref component.mask;
             }
         }
 
@@ -95,13 +82,12 @@ namespace Rendering
             entity = new(world, existingEntity);
         }
 
-        public MeshRenderer(World world, Mesh mesh, Material material, Camera camera)
+        public MeshRenderer(World world, Mesh mesh, Material material, uint mask = 1)
         {
             entity = new(world);
             rint meshReference = entity.AddReference(mesh);
             rint materialReference = entity.AddReference(material);
-            rint cameraReference = entity.AddReference(camera);
-            entity.AddComponent(new IsRenderer(meshReference, materialReference, cameraReference));
+            entity.AddComponent(new IsRenderer(meshReference, materialReference, mask));
         }
 
         public readonly void Dispose()
@@ -112,6 +98,11 @@ namespace Rendering
         public readonly override string ToString()
         {
             return entity.ToString();
+        }
+
+        public static implicit operator Entity(MeshRenderer renderer)
+        {
+            return renderer.entity;
         }
     }
 }

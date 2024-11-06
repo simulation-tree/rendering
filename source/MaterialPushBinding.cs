@@ -1,7 +1,6 @@
-﻿using Shaders;
-using Unmanaged;
+﻿using Unmanaged;
 
-namespace Rendering.Components
+namespace Rendering
 {
     /// <summary>
     /// Links a component on the render entity to a push constant in the shader.
@@ -10,9 +9,9 @@ namespace Rendering.Components
     {
         public uint start;
         public RuntimeType componentType;
-        public ShaderStage stage;
+        public RenderStage stage;
 
-        public MaterialPushBinding(uint start, RuntimeType componentType, ShaderStage stage)
+        public MaterialPushBinding(uint start, RuntimeType componentType, RenderStage stage)
         {
             this.start = start;
             this.componentType = componentType;

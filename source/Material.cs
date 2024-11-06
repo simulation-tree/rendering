@@ -116,7 +116,7 @@ namespace Rendering
         /// <summary>
         /// Adds a binding that links a component on the render entity, to the shader.
         /// </summary>
-        public readonly void AddPushBinding(RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex)
+        public readonly void AddPushBinding(RuntimeType componentType, RenderStage stage = RenderStage.Vertex)
         {
             USpan<MaterialPushBinding> componentBindings = entity.GetArray<MaterialPushBinding>();
             uint start = 0;
@@ -135,13 +135,13 @@ namespace Rendering
             componentBindings[bindingCount] = new(start, componentType, stage);
         }
 
-        public readonly void AddPushBinding<T>(ShaderStage stage = ShaderStage.Vertex) where T : unmanaged
+        public readonly void AddPushBinding<T>(RenderStage stage = RenderStage.Vertex) where T : unmanaged
         {
             RuntimeType componentType = RuntimeType.Get<T>();
             AddPushBinding(componentType, stage);
         }
 
-        public readonly void SetPushBinding(RuntimeType componentType, byte start, ShaderStage stage = ShaderStage.Vertex)
+        public readonly void SetPushBinding(RuntimeType componentType, byte start, RenderStage stage = RenderStage.Vertex)
         {
             USpan<MaterialPushBinding> componentBindings = entity.GetArray<MaterialPushBinding>();
             for (uint i = 0; i < componentBindings.Length; i++)
@@ -161,7 +161,7 @@ namespace Rendering
             componentBindings[bindingCount] = new(start, componentType, stage);
         }
 
-        public readonly void AddComponentBinding(byte binding, byte set, uint entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex)
+        public readonly void AddComponentBinding(byte binding, byte set, uint entity, RuntimeType componentType, RenderStage stage = RenderStage.Vertex)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
@@ -179,24 +179,24 @@ namespace Rendering
             componentBindings[bindingCount] = new(key, entity, componentType, stage);
         }
 
-        public readonly void AddComponentBinding<E>(byte binding, byte set, E entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex) where E : IEntity
+        public readonly void AddComponentBinding<E>(byte binding, byte set, E entity, RuntimeType componentType, RenderStage stage = RenderStage.Vertex) where E : IEntity
         {
             AddComponentBinding(binding, set, entity.Value, componentType, stage);
         }
 
-        public readonly void AddComponentBinding<C>(byte binding, byte set, uint entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
+        public readonly void AddComponentBinding<C>(byte binding, byte set, uint entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
             RuntimeType componentType = RuntimeType.Get<C>();
             AddComponentBinding(binding, set, entity, componentType, stage);
         }
 
-        public readonly void AddComponentBinding<C>(byte binding, byte set, Entity entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
+        public readonly void AddComponentBinding<C>(byte binding, byte set, Entity entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
             RuntimeType componentType = RuntimeType.Get<C>();
             AddComponentBinding(binding, set, entity, componentType, stage);
         }
 
-        public readonly bool SetComponentBinding(byte binding, byte set, uint entity, RuntimeType componentType, ShaderStage stage = ShaderStage.Vertex)
+        public readonly bool SetComponentBinding(byte binding, byte set, uint entity, RuntimeType componentType, RenderStage stage = RenderStage.Vertex)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
@@ -218,19 +218,19 @@ namespace Rendering
             return false;
         }
 
-        public readonly bool SetComponentBinding<C>(byte binding, byte set, uint entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
+        public readonly bool SetComponentBinding<C>(byte binding, byte set, uint entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
             RuntimeType componentType = RuntimeType.Get<C>();
             return SetComponentBinding(binding, set, entity, componentType, stage);
         }
 
-        public readonly bool SetComponentBinding<C>(byte binding, byte set, Entity entity, ShaderStage stage = ShaderStage.Vertex) where C : unmanaged
+        public readonly bool SetComponentBinding<C>(byte binding, byte set, Entity entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
             RuntimeType componentType = RuntimeType.Get<C>();
             return SetComponentBinding(binding, set, entity.GetEntityValue(), componentType, stage);
         }
 
-        public readonly bool RemoveComponentBinding(byte binding, byte set, ShaderStage stage)
+        public readonly bool RemoveComponentBinding(byte binding, byte set, RenderStage stage)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = entity.GetArray<MaterialComponentBinding>();
@@ -395,47 +395,6 @@ namespace Rendering
             }
 
             return false;
-        }
-
-        public unsafe readonly ref MaterialComponentBinding TryGetProperty(ShaderUniformProperty uniform, out bool contains)
-        {
-            USpan<MaterialComponentBinding> componentBindings = entity.GetArray<MaterialComponentBinding>();
-            for (uint i = 0; i < componentBindings.Length; i++)
-            {
-                ref MaterialComponentBinding existingBinding = ref componentBindings[i];
-                if (existingBinding.key == uniform.key)
-                {
-                    if (existingBinding.componentType.Size == uniform.size)
-                    {
-                        contains = true;
-                        return ref existingBinding;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"Component binding `{existingBinding.key}` found but has mismatching size, expected {uniform.size} but was {existingBinding.componentType.Size}.");
-                    }
-                }
-            }
-
-            contains = false;
-            return ref *(MaterialComponentBinding*)null;
-        }
-
-        public unsafe readonly ref MaterialTextureBinding TryGetProperty(ShaderSamplerProperty sampler, out bool contains)
-        {
-            USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
-            for (uint i = 0; i < textureBindings.Length; i++)
-            {
-                ref MaterialTextureBinding existingBinding = ref textureBindings[i];
-                if (existingBinding.key == sampler.key)
-                {
-                    contains = true;
-                    return ref existingBinding;
-                }
-            }
-
-            contains = false;
-            return ref *(MaterialTextureBinding*)null;
         }
     }
 }
