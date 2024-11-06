@@ -1,5 +1,4 @@
-﻿using Shaders;
-using System;
+﻿using System;
 using System.Numerics;
 using Textures;
 
