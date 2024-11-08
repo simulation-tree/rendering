@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Simulation;
+using System;
 using System.Numerics;
-using Textures;
 
 namespace Rendering
 {
@@ -38,18 +38,18 @@ namespace Rendering
             this.filtering = filtering;
         }
 
-        public MaterialTextureBinding(uint version, DescriptorResourceKey key, Texture texture, Vector4 region, TextureFiltering filtering)
+        public MaterialTextureBinding(uint version, DescriptorResourceKey key, Entity texture, Vector4 region, TextureFiltering filtering)
         {
             this.version = version;
             this.key = key;
-            textureEntity = texture.entity.value;
+            textureEntity = texture.GetEntityValue();
             this.region = region;
             this.filtering = filtering;
         }
 
-        public void SetTexture(Texture texture)
+        public void SetTexture(Entity texture)
         {
-            textureEntity = texture.entity.value;
+            textureEntity = texture.GetEntityValue();
             version++;
         }
 

@@ -4,7 +4,6 @@ using Shaders;
 using Simulation;
 using System;
 using System.Numerics;
-using Textures;
 using Unmanaged;
 
 namespace Rendering
@@ -251,7 +250,7 @@ namespace Rendering
             return false;
         }
 
-        public readonly void AddTextureBinding(byte binding, byte set, Texture texture, Vector4 region, TextureFiltering filtering = TextureFiltering.Linear)
+        public readonly void AddTextureBinding(byte binding, byte set, Entity texture, Vector4 region, TextureFiltering filtering = TextureFiltering.Linear)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
@@ -269,12 +268,12 @@ namespace Rendering
             textureBindings[bindingCount] = new(0, key, texture, region, filtering);
         }
 
-        public readonly void AddTextureBinding(byte binding, byte set, Texture texture, TextureFiltering filtering = TextureFiltering.Linear)
+        public readonly void AddTextureBinding(byte binding, byte set, Entity texture, TextureFiltering filtering = TextureFiltering.Linear)
         {
             AddTextureBinding(binding, set, texture, new(0, 0, 1, 1), filtering);
         }
 
-        public readonly bool SetTextureBinding(byte binding, byte set, Texture texture, Vector4 region, TextureFiltering filtering = TextureFiltering.Linear)
+        public readonly bool SetTextureBinding(byte binding, byte set, Entity texture, Vector4 region, TextureFiltering filtering = TextureFiltering.Linear)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
@@ -294,13 +293,13 @@ namespace Rendering
             return false;
         }
 
-        public readonly void SetTextureRegion(Texture texture, Vector4 region)
+        public readonly void SetTextureRegion(Entity texture, Vector4 region)
         {
             USpan<MaterialTextureBinding> textureBindings = entity.GetArray<MaterialTextureBinding>();
             for (uint i = 0; i < textureBindings.Length; i++)
             {
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
-                if (existingBinding.TextureEntity == texture.entity.value)
+                if (existingBinding.TextureEntity == texture.GetEntityValue())
                 {
                     existingBinding.SetRegion(region);
                     return;

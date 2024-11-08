@@ -105,7 +105,7 @@ namespace Rendering.Systems
             FixedString label = default(T).Label;
             if (availableSystemTypes.ContainsKey(label))
             {
-                throw new InvalidOperationException($"Label '{label}' already has a render system registered for.");
+                throw new InvalidOperationException($"Label '{label}' already has a render system registered for");
             }
 
             RenderSystemType systemCreator = RenderSystemType.Create<T>();

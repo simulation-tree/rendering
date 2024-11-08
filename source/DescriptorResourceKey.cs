@@ -20,9 +20,13 @@ namespace Rendering
 
         public DescriptorResourceKey(byte binding, byte set)
         {
-            if (set >= MaxSetOrBindingValue || binding >= MaxSetOrBindingValue)
+            if (set >= MaxSetOrBindingValue)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(set), $"Given set {set} is greater than the maximum allowed {MaxSetOrBindingValue}");
+            }
+            else if (binding >= MaxSetOrBindingValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(binding), $"Given binding {binding} is greater than the maximum allowed {MaxSetOrBindingValue}");
             }
 
             value = (byte)(set << 4 | binding);

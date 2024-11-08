@@ -81,15 +81,15 @@ namespace Rendering.Systems
                             }
                             else if (!hasVertexProperty && !hasFragmentProperty)
                             {
-                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no vertex or fragment properties.");
+                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no vertex or fragment properties");
                             }
                             else if (!hasVertexProperty)
                             {
-                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no vertex property.");
+                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no vertex property");
                             }
                             else
                             {
-                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no fragment property.");
+                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no fragment property");
                             }
                         }
                         else
