@@ -1,6 +1,6 @@
 ﻿using Unmanaged;
 
-namespace Rendering.Functions
+namespace Rendering
 {
     /// <summary>
     /// Creates a system instance for an existing destination entity.

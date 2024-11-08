@@ -16,9 +16,9 @@ namespace Rendering
         public readonly FinishFunction finish;
         public readonly SurfaceCreatedFunction surfaceCreated;
         public readonly BeginRenderFunction beginRender;
-        public readonly SystemFunction endRender;
+        public readonly EndRenderFunction endRender;
 
-        private RenderSystemType(FixedString label, CreateFunction create, DisposeFunction dispose, RenderFunction render, FinishFunction finish, SurfaceCreatedFunction surfaceCreated, BeginRenderFunction beginRender, SystemFunction endRender)
+        private RenderSystemType(FixedString label, CreateFunction create, DisposeFunction dispose, RenderFunction render, FinishFunction finish, SurfaceCreatedFunction surfaceCreated, BeginRenderFunction beginRender, EndRenderFunction endRender)
         {
             this.label = label;
             this.create = create;

@@ -12,6 +12,6 @@ namespace Rendering
         SurfaceCreatedFunction SurfaceCreated { get; }
         BeginRenderFunction BeginRender { get; }
         RenderFunction Render { get; }
-        SystemFunction EndRender { get; }
+        EndRenderFunction EndRender { get; }
     }
 }

@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// Disposes and cleans up any resources for this render system type.
-    /// <para>Called just once and is balanced by the <see cref="IRenderer.GetFunctions"/> method.</para>
+    /// <para>Called just once and is balanced by the <see cref="IRenderer"/> method.</para>
     /// </summary>
     public unsafe readonly struct FinishFunction
     {
