@@ -1,17 +1,18 @@
-﻿using Unmanaged;
+﻿using Worlds;
 
 namespace Rendering
 {
     /// <summary>
     /// Links a component on the render entity to a push constant in the shader.
     /// </summary>
+    [Array]
     public struct MaterialPushBinding
     {
         public uint start;
-        public RuntimeType componentType;
+        public ComponentType componentType;
         public RenderStage stage;
 
-        public MaterialPushBinding(uint start, RuntimeType componentType, RenderStage stage)
+        public MaterialPushBinding(uint start, ComponentType componentType, RenderStage stage)
         {
             this.start = start;
             this.componentType = componentType;

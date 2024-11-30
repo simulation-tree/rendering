@@ -1,7 +1,7 @@
 ﻿using Rendering.Components;
-using Simulation;
 using System;
 using System.Numerics;
+using Worlds;
 
 namespace Rendering
 {
@@ -28,7 +28,7 @@ namespace Rendering
                 else
                 {
                     uint destinationEntity = entity.GetReference(destinationReference);
-                    if (destinationEntity != value.entity.value)
+                    if (destinationEntity != value.GetEntityValue())
                     {
                         entity.SetReference(destinationReference, value);
                     }

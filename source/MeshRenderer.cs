@@ -1,24 +1,12 @@
 ﻿using Meshes;
 using Rendering.Components;
-using Simulation;
+using Worlds;
 
 namespace Rendering
 {
     public readonly struct MeshRenderer : IEntity
     {
         private readonly Entity entity;
-
-        public readonly bool IsEnabled
-        {
-            get => entity.IsEnabled;
-            set => entity.IsEnabled = value;
-        }
-
-        public readonly Entity Parent
-        {
-            get => entity.Parent;
-            set => entity.Parent = value;
-        }
 
         public readonly Material Material
         {

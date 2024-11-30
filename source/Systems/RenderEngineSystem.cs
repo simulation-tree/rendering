@@ -7,6 +7,7 @@ using Simulation.Functions;
 using System;
 using System.Runtime.InteropServices;
 using Unmanaged;
+using Worlds;
 
 namespace Rendering.Systems
 {
@@ -20,12 +21,12 @@ namespace Rendering.Systems
         private readonly Dictionary<Destination, RenderSystem> renderSystems;
         private readonly Array<List<Viewport>> viewportEntities;
 
-        readonly unsafe InitializeFunction ISystem.Initialize => new(&Initialize);
-        readonly unsafe IterateFunction ISystem.Iterate => new(&Update);
-        readonly unsafe FinalizeFunction ISystem.Finalize => new(&Finalize);
+        readonly unsafe StartSystem ISystem.Start => new(&Start);
+        readonly unsafe UpdateSystem ISystem.Update => new(&Update);
+        readonly unsafe FinishSystem ISystem.Finish => new(&Finish);
 
         [UnmanagedCallersOnly]
-        private static void Initialize(SystemContainer container, World world)
+        private static void Start(SystemContainer container, World world)
         {
         }
 
@@ -43,7 +44,7 @@ namespace Rendering.Systems
         }
 
         [UnmanagedCallersOnly]
-        private static void Finalize(SystemContainer container, World world)
+        private static void Finish(SystemContainer container, World world)
         {
             if (container.World == world)
             {
@@ -109,7 +110,7 @@ namespace Rendering.Systems
             }
 
             RenderSystemType systemCreator = RenderSystemType.Create<T>();
-            availableSystemTypes.Add(label, systemCreator);
+            availableSystemTypes.TryAdd(label, systemCreator);
         }
 
         private readonly void Update(World world)
@@ -205,14 +206,14 @@ namespace Rendering.Systems
                                 if (!renderSystem.renderers.TryGetValue(viewport, out Dictionary<int, List<uint>> groups))
                                 {
                                     groups = new();
-                                    renderSystem.renderers.Add(viewport, groups);
+                                    renderSystem.renderers.TryAdd(viewport, groups);
                                 }
 
                                 int hash = HashCode.Combine(materialEntity, meshEntity);
                                 if (!groups.TryGetValue(hash, out List<uint> renderers))
                                 {
                                     renderers = new();
-                                    groups.Add(hash, renderers);
+                                    groups.TryAdd(hash, renderers);
                                     renderSystem.materials.AddOrSet(hash, new(world, materialEntity));
                                     renderSystem.shaders.AddOrSet(hash, new(world, shaderEntity));
                                     renderSystem.meshes.AddOrSet(hash, new(world, meshEntity));
@@ -295,7 +296,7 @@ namespace Rendering.Systems
                 if (availableSystemTypes.TryGetValue(label, out RenderSystemType systemCreator))
                 {
                     RenderSystem system = systemCreator.Create(destination, extensionNames.Slice(0, extensionNamesLength));
-                    renderSystems.Add(destination, system);
+                    renderSystems.TryAdd(destination, system);
                     knownDestinations.Add(destination);
                     destination.AddComponent(new RenderSystemInUse(system.library));
                 }

@@ -1,5 +1,8 @@
-﻿namespace Rendering.Components
+﻿using Worlds;
+
+namespace Rendering.Components
 {
+    [Component]
     public readonly struct SurfaceReference
     {
         public readonly nint address;

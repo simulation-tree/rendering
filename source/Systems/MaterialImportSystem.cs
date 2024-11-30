@@ -8,6 +8,7 @@ using System;
 using System.Runtime.InteropServices;
 using Unmanaged;
 using Unmanaged.JSON;
+using Worlds;
 
 namespace Rendering.Systems
 {
@@ -16,9 +17,9 @@ namespace Rendering.Systems
         private readonly ComponentQuery<IsMaterial, IsDataRequest> query;
         private readonly Dictionary<FixedString, Shader> cachedShaders;
 
-        readonly unsafe InitializeFunction ISystem.Initialize => new(&Initialize);
-        readonly unsafe IterateFunction ISystem.Iterate => new(&Update);
-        readonly unsafe FinalizeFunction ISystem.Finalize => new(&Finalize);
+        readonly unsafe StartSystem ISystem.Start => new(&Initialize);
+        readonly unsafe UpdateSystem ISystem.Update => new(&Update);
+        readonly unsafe FinishSystem ISystem.Finish => new(&Finalize);
 
         [UnmanagedCallersOnly]
         private static void Initialize(SystemContainer container, World world)
@@ -77,7 +78,7 @@ namespace Rendering.Systems
                                 USpan<char> vertexAddress = jsonObject.GetText("vertex");
                                 USpan<char> fragmentAddress = jsonObject.GetText("fragment");
                                 shader = new(world, vertexAddress, fragmentAddress);
-                                cachedShaders.Add(address, shader);
+                                cachedShaders.TryAdd(address, shader);
                             }
                             else if (!hasVertexProperty && !hasFragmentProperty)
                             {

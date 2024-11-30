@@ -1,12 +1,13 @@
-﻿using Simulation;
-using System;
+﻿using System;
 using System.Numerics;
+using Worlds;
 
 namespace Rendering
 {
     /// <summary>
     /// A shader property that refers to a texture entity.
     /// </summary>
+    [Array]
     public struct MaterialTextureBinding : IEquatable<MaterialTextureBinding>
     {
         public DescriptorResourceKey key;

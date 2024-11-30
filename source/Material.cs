@@ -1,16 +1,16 @@
 ﻿using Data.Components;
 using Rendering.Components;
 using Shaders;
-using Simulation;
 using System;
 using System.Numerics;
 using Unmanaged;
+using Worlds;
 
 namespace Rendering
 {
     public readonly struct Material : IEntity
     {
-        public readonly Entity entity;
+        private readonly Entity entity;
 
         public readonly Shader Shader
         {
@@ -115,7 +115,7 @@ namespace Rendering
         /// <summary>
         /// Adds a binding that links a component on the render entity, to the shader.
         /// </summary>
-        public readonly void AddPushBinding(RuntimeType componentType, RenderStage stage = RenderStage.Vertex)
+        public readonly void AddPushBinding(ComponentType componentType, RenderStage stage = RenderStage.Vertex)
         {
             USpan<MaterialPushBinding> componentBindings = entity.GetArray<MaterialPushBinding>();
             uint start = 0;
@@ -136,11 +136,11 @@ namespace Rendering
 
         public readonly void AddPushBinding<T>(RenderStage stage = RenderStage.Vertex) where T : unmanaged
         {
-            RuntimeType componentType = RuntimeType.Get<T>();
+            ComponentType componentType = ComponentType.Get<T>();
             AddPushBinding(componentType, stage);
         }
 
-        public readonly void SetPushBinding(RuntimeType componentType, byte start, RenderStage stage = RenderStage.Vertex)
+        public readonly void SetPushBinding(ComponentType componentType, byte start, RenderStage stage = RenderStage.Vertex)
         {
             USpan<MaterialPushBinding> componentBindings = entity.GetArray<MaterialPushBinding>();
             for (uint i = 0; i < componentBindings.Length; i++)
@@ -160,7 +160,7 @@ namespace Rendering
             componentBindings[bindingCount] = new(start, componentType, stage);
         }
 
-        public readonly void AddComponentBinding(byte binding, byte set, uint entity, RuntimeType componentType, RenderStage stage = RenderStage.Vertex)
+        public readonly void AddComponentBinding(byte binding, byte set, uint entity, ComponentType componentType, RenderStage stage = RenderStage.Vertex)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
@@ -178,24 +178,24 @@ namespace Rendering
             componentBindings[bindingCount] = new(key, entity, componentType, stage);
         }
 
-        public readonly void AddComponentBinding<E>(byte binding, byte set, E entity, RuntimeType componentType, RenderStage stage = RenderStage.Vertex) where E : IEntity
+        public readonly void AddComponentBinding<E>(byte binding, byte set, E entity, ComponentType componentType, RenderStage stage = RenderStage.Vertex) where E : IEntity
         {
             AddComponentBinding(binding, set, entity.Value, componentType, stage);
         }
 
         public readonly void AddComponentBinding<C>(byte binding, byte set, uint entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            RuntimeType componentType = RuntimeType.Get<C>();
+            ComponentType componentType = ComponentType.Get<C>();
             AddComponentBinding(binding, set, entity, componentType, stage);
         }
 
         public readonly void AddComponentBinding<C>(byte binding, byte set, Entity entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            RuntimeType componentType = RuntimeType.Get<C>();
+            ComponentType componentType = ComponentType.Get<C>();
             AddComponentBinding(binding, set, entity, componentType, stage);
         }
 
-        public readonly bool SetComponentBinding(byte binding, byte set, uint entity, RuntimeType componentType, RenderStage stage = RenderStage.Vertex)
+        public readonly bool SetComponentBinding(byte binding, byte set, uint entity, ComponentType componentType, RenderStage stage = RenderStage.Vertex)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
@@ -219,13 +219,13 @@ namespace Rendering
 
         public readonly bool SetComponentBinding<C>(byte binding, byte set, uint entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            RuntimeType componentType = RuntimeType.Get<C>();
+            ComponentType componentType = ComponentType.Get<C>();
             return SetComponentBinding(binding, set, entity, componentType, stage);
         }
 
         public readonly bool SetComponentBinding<C>(byte binding, byte set, Entity entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            RuntimeType componentType = RuntimeType.Get<C>();
+            ComponentType componentType = ComponentType.Get<C>();
             return SetComponentBinding(binding, set, entity.GetEntityValue(), componentType, stage);
         }
 
@@ -394,6 +394,11 @@ namespace Rendering
             }
 
             return false;
+        }
+
+        public static implicit operator Entity(Material material)
+        {
+            return material.entity;
         }
     }
 }

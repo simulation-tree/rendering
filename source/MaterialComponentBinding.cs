@@ -1,22 +1,23 @@
 ﻿using System;
-using Unmanaged;
+using Worlds;
 
 namespace Rendering
 {
     /// <summary>
     /// Links a component to a uniform buffer object.
     /// </summary>
+    [Array]
     public struct MaterialComponentBinding : IEquatable<MaterialComponentBinding>
     {
         public DescriptorResourceKey key;
         public uint entity;
-        public RuntimeType componentType;
+        public ComponentType componentType;
         public RenderStage stage;
 
         public readonly byte Binding => key.Binding;
         public readonly byte Set => key.Set;
 
-        public MaterialComponentBinding(DescriptorResourceKey key, uint entity, RuntimeType componentType, RenderStage stage)
+        public MaterialComponentBinding(DescriptorResourceKey key, uint entity, ComponentType componentType, RenderStage stage)
         {
             this.key = key;
             this.entity = entity;
@@ -44,7 +45,7 @@ namespace Rendering
         /// </summary>
         public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, uint entity, RenderStage stage) where T : unmanaged
         {
-            return new MaterialComponentBinding(key, entity, RuntimeType.Get<T>(), stage);
+            return new MaterialComponentBinding(key, entity, ComponentType.Get<T>(), stage);
         }
 
         public static bool operator ==(MaterialComponentBinding left, MaterialComponentBinding right)

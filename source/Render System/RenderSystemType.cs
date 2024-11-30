@@ -13,12 +13,12 @@ namespace Rendering
         public readonly CreateFunction create;
         public readonly DisposeFunction destroy;
         public readonly RenderFunction render;
-        public readonly FinishFunction finish;
+        public readonly FinishRenderer finish;
         public readonly SurfaceCreatedFunction surfaceCreated;
         public readonly BeginRenderFunction beginRender;
         public readonly EndRenderFunction endRender;
 
-        private RenderSystemType(FixedString label, CreateFunction create, DisposeFunction dispose, RenderFunction render, FinishFunction finish, SurfaceCreatedFunction surfaceCreated, BeginRenderFunction beginRender, EndRenderFunction endRender)
+        private RenderSystemType(FixedString label, CreateFunction create, DisposeFunction dispose, RenderFunction render, FinishRenderer finish, SurfaceCreatedFunction surfaceCreated, BeginRenderFunction beginRender, EndRenderFunction endRender)
         {
             this.label = label;
             this.create = create;
@@ -31,7 +31,7 @@ namespace Rendering
         }
 
         /// <summary>
-        /// Cleans up and disposes by invoking the <see cref="FinishFunction"/>
+        /// Cleans up and disposes by invoking the <see cref="FinishRenderer"/>
         /// on the render system type itself.
         /// </summary>
         public readonly void Dispose()

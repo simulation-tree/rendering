@@ -1,16 +1,16 @@
 ﻿using Data;
 using Rendering.Components;
-using Simulation;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Unmanaged;
+using Worlds;
 
 namespace Rendering
 {
     public readonly struct Destination : IEntity, IEquatable<Destination>
     {
-        public readonly Entity entity;
+        private readonly Entity entity;
 
         /// <summary>
         /// Retrieves the size of the destination.
@@ -53,7 +53,7 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsDestination>().AddArrayType<Extension>();
+        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsDestination>().AddArrayType<DestinationExtension>();
 
         public Destination(World world, uint existingEntity)
         {
@@ -64,14 +64,14 @@ namespace Rendering
         {
             entity = new(world);
             entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black.value, renderer));
-            entity.CreateArray<Extension>();
+            entity.CreateArray<DestinationExtension>();
         }
 
         public Destination(World world, Vector2 size, USpan<char> renderer)
         {
             entity = new(world);
             entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black.value, new(renderer)));
-            entity.CreateArray<Extension>();
+            entity.CreateArray<DestinationExtension>();
         }
 
         public readonly void Dispose()
@@ -103,7 +103,7 @@ namespace Rendering
         public readonly uint CopyExtensionNamesTo(USpan<FixedString> buffer)
         {
             //todo: should be possible to cast the unmanaged list directly into the desired type, the extension and FixedString are same size
-            USpan<Extension> extensions = entity.GetArray<Extension>();
+            USpan<DestinationExtension> extensions = entity.GetArray<DestinationExtension>();
             uint count = Math.Min(extensions.Length, buffer.Length);
             for (uint i = 0; i < count; i++)
             {
@@ -115,7 +115,7 @@ namespace Rendering
 
         public readonly void AddExtension(USpan<char> extension)
         {
-            USpan<Extension> extensions = entity.GetArray<Extension>();
+            USpan<DestinationExtension> extensions = entity.GetArray<DestinationExtension>();
             for (uint i = 0; i < extensions.Length; i++)
             {
                 if (extensions[i].text.Equals(extension))
@@ -125,8 +125,8 @@ namespace Rendering
             }
 
             uint extensionCount = extensions.Length;
-            extensions = entity.ResizeArray<Extension>(extensionCount + 1);
-            extensions[extensionCount] = new Extension(extension);
+            extensions = entity.ResizeArray<DestinationExtension>(extensionCount + 1);
+            extensions[extensionCount] = new DestinationExtension(extension);
         }
 
         public readonly void AddExtension(FixedString extension)
@@ -161,19 +161,9 @@ namespace Rendering
             return a.entity != b.entity;
         }
 
-        public readonly struct Extension
+        public static implicit operator Entity(Destination destination)
         {
-            public readonly FixedString text;
-
-            public Extension(FixedString text)
-            {
-                this.text = text;
-            }
-
-            public Extension(USpan<char> text)
-            {
-                this.text = new(text);
-            }
+            return destination.entity;
         }
     }
 }

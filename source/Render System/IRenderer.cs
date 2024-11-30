@@ -8,7 +8,7 @@ namespace Rendering
         FixedString Label { get; }
         CreateFunction Create { get; }
         DisposeFunction Dispose { get; }
-        FinishFunction Finish { get; }
+        FinishRenderer Finish { get; }
         SurfaceCreatedFunction SurfaceCreated { get; }
         BeginRenderFunction BeginRender { get; }
         RenderFunction Render { get; }
