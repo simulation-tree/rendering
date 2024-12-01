@@ -66,9 +66,9 @@ namespace Rendering.Systems
                     FixedString address = x.Component2.address;
                     if (!cachedShaders.TryGetValue(address, out Shader shader))
                     {
-                        if (world.ContainsArray<byte>(x.entity))
+                        if (world.ContainsArray<BinaryData>(x.entity))
                         {
-                            using BinaryReader reader = new(world.GetArray<byte>(x.entity));
+                            using BinaryReader reader = new(world.GetArray<BinaryData>(x.entity).As<byte>());
                             using JSONObject jsonObject = reader.ReadObject<JSONObject>();
                             bool hasVertexProperty = jsonObject.Contains("vertex");
                             bool hasFragmentProperty = jsonObject.Contains("fragment");
