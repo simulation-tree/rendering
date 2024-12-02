@@ -24,8 +24,8 @@ the view and projection matrices.
 ### Binding data to shaders
 Its the materials entities that contain information about how to bind entity or texture data to [`shaders`](https://github.com/game-simulations/shaders):
 ```cs
-Shader shader = new(world, "*/Shaders/shader.vert.glsl", "*/Shaders/shader.frag.glsl");
-Texture texture = new(world, "*/Textures/texture.png");
+Shader shader = new(world, "Assets/Shaders/shader.vert.glsl", "Assets/Shaders/shader.frag.glsl");
+Texture texture = new(world, "Assets/Textures/texture.png");
 Material material = new(world, shader);
 material.AddPushBinding<Color>(); //component expected on the renderer entity
 material.AddComponentBinding<CameraProjection>(0, 0, camera);
@@ -54,8 +54,8 @@ Material material = new(world, "*/Materials/Unlit.material.json");
 ```
 ```json
 {
-    "vertex": "*/Shaders/unlit.vert.glsl",
-    "fragment": "*/Shaders/unlit.frag.glsl"
+    "vertex": "Assets/Shaders/unlit.vert.glsl",
+    "fragment": "Assets/Shaders/unlit.frag.glsl"
 }
 ```
 
