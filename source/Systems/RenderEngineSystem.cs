@@ -3,15 +3,13 @@ using Meshes.Components;
 using Rendering.Components;
 using Shaders.Components;
 using Simulation;
-using Simulation.Functions;
 using System;
-using System.Runtime.InteropServices;
 using Unmanaged;
 using Worlds;
 
 namespace Rendering.Systems
 {
-    public struct RenderEngineSystem : ISystem
+    public partial struct RenderEngineSystem : ISystem
     {
         private readonly ComponentQuery<IsDestination> destinationQuery;
         private readonly ComponentQuery<IsRenderer> rendererQuery;
@@ -21,35 +19,26 @@ namespace Rendering.Systems
         private readonly Dictionary<Destination, RenderSystem> renderSystems;
         private readonly Array<List<Viewport>> viewportEntities;
 
-        readonly unsafe StartSystem ISystem.Start => new(&Start);
-        readonly unsafe UpdateSystem ISystem.Update => new(&Update);
-        readonly unsafe FinishSystem ISystem.Finish => new(&Finish);
-
-        [UnmanagedCallersOnly]
-        private static void Start(SystemContainer container, World world)
+        void ISystem.Start(in SystemContainer systemContainer, in World world)
         {
         }
 
-        [UnmanagedCallersOnly]
-        private static void Update(SystemContainer container, World world, TimeSpan delta)
+        void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            ref RenderEngineSystem system = ref container.Read<RenderEngineSystem>();
-            if (container.World == world)
+            if (systemContainer.World == world)
             {
-                system.RemoveOldSystems();
-                system.RenderAll();
+                RemoveOldSystems();
+                RenderAll();
             }
 
-            system.Update(world);
+            Update(world);
         }
 
-        [UnmanagedCallersOnly]
-        private static void Finish(SystemContainer container, World world)
+        void ISystem.Finish(in SystemContainer systemContainer, in World world)
         {
-            if (container.World == world)
+            if (systemContainer.World == world)
             {
-                ref RenderEngineSystem system = ref container.Read<RenderEngineSystem>();
-                system.CleanUp();
+                CleanUp();
             }
         }
 

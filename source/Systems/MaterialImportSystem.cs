@@ -3,43 +3,32 @@ using Data.Components;
 using Rendering.Components;
 using Shaders;
 using Simulation;
-using Simulation.Functions;
 using System;
-using System.Runtime.InteropServices;
 using Unmanaged;
 using Unmanaged.JSON;
 using Worlds;
 
 namespace Rendering.Systems
 {
-    public readonly struct MaterialImportSystem : ISystem
+    public readonly partial struct MaterialImportSystem : ISystem
     {
         private readonly ComponentQuery<IsMaterial, IsDataRequest> query;
         private readonly Dictionary<FixedString, Shader> cachedShaders;
 
-        readonly unsafe StartSystem ISystem.Start => new(&Initialize);
-        readonly unsafe UpdateSystem ISystem.Update => new(&Update);
-        readonly unsafe FinishSystem ISystem.Finish => new(&Finalize);
-
-        [UnmanagedCallersOnly]
-        private static void Initialize(SystemContainer container, World world)
+        void ISystem.Start(in SystemContainer systemContainer, in World world)
         {
         }
 
-        [UnmanagedCallersOnly]
-        private static void Update(SystemContainer container, World world, TimeSpan delta)
+        void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            ref MaterialImportSystem system = ref container.Read<MaterialImportSystem>();
-            system.Update(world);
+            Update(world);
         }
 
-        [UnmanagedCallersOnly]
-        private static void Finalize(SystemContainer container, World world)
+        void ISystem.Finish(in SystemContainer systemContainer, in World world)
         {
-            if (container.World == world)
+            if (systemContainer.World == world)
             {
-                ref MaterialImportSystem system = ref container.Read<MaterialImportSystem>();
-                system.CleanUp();
+                CleanUp();
             }
         }
 

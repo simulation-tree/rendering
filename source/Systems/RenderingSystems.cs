@@ -1,43 +1,33 @@
 ﻿using Simulation;
-using Simulation.Functions;
 using System;
-using System.Runtime.InteropServices;
 using Worlds;
 
 namespace Rendering.Systems
 {
-    public struct RenderingSystems : ISystem
+    public partial struct RenderingSystems : ISystem
     {
         private Simulator simulator;
 
-        readonly unsafe StartSystem ISystem.Start => new(&Start);
-        readonly unsafe UpdateSystem ISystem.Update => new(&Update);
-        readonly unsafe FinishSystem ISystem.Finish => new(&Finish);
-
-        [UnmanagedCallersOnly]
-        private static void Start(SystemContainer container, World world)
+        void ISystem.Start(in SystemContainer systemContainer, in World world)
         {
-            if (container.World == world)
+            if (systemContainer.World == world)
             {
-                Simulator simulator = container.Simulator;
-                ref RenderingSystems system = ref container.Read<RenderingSystems>();
-                system.simulator = simulator;
+                Simulator simulator = systemContainer.Simulator;
+                this.simulator = simulator;
                 simulator.AddSystem<RenderEngineSystem>();
                 simulator.AddSystem<MaterialImportSystem>();
             }
         }
 
-        [UnmanagedCallersOnly]
-        private static void Update(SystemContainer container, World world, TimeSpan delta)
+        void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
         }
 
-        [UnmanagedCallersOnly]
-        private static void Finish(SystemContainer container, World world)
+        void ISystem.Finish(in SystemContainer systemContainer, in World world)
         {
-            if (container.World == world)
+            if (systemContainer.World == world)
             {
-                Simulator simulator = container.Simulator;
+                Simulator simulator = systemContainer.Simulator;
                 simulator.RemoveSystem<MaterialImportSystem>();
                 simulator.RemoveSystem<RenderEngineSystem>();
             }
