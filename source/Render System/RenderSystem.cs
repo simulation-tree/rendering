@@ -2,7 +2,6 @@
 using System;
 using System.Numerics;
 using Unmanaged;
-using Worlds;
 
 namespace Rendering
 {
@@ -14,10 +13,10 @@ namespace Rendering
         private bool hasSurface;
         public readonly nint library;
         public readonly List<Viewport> viewports;
-        public readonly Dictionary<Viewport, Dictionary<int, List<uint>>> renderers;
-        public readonly Dictionary<int, Entity> materials;
-        public readonly Dictionary<int, Entity> shaders;
-        public readonly Dictionary<int, Entity> meshes;
+        public readonly Dictionary<Viewport, Dictionary<RendererKey, List<uint>>> renderers;
+        public readonly Dictionary<RendererKey, uint> materials;
+        public readonly Dictionary<RendererKey, uint> shaders;
+        public readonly Dictionary<RendererKey, uint> meshes;
 
         private readonly Allocation system;
         private readonly RenderSystemType type;
@@ -56,8 +55,8 @@ namespace Rendering
 
             foreach (Viewport viewport in renderers.Keys)
             {
-                Dictionary<int, List<uint>> groups = renderers[viewport];
-                foreach (int hash in groups.Keys)
+                Dictionary<RendererKey, List<uint>> groups = renderers[viewport];
+                foreach (RendererKey hash in groups.Keys)
                 {
                     List<uint> renderers = groups[hash];
                     renderers.Dispose();

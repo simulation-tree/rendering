@@ -150,20 +150,20 @@ namespace Rendering.Systems
                                 if (shaderEntity == default || !world.ContainsEntity(shaderEntity) || !world.ContainsComponent<IsShader>(shaderEntity)) continue; //shader not yet loaded
                                 if (meshEntity == default || !world.ContainsComponent<IsMesh>(meshEntity)) continue; //mesh not yet loaded
 
-                                if (!renderSystem.renderers.TryGetValue(viewport, out Dictionary<int, List<uint>> groups))
+                                if (!renderSystem.renderers.TryGetValue(viewport, out Dictionary<RendererKey, List<uint>> groups))
                                 {
                                     groups = new();
                                     renderSystem.renderers.Add(viewport, groups);
                                 }
 
-                                int hash = HashCode.Combine(materialEntity, meshEntity);
-                                if (!groups.TryGetValue(hash, out List<uint> renderers))
+                                RendererKey key = new(materialEntity, meshEntity);
+                                if (!groups.TryGetValue(key, out List<uint> renderers))
                                 {
                                     renderers = new();
-                                    groups.Add(hash, renderers);
-                                    renderSystem.materials.AddOrSet(hash, new(world, materialEntity));
-                                    renderSystem.shaders.AddOrSet(hash, new(world, shaderEntity));
-                                    renderSystem.meshes.AddOrSet(hash, new(world, meshEntity));
+                                    groups.Add(key, renderers);
+                                    renderSystem.materials.AddOrSet(key, materialEntity);
+                                    renderSystem.shaders.AddOrSet(key, shaderEntity);
+                                    renderSystem.meshes.AddOrSet(key, meshEntity);
                                 }
 
                                 renderers.Add(entity);
@@ -222,10 +222,10 @@ namespace Rendering.Systems
 
                     foreach (Viewport viewport in renderSystem.renderers.Keys)
                     {
-                        Dictionary<int, List<uint>> renderersPerCamera = renderSystem.renderers[viewport];
-                        foreach (int hash in renderersPerCamera.Keys)
+                        Dictionary<RendererKey, List<uint>> renderersPerCamera = renderSystem.renderers[viewport];
+                        foreach (RendererKey key in renderersPerCamera.Keys)
                         {
-                            List<uint> renderers = renderersPerCamera[hash];
+                            List<uint> renderers = renderersPerCamera[key];
                             renderers.Clear();
                         }
                     }
@@ -258,11 +258,11 @@ namespace Rendering.Systems
                 World world = destination.GetWorld();
                 foreach (Viewport viewport in renderSystem.viewports)
                 {
-                    if (renderSystem.renderers.TryGetValue(viewport, out Dictionary<int, List<uint>> groups))
+                    if (renderSystem.renderers.TryGetValue(viewport, out Dictionary<RendererKey, List<uint>> groups))
                     {
-                        foreach (int hash in groups.Keys)
+                        foreach (RendererKey key in groups.Keys)
                         {
-                            List<uint> renderers = groups[hash];
+                            List<uint> renderers = groups[key];
                             uint rendererCount = renderers.Count;
 
                             //make sure renderer entries that no longer exist are not in this list
@@ -278,10 +278,10 @@ namespace Rendering.Systems
                             rendererCount = renderers.Count;
                             if (rendererCount > 0)
                             {
-                                Entity material = renderSystem.materials[hash];
-                                Entity mesh = renderSystem.meshes[hash];
-                                Entity shader = renderSystem.shaders[hash];
-                                renderSystem.Render(renderers.AsSpan(), material.GetEntityValue(), shader.GetEntityValue(), mesh.GetEntityValue());
+                                uint material = renderSystem.materials[key];
+                                uint mesh = renderSystem.meshes[key];
+                                uint shader = renderSystem.shaders[key];
+                                renderSystem.Render(renderers.AsSpan(), material, shader, mesh);
                             }
                         }
                     }

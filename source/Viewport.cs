@@ -89,7 +89,7 @@ namespace Rendering
 
         public readonly override int GetHashCode()
         {
-            return HashCode.Combine(entity);
+            return entity.GetHashCode();
         }
 
         public static implicit operator Entity(Viewport viewport)
