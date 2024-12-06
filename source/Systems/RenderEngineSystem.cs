@@ -46,32 +46,31 @@ namespace Rendering.Systems
 
         void ISystem.Finish(in SystemContainer systemContainer, in World world)
         {
-        }
-
-        void IDisposable.Dispose()
-        {
-            for (uint i = viewportEntities.Length - 1; i != uint.MaxValue; i--)
+            if (systemContainer.World == world)
             {
-                viewportEntities[i].Dispose();
+                for (uint i = viewportEntities.Length - 1; i != uint.MaxValue; i--)
+                {
+                    viewportEntities[i].Dispose();
+                }
+
+                for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
+                {
+                    Destination destination = knownDestinations[i];
+                    RenderSystem destinationRenderer = renderSystems[destination];
+                    destinationRenderer.Dispose();
+                }
+
+                viewportEntities.Dispose();
+                renderSystems.Dispose();
+                knownDestinations.Dispose();
+
+                foreach (FixedString label in availableSystemTypes.Keys)
+                {
+                    availableSystemTypes[label].Dispose();
+                }
+
+                availableSystemTypes.Dispose();
             }
-
-            for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
-            {
-                Destination destination = knownDestinations[i];
-                RenderSystem destinationRenderer = renderSystems[destination];
-                destinationRenderer.Dispose();
-            }
-
-            viewportEntities.Dispose();
-            renderSystems.Dispose();
-            knownDestinations.Dispose();
-
-            foreach (FixedString label in availableSystemTypes.Keys)
-            {
-                availableSystemTypes[label].Dispose();
-            }
-
-            availableSystemTypes.Dispose();
         }
 
         /// <summary>

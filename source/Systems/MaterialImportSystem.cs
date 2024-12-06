@@ -30,11 +30,10 @@ namespace Rendering.Systems
 
         void ISystem.Finish(in SystemContainer systemContainer, in World world)
         {
-        }
-
-        void IDisposable.Dispose()
-        {
-            cachedShaders.Dispose();
+            if (systemContainer.World == world)
+            {
+                cachedShaders.Dispose();
+            }
         }
 
         private readonly void LoadMaterials(World world)
