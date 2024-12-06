@@ -12,8 +12,12 @@ namespace Rendering.Systems
 {
     public readonly partial struct MaterialImportSystem : ISystem
     {
-        private readonly ComponentQuery<IsMaterial, IsDataRequest> query;
         private readonly Dictionary<FixedString, Shader> cachedShaders;
+
+        public MaterialImportSystem()
+        {
+            cachedShaders = new();
+        }
 
         void ISystem.Start(in SystemContainer systemContainer, in World world)
         {
@@ -21,43 +25,34 @@ namespace Rendering.Systems
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            Update(world);
+            LoadMaterials(world);
         }
 
         void ISystem.Finish(in SystemContainer systemContainer, in World world)
         {
-            if (systemContainer.World == world)
-            {
-                CleanUp();
-            }
         }
 
-        public MaterialImportSystem()
+        void IDisposable.Dispose()
         {
-            query = new();
-            cachedShaders = new();
-        }
-
-        private void CleanUp()
-        {
-            query.Dispose();
             cachedShaders.Dispose();
         }
 
-        private void Update(World world)
+        private readonly void LoadMaterials(World world)
         {
-            query.Update(world);
-            foreach (var x in query)
+            ComponentQuery<IsMaterial, IsDataRequest> requestQuery = new(world);
+            foreach (var r in requestQuery)
             {
-                ref IsMaterial component = ref x.Component1;
+                ref IsMaterial component = ref r.component1;
+                ref IsDataRequest request = ref r.component2;
+                uint entity = r.entity;
                 if (component.shaderReference == default)
                 {
-                    FixedString address = x.Component2.address;
+                    FixedString address = request.address;
                     if (!cachedShaders.TryGetValue(address, out Shader shader))
                     {
-                        if (world.ContainsArray<BinaryData>(x.entity))
+                        if (world.ContainsArray<BinaryData>(entity))
                         {
-                            using BinaryReader reader = new(world.GetArray<BinaryData>(x.entity).As<byte>());
+                            using BinaryReader reader = new(world.GetArray<BinaryData>(entity).As<byte>());
                             using JSONObject jsonObject = reader.ReadObject<JSONObject>();
                             bool hasVertexProperty = jsonObject.Contains("vertex");
                             bool hasFragmentProperty = jsonObject.Contains("fragment");
@@ -67,28 +62,28 @@ namespace Rendering.Systems
                                 USpan<char> vertexAddress = jsonObject.GetText("vertex");
                                 USpan<char> fragmentAddress = jsonObject.GetText("fragment");
                                 shader = new(world, vertexAddress, fragmentAddress);
-                                cachedShaders.TryAdd(address, shader);
+                                cachedShaders.Add(address, shader);
                             }
                             else if (!hasVertexProperty && !hasFragmentProperty)
                             {
-                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no vertex or fragment properties");
+                                throw new InvalidOperationException($"JSON data for material `{entity}` has no vertex or fragment properties");
                             }
                             else if (!hasVertexProperty)
                             {
-                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no vertex property");
+                                throw new InvalidOperationException($"JSON data for material `{entity}` has no vertex property");
                             }
                             else
                             {
-                                throw new InvalidOperationException($"JSON data for material `{x.entity}` has no fragment property");
+                                throw new InvalidOperationException($"JSON data for material `{entity}` has no fragment property");
                             }
                         }
                         else
                         {
-                            continue; //waiting for data to become available
+                            return; //waiting for data to become available
                         }
                     }
 
-                    component.shaderReference = world.AddReference(x.entity, shader);
+                    component.shaderReference = world.AddReference(entity, shader);
                 }
             }
         }

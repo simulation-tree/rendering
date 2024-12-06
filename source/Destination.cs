@@ -8,7 +8,7 @@ using Worlds;
 
 namespace Rendering
 {
-    public readonly struct Destination : IEntity, IEquatable<Destination>
+    public readonly struct Destination : IDestination, IEquatable<Destination>
     {
         private readonly Entity entity;
 
@@ -19,12 +19,12 @@ namespace Rendering
         {
             get
             {
-                IsDestination isDestination = entity.GetComponentRef<IsDestination>();
+                IsDestination isDestination = entity.GetComponent<IsDestination>();
                 return (isDestination.width, isDestination.height);
             }
             set
             {
-                ref IsDestination isDestination = ref entity.GetComponentRef<IsDestination>();
+                ref IsDestination isDestination = ref entity.GetComponent<IsDestination>();
                 isDestination.width = value.width;
                 isDestination.height = value.height;
             }
@@ -48,8 +48,7 @@ namespace Rendering
             }
         }
 
-        public readonly ref Vector4 DestinationRegion => ref entity.GetComponentRef<IsDestination>().region;
-        public readonly ref Vector4 ClearColor => ref entity.GetComponentRef<IsDestination>().clearColor;
+        public readonly ref Vector4 DestinationRegion => ref entity.GetComponent<IsDestination>().region;
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
@@ -63,26 +62,20 @@ namespace Rendering
         public Destination(World world, Vector2 size, FixedString renderer)
         {
             entity = new(world);
-            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black.value, renderer));
+            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black, renderer));
             entity.CreateArray<DestinationExtension>();
         }
 
         public Destination(World world, Vector2 size, USpan<char> renderer)
         {
             entity = new(world);
-            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black.value, new(renderer)));
+            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black, new(renderer)));
             entity.CreateArray<DestinationExtension>();
         }
 
         public readonly void Dispose()
         {
             entity.Dispose();
-        }
-
-        public readonly Vector2 SizeAsVector2()
-        {
-            (uint width, uint height) = Size;
-            return new Vector2(width, height);
         }
 
         public readonly override string ToString()
@@ -102,15 +95,10 @@ namespace Rendering
 
         public readonly uint CopyExtensionNamesTo(USpan<FixedString> buffer)
         {
-            //todo: should be possible to cast the unmanaged list directly into the desired type, the extension and FixedString are same size
             USpan<DestinationExtension> extensions = entity.GetArray<DestinationExtension>();
-            uint count = Math.Min(extensions.Length, buffer.Length);
-            for (uint i = 0; i < count; i++)
-            {
-                buffer[i] = extensions[i].text;
-            }
-
-            return count;
+            uint length = Math.Min(extensions.Length, buffer.Length);
+            extensions.As<FixedString>().Slice(0, length).CopyTo(buffer);
+            return length;
         }
 
         public readonly void AddExtension(USpan<char> extension)

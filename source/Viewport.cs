@@ -1,11 +1,10 @@
 ﻿using Rendering.Components;
 using System;
-using System.Numerics;
 using Worlds;
 
 namespace Rendering
 {
-    public readonly struct Viewport : IEntity, IEquatable<Viewport>
+    public readonly struct Viewport : IViewport, IEquatable<Viewport>
     {
         private readonly Entity entity;
 
@@ -19,7 +18,7 @@ namespace Rendering
             }
             set
             {
-                ref IsViewport component = ref entity.GetComponentRef<IsViewport>();
+                ref IsViewport component = ref entity.GetComponent<IsViewport>();
                 ref rint destinationReference = ref component.destinationReference;
                 if (destinationReference == default)
                 {
@@ -39,10 +38,6 @@ namespace Rendering
                 }
             }
         }
-
-        public readonly ref uint Mask => ref entity.GetComponentRef<IsViewport>().mask;
-        public readonly ref Vector4 Region => ref entity.GetComponentRef<IsViewport>().region;
-        public readonly ref sbyte Order => ref entity.GetComponentRef<IsViewport>().order;
 
         readonly uint IEntity.Value => entity.GetEntityValue();
         readonly World IEntity.World => entity.GetWorld();

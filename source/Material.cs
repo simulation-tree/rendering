@@ -16,12 +16,12 @@ namespace Rendering
         {
             get
             {
-                IsMaterial component = entity.GetComponentRef<IsMaterial>();
+                IsMaterial component = entity.GetComponent<IsMaterial>();
                 return new(entity.world, entity.GetReference(component.shaderReference));
             }
             set
             {
-                ref IsMaterial component = ref entity.GetComponentRef<IsMaterial>();
+                ref IsMaterial component = ref entity.GetComponent<IsMaterial>();
                 if (entity.ContainsReference(component.shaderReference))
                 {
                     entity.SetReference(component.shaderReference, value);

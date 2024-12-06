@@ -6,16 +6,13 @@ namespace Rendering.Systems
 {
     public partial struct RenderingSystems : ISystem
     {
-        private Simulator simulator;
+        private readonly Simulator simulator;
 
         void ISystem.Start(in SystemContainer systemContainer, in World world)
         {
             if (systemContainer.World == world)
             {
-                Simulator simulator = systemContainer.Simulator;
-                this.simulator = simulator;
-                simulator.AddSystem<RenderEngineSystem>();
-                simulator.AddSystem<MaterialImportSystem>();
+                systemContainer.allocation.Write(new RenderingSystems(systemContainer.Simulator));
             }
         }
 
@@ -25,12 +22,19 @@ namespace Rendering.Systems
 
         void ISystem.Finish(in SystemContainer systemContainer, in World world)
         {
-            if (systemContainer.World == world)
-            {
-                Simulator simulator = systemContainer.Simulator;
-                simulator.RemoveSystem<MaterialImportSystem>();
-                simulator.RemoveSystem<RenderEngineSystem>();
-            }
+        }
+
+        private RenderingSystems(Simulator simulator)
+        {
+            this.simulator = simulator;
+            simulator.AddSystem(new RenderEngineSystem());
+            simulator.AddSystem(new MaterialImportSystem());
+        }
+
+        public readonly void Dispose()
+        {
+            simulator.RemoveSystem<MaterialImportSystem>();
+            simulator.RemoveSystem<RenderEngineSystem>();
         }
 
         public readonly void RegisterRenderSystem<T>() where T : unmanaged, IRenderer
