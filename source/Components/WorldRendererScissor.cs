@@ -4,16 +4,16 @@ using Worlds;
 namespace Rendering.Components
 {
     [Component]
-    public struct RendererScissor
+    public struct WorldRendererScissor
     {
         public Vector4 value;
 
-        public RendererScissor(Vector4 value)
+        public WorldRendererScissor(Vector4 value)
         {
             this.value = value;
         }
 
-        public RendererScissor(float x, float y, float width, float height)
+        public WorldRendererScissor(float x, float y, float width, float height)
         {
             value = new(x, y, width, height);
         }

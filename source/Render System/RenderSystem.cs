@@ -6,7 +6,7 @@ using Unmanaged;
 namespace Rendering
 {
     /// <summary>
-    /// Represents an unmanaged <see cref="IRenderer"/> instance.
+    /// Represents an unmanaged <see cref="IRenderingBackend"/> instance.
     /// </summary>
     public struct RenderSystem : IDisposable
     {

@@ -3,7 +3,7 @@ using Unmanaged;
 
 namespace Rendering
 {
-    public interface IRenderer
+    public interface IRenderingBackend
     {
         FixedString Label { get; }
         CreateFunction Create { get; }

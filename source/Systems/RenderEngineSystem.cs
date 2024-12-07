@@ -17,20 +17,29 @@ namespace Rendering.Systems
         private readonly Dictionary<Destination, RenderSystem> renderSystems;
         private readonly Array<List<Viewport>> viewportEntities;
 
-        public RenderEngineSystem()
+        private RenderEngineSystem(List<Destination> knownDestinations, Dictionary<FixedString, RenderSystemType> availableSystemTypes, Dictionary<Destination, RenderSystem> renderSystems, Array<List<Viewport>> viewportEntities)
         {
-            knownDestinations = new();
-            availableSystemTypes = new();
-            renderSystems = new();
-            viewportEntities = new(32);
-            for (uint i = 0; i < viewportEntities.Length; i++)
-            {
-                viewportEntities[i] = new(32);
-            }
+            this.knownDestinations = knownDestinations;
+            this.availableSystemTypes = availableSystemTypes;
+            this.renderSystems = renderSystems;
+            this.viewportEntities = viewportEntities;
         }
 
         void ISystem.Start(in SystemContainer systemContainer, in World world)
         {
+            if (systemContainer.World == world)
+            {
+                List<Destination> knownDestinations = new();
+                Dictionary<FixedString, RenderSystemType> availableSystemTypes = new();
+                Dictionary<Destination, RenderSystem> renderSystems = new();
+                Array<List<Viewport>> viewportEntities = new(32);
+                for (uint i = 0; i < viewportEntities.Length; i++)
+                {
+                    viewportEntities[i] = new(32);
+                }
+
+                systemContainer.Write(new RenderEngineSystem(knownDestinations, availableSystemTypes, renderSystems, viewportEntities));
+            }
         }
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
@@ -77,7 +86,7 @@ namespace Rendering.Systems
         /// Makes the given render system type available for use at runtime,
         /// for destinations that reference its label.
         /// </summary>
-        public readonly void RegisterRenderSystem<T>() where T : unmanaged, IRenderer
+        public readonly void RegisterRenderingBackend<T>() where T : unmanaged, IRenderingBackend
         {
             FixedString label = default(T).Label;
             if (availableSystemTypes.ContainsKey(label))

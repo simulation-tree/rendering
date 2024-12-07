@@ -5,7 +5,7 @@ using Unmanaged;
 namespace Rendering
 {
     /// <summary>
-    /// Defines a <see cref="IRenderer"/> type using functions.
+    /// Defines a <see cref="IRenderingBackend"/> type using functions.
     /// </summary>
     public readonly struct RenderSystemType : IDisposable
     {
@@ -48,7 +48,7 @@ namespace Rendering
             return new(result, this);
         }
 
-        public static RenderSystemType Create<T>() where T : unmanaged, IRenderer
+        public static RenderSystemType Create<T>() where T : unmanaged, IRenderingBackend
         {
             T v = default;
             return new(v.Label, v.Create, v.Dispose, v.Render, v.Finish, v.SurfaceCreated, v.BeginRender, v.EndRender);

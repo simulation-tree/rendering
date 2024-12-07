@@ -14,13 +14,18 @@ namespace Rendering.Systems
     {
         private readonly Dictionary<FixedString, Shader> cachedShaders;
 
-        public MaterialImportSystem()
+        private MaterialImportSystem(Dictionary<FixedString, Shader> cachedShaders)
         {
-            cachedShaders = new();
+            this.cachedShaders = cachedShaders;
         }
 
         void ISystem.Start(in SystemContainer systemContainer, in World world)
         {
+            if (systemContainer.World == world)
+            {
+                Dictionary<FixedString, Shader> cachedShaders = new();
+                systemContainer.Write(new MaterialImportSystem(cachedShaders));
+            }
         }
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)

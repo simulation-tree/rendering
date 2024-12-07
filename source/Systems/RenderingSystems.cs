@@ -4,15 +4,25 @@ using Worlds;
 
 namespace Rendering.Systems
 {
-    public partial struct RenderingSystems : ISystem
+    public readonly partial struct RenderingSystems : ISystem
     {
-        private readonly Simulator simulator;
+        private readonly SystemContainer<RenderEngineSystem> renderEngine;
+
+        private RenderingSystems(SystemContainer<RenderEngineSystem> renderEngine)
+        {
+            this.renderEngine = renderEngine;
+        }
 
         void ISystem.Start(in SystemContainer systemContainer, in World world)
         {
             if (systemContainer.World == world)
             {
-                systemContainer.allocation.Write(new RenderingSystems(systemContainer.Simulator));
+                Simulator simulator = systemContainer.Simulator;
+                simulator.AddSystem<MaterialImportSystem>();
+                simulator.AddSystem<ClampNestedScissorViews>();
+                SystemContainer<RenderEngineSystem> renderEngine = simulator.AddSystem<RenderEngineSystem>();
+
+                systemContainer.Write(new RenderingSystems(renderEngine));
             }
         }
 
@@ -22,25 +32,19 @@ namespace Rendering.Systems
 
         void ISystem.Finish(in SystemContainer systemContainer, in World world)
         {
+            if (systemContainer.World == world)
+            {
+                Simulator simulator = systemContainer.Simulator;
+                simulator.RemoveSystem<RenderEngineSystem>();
+                simulator.RemoveSystem<ClampNestedScissorViews>();
+                simulator.RemoveSystem<MaterialImportSystem>();
+            }
         }
 
-        private RenderingSystems(Simulator simulator)
+        public readonly void RegisterRenderingBackend<T>() where T : unmanaged, IRenderingBackend
         {
-            this.simulator = simulator;
-            simulator.AddSystem(new RenderEngineSystem());
-            simulator.AddSystem(new MaterialImportSystem());
-        }
-
-        public readonly void Dispose()
-        {
-            simulator.RemoveSystem<MaterialImportSystem>();
-            simulator.RemoveSystem<RenderEngineSystem>();
-        }
-
-        public readonly void RegisterRenderSystem<T>() where T : unmanaged, IRenderer
-        {
-            ref RenderEngineSystem renderEngineSystem = ref simulator.GetSystem<RenderEngineSystem>().Value;
-            renderEngineSystem.RegisterRenderSystem<T>();
+            ref RenderEngineSystem system = ref renderEngine.Value;
+            system.RegisterRenderingBackend<T>();
         }
     }
 }
