@@ -71,5 +71,24 @@ namespace Rendering.Tests
             Assert.That(parent.value, Is.EqualTo(new Vector4(50, 50, 50, 50)));
             Assert.That(child.value, Is.EqualTo(new Vector4(50, 50, 25, 25)));
         }
+
+        [Test]
+        public void VerifyDeepDescendant()
+        {
+            uint rootEntity = World.CreateEntity();
+            uint parentScissor = World.CreateEntity();
+            uint childScissor = World.CreateEntity();
+            World.SetParent(parentScissor, rootEntity);
+            World.SetParent(childScissor, parentScissor);
+            World.AddComponent(rootEntity, new RendererScissor(0, 0, 100, 100));
+            World.AddComponent(childScissor, new RendererScissor(50, 50, 100, 100));
+
+            Simulator.Update();
+
+            WorldRendererScissor root = World.GetComponent<WorldRendererScissor>(rootEntity);
+            WorldRendererScissor child = World.GetComponent<WorldRendererScissor>(childScissor);
+            Assert.That(root.value, Is.EqualTo(new Vector4(0, 0, 100, 100)));
+            Assert.That(child.value, Is.EqualTo(new Vector4(50, 50, 50, 50)));
+        }
     }
 }

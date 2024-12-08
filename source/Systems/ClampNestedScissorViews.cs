@@ -91,16 +91,19 @@ namespace Rendering.Systems
             }
 
             //gather values for later
+            foreach (var child in world.Entities)
+            {
+                uint parent = world.GetParent(child);
+                parentEntities[child] = parent;
+            }
+
             ComponentQuery<RendererScissor> scissorQuery = new(world);
             foreach (var r in scissorQuery)
             {
                 uint entity = r.entity;
                 scissors[entity] = r.component1.value;
                 hasScissor[entity] = true;
-
-                uint parent = world.GetParent(entity);
-                parentEntities[entity] = parent;
-
+                uint parent = parentEntities[entity];
                 uint depth = 0;
                 while (parent != default)
                 {
