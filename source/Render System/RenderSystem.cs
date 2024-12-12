@@ -14,9 +14,7 @@ namespace Rendering
         public readonly nint library;
         public readonly List<Viewport> viewports;
         public readonly Dictionary<Viewport, Dictionary<RendererKey, List<uint>>> renderers;
-        public readonly Dictionary<RendererKey, uint> materials;
-        public readonly Dictionary<RendererKey, uint> shaders;
-        public readonly Dictionary<RendererKey, uint> meshes;
+        public readonly Dictionary<RendererKey, RendererCombination> infos;
 
         private readonly Allocation system;
         private readonly RenderSystemType type;
@@ -40,17 +38,13 @@ namespace Rendering
 
             viewports = new();
             renderers = new();
-            materials = new();
-            shaders = new();
-            meshes = new();
+            infos = new();
         }
 
         public readonly void Dispose()
         {
             type.destroy.Invoke(system);
-            materials.Dispose();
-            shaders.Dispose();
-            meshes.Dispose();
+            infos.Dispose();
             viewports.Dispose();
 
             foreach (Viewport viewport in renderers.Keys)

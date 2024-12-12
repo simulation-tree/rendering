@@ -16,13 +16,15 @@ namespace Rendering.Systems
         private readonly Dictionary<FixedString, RenderSystemType> availableSystemTypes;
         private readonly Dictionary<Destination, RenderSystem> renderSystems;
         private readonly Array<List<Viewport>> viewportEntities;
+        private readonly List<Dictionary<RendererKey, List<uint>>> rendererGroups;
 
-        private RenderEngineSystem(List<Destination> knownDestinations, Dictionary<FixedString, RenderSystemType> availableSystemTypes, Dictionary<Destination, RenderSystem> renderSystems, Array<List<Viewport>> viewportEntities)
+        private RenderEngineSystem(List<Destination> knownDestinations, Dictionary<FixedString, RenderSystemType> availableSystemTypes, Dictionary<Destination, RenderSystem> renderSystems, Array<List<Viewport>> viewportEntities, List<Dictionary<RendererKey, List<uint>>> rendererGroups)
         {
             this.knownDestinations = knownDestinations;
             this.availableSystemTypes = availableSystemTypes;
             this.renderSystems = renderSystems;
             this.viewportEntities = viewportEntities;
+            this.rendererGroups = rendererGroups;
         }
 
         void ISystem.Start(in SystemContainer systemContainer, in World world)
@@ -33,12 +35,13 @@ namespace Rendering.Systems
                 Dictionary<FixedString, RenderSystemType> availableSystemTypes = new();
                 Dictionary<Destination, RenderSystem> renderSystems = new();
                 Array<List<Viewport>> viewportEntities = new(32);
+                List<Dictionary<RendererKey, List<uint>>> rendererGroups = new();
                 for (uint i = 0; i < viewportEntities.Length; i++)
                 {
                     viewportEntities[i] = new(32);
                 }
 
-                systemContainer.Write(new RenderEngineSystem(knownDestinations, availableSystemTypes, renderSystems, viewportEntities));
+                systemContainer.Write(new RenderEngineSystem(knownDestinations, availableSystemTypes, renderSystems, viewportEntities, rendererGroups));
             }
         }
 
@@ -79,6 +82,7 @@ namespace Rendering.Systems
                 }
 
                 availableSystemTypes.Dispose();
+                rendererGroups.Dispose();
             }
         }
 
@@ -170,9 +174,7 @@ namespace Rendering.Systems
                                 {
                                     renderers = new();
                                     groups.Add(key, renderers);
-                                    renderSystem.materials.AddOrSet(key, materialEntity);
-                                    renderSystem.shaders.AddOrSet(key, shaderEntity);
-                                    renderSystem.meshes.AddOrSet(key, meshEntity);
+                                    renderSystem.infos.AddOrSet(key, new(materialEntity, shaderEntity, meshEntity));
                                 }
 
                                 renderers.Add(entity);
@@ -257,24 +259,26 @@ namespace Rendering.Systems
             {
                 if (!destination.AsEntity().ContainsComponent<SurfaceReference>()) continue;
 
-                IsDestination component = destination.AsEntity().GetComponent<IsDestination>();
+                ref IsDestination component = ref destination.AsEntity().GetComponent<IsDestination>();
                 if (component.Area == 0) continue;
 
-                RenderSystem renderSystem = renderSystems[destination];
+                ref RenderSystem renderSystem = ref renderSystems[destination];
                 if (renderSystem.BeginRender(component.clearColor) == 1) continue;
 
-                //todo: iterate with respect to each camera's sorting order
                 World world = destination.GetWorld();
+
+                //make sure renderer entries that no longer exist are not in this list
+                //todo: is this needed?
                 foreach (Viewport viewport in renderSystem.viewports)
                 {
-                    if (renderSystem.renderers.TryGetValue(viewport, out Dictionary<RendererKey, List<uint>> groups))
+                    ref Dictionary<RendererKey, List<uint>> groups = ref renderSystem.renderers.TryGetValue(viewport, out bool containsGroups);
+                    if (containsGroups)
                     {
+                        rendererGroups.Add(groups);
                         foreach (RendererKey key in groups.Keys)
                         {
-                            List<uint> renderers = groups[key];
+                            ref List<uint> renderers = ref groups[key];
                             uint rendererCount = renderers.Count;
-
-                            //make sure renderer entries that no longer exist are not in this list
                             for (uint r = rendererCount - 1; r != uint.MaxValue; r--)
                             {
                                 uint rendererEntity = renderers[r];
@@ -283,19 +287,22 @@ namespace Rendering.Systems
                                     renderers.RemoveAt(r);
                                 }
                             }
-
-                            rendererCount = renderers.Count;
-                            if (rendererCount > 0)
-                            {
-                                uint material = renderSystem.materials[key];
-                                uint mesh = renderSystem.meshes[key];
-                                uint shader = renderSystem.shaders[key];
-                                renderSystem.Render(renderers.AsSpan(), material, shader, mesh);
-                            }
                         }
                     }
                 }
 
+                //todo: iterate with respect to each camera's sorting order
+                foreach (Dictionary<RendererKey, List<uint>> groups in rendererGroups)
+                {
+                    foreach (RendererKey key in groups.Keys)
+                    {
+                        ref List<uint> renderers = ref groups[key];
+                        ref RendererCombination info = ref renderSystem.infos[key];
+                        renderSystem.Render(renderers.AsSpan(), info.material, info.shader, info.mesh);
+                    }
+                }
+
+                rendererGroups.Clear();
                 renderSystem.EndRender();
             }
         }
