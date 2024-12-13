@@ -12,9 +12,9 @@ namespace Rendering.Systems
 {
     public readonly partial struct MaterialImportSystem : ISystem
     {
-        private readonly Dictionary<FixedString, Shader> cachedShaders;
+        private readonly Dictionary<ShaderKey, Shader> cachedShaders;
 
-        private MaterialImportSystem(Dictionary<FixedString, Shader> cachedShaders)
+        private MaterialImportSystem(Dictionary<ShaderKey, Shader> cachedShaders)
         {
             this.cachedShaders = cachedShaders;
         }
@@ -23,7 +23,7 @@ namespace Rendering.Systems
         {
             if (systemContainer.World == world)
             {
-                Dictionary<FixedString, Shader> cachedShaders = new();
+                Dictionary<ShaderKey, Shader> cachedShaders = new();
                 systemContainer.Write(new MaterialImportSystem(cachedShaders));
             }
         }
@@ -52,7 +52,8 @@ namespace Rendering.Systems
                 if (component.shaderReference == default)
                 {
                     FixedString address = request.address;
-                    if (!cachedShaders.TryGetValue(address, out Shader shader))
+                    ShaderKey key = new(address, world);
+                    if (!cachedShaders.TryGetValue(key, out Shader shader))
                     {
                         if (world.ContainsArray<BinaryData>(entity))
                         {
@@ -66,7 +67,7 @@ namespace Rendering.Systems
                                 USpan<char> vertexAddress = jsonObject.GetText("vertex");
                                 USpan<char> fragmentAddress = jsonObject.GetText("fragment");
                                 shader = new(world, vertexAddress, fragmentAddress);
-                                cachedShaders.Add(address, shader);
+                                cachedShaders.Add(key, shader);
                             }
                             else if (!hasVertexProperty && !hasFragmentProperty)
                             {
@@ -89,6 +90,43 @@ namespace Rendering.Systems
 
                     component.shaderReference = world.AddReference(entity, shader);
                 }
+            }
+        }
+
+        public readonly struct ShaderKey : IEquatable<ShaderKey>
+        {
+            public readonly FixedString address;
+            public readonly World world;
+
+            public ShaderKey(FixedString address, World world)
+            {
+                this.address = address;
+                this.world = world;
+            }
+
+            public readonly override bool Equals(object? obj)
+            {
+                return obj is ShaderKey key && Equals(key);
+            }
+
+            public readonly bool Equals(ShaderKey other)
+            {
+                return address.Equals(other.address) && world.Equals(other.world);
+            }
+
+            public readonly override int GetHashCode()
+            {
+                return HashCode.Combine(address, world);
+            }
+
+            public static bool operator ==(ShaderKey left, ShaderKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(ShaderKey left, ShaderKey right)
+            {
+                return !(left == right);
             }
         }
     }
