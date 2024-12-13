@@ -65,11 +65,10 @@ namespace Rendering.Systems
                     viewportEntities[i].Dispose();
                 }
 
-                for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
+                foreach (Destination key in renderSystems.Keys)
                 {
-                    Destination destination = knownDestinations[i];
-                    RenderSystem destinationRenderer = renderSystems[destination];
-                    destinationRenderer.Dispose();
+                    ref RenderSystem renderSystem = ref renderSystems[key];
+                    renderSystem.Dispose();
                 }
 
                 viewportEntities.Dispose();
