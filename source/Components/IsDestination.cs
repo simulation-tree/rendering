@@ -35,8 +35,16 @@ namespace Rendering.Components
             throw new NotImplementedException();
         }
 #endif
+        public IsDestination(Vector2 size, FixedString rendererLabel)
+        {
+            width = (uint)size.X;
+            height = (uint)size.Y;
+            region = new Vector4(0, 0, 1, 1);
+            clearColor = new Vector4(0, 0, 0, 1);
+            this.rendererLabel = rendererLabel;
+        }
 
-        public IsDestination(uint width, uint height, Vector4 region, Vector4 clearColor, FixedString rendererLabel)
+        public IsDestination(uint width, uint height, FixedString rendererLabel, Vector4 region, Vector4 clearColor)
         {
             this.width = width;
             this.height = height;
@@ -45,7 +53,7 @@ namespace Rendering.Components
             this.rendererLabel = rendererLabel;
         }
 
-        public IsDestination(Vector2 size, Vector4 region, Vector4 clearColor, FixedString rendererLabel)
+        public IsDestination(Vector2 size, FixedString rendererLabel, Vector4 region, Vector4 clearColor)
         {
             width = (uint)size.X;
             height = (uint)size.Y;

@@ -87,7 +87,7 @@ namespace Rendering.Systems
             {
                 addMissingComponents.AddComponent<WorldRendererScissor>();
                 world.Perform(addMissingComponents);
-                addMissingComponents.ClearInstructions();
+                addMissingComponents.Clear();
             }
 
             //gather values for later

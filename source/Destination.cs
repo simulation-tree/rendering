@@ -61,15 +61,13 @@ namespace Rendering
 
         public Destination(World world, Vector2 size, FixedString renderer)
         {
-            entity = new(world);
-            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black, renderer));
+            entity = new Entity<IsDestination>(world, new IsDestination(size, renderer));
             entity.CreateArray<DestinationExtension>();
         }
 
         public Destination(World world, Vector2 size, USpan<char> renderer)
         {
-            entity = new(world);
-            entity.AddComponent(new IsDestination(size, new Vector4(0, 0, 1, 1), Color.Black, new(renderer)));
+            entity = new Entity<IsDestination>(world, new IsDestination(size, new(renderer)));
             entity.CreateArray<DestinationExtension>();
         }
 
