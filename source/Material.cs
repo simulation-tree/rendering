@@ -2,6 +2,7 @@
 using Rendering.Components;
 using Shaders;
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using Unmanaged;
 using Worlds;
@@ -53,7 +54,7 @@ namespace Rendering
         [Obsolete("Default constructor not available", true)]
         public Material()
         {
-            throw new InvalidOperationException("Cannot create a material without a world.");
+            throw new NotSupportedException();
         }
 #endif
 
@@ -123,7 +124,7 @@ namespace Rendering
             {
                 if (existingBinding.componentType == componentType)
                 {
-                    throw new InvalidOperationException($"Push binding `{componentType}` already exists on `{entity}`.");
+                    throw new InvalidOperationException($"Push binding `{componentType}` already exists on `{entity}`");
                 }
 
                 start += existingBinding.componentType.Size;
@@ -162,17 +163,10 @@ namespace Rendering
 
         public readonly void AddComponentBinding(byte binding, byte set, uint entity, ComponentType componentType, RenderStage stage = RenderStage.Vertex)
         {
+            ThrowIfComponentBindingIsAlreadyPresent(binding, set, stage);
+
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
-            for (uint i = 0; i < componentBindings.Length; i++)
-            {
-                ref MaterialComponentBinding existingBinding = ref componentBindings[i];
-                if (existingBinding.key.Equals(key) && existingBinding.stage == stage)
-                {
-                    throw new InvalidOperationException($"Component with binding `{binding}` already exists on `{this.entity}`.");
-                }
-            }
-
             uint bindingCount = componentBindings.Length;
             componentBindings = this.entity.ResizeArray<MaterialComponentBinding>(bindingCount + 1);
             componentBindings[bindingCount] = new(key, entity, componentType, stage);
@@ -195,8 +189,10 @@ namespace Rendering
             AddComponentBinding(binding, set, entity, componentType, stage);
         }
 
-        public readonly bool SetComponentBinding(byte binding, byte set, uint entity, ComponentType componentType, RenderStage stage = RenderStage.Vertex)
+        public readonly void SetComponentBinding(byte binding, byte set, uint entity, ComponentType componentType, RenderStage stage = RenderStage.Vertex)
         {
+            ThrowIfComponentBindingIsMissing(binding, set, stage);
+
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = this.entity.GetArray<MaterialComponentBinding>();
             for (uint i = 0; i < componentBindings.Length; i++)
@@ -206,30 +202,23 @@ namespace Rendering
                 {
                     existingBinding.componentType = componentType;
                     existingBinding.entity = entity;
-                    return true;
                 }
             }
-
-            //todo: why the add here? when the Add function is already present
-            uint bindingCount = componentBindings.Length;
-            componentBindings = this.entity.ResizeArray<MaterialComponentBinding>(bindingCount + 1);
-            componentBindings[bindingCount] = new(key, entity, componentType, stage);
-            return false;
         }
 
-        public readonly bool SetComponentBinding<C>(byte binding, byte set, uint entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
+        public readonly void SetComponentBinding<C>(byte binding, byte set, uint entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
             ComponentType componentType = ComponentType.Get<C>();
-            return SetComponentBinding(binding, set, entity, componentType, stage);
+            SetComponentBinding(binding, set, entity, componentType, stage);
         }
 
-        public readonly bool SetComponentBinding<C>(byte binding, byte set, Entity entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
+        public readonly void SetComponentBinding<C>(byte binding, byte set, Entity entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
             ComponentType componentType = ComponentType.Get<C>();
-            return SetComponentBinding(binding, set, entity.GetEntityValue(), componentType, stage);
+            SetComponentBinding(binding, set, entity.GetEntityValue(), componentType, stage);
         }
 
-        public readonly bool RemoveComponentBinding(byte binding, byte set, RenderStage stage)
+        public readonly bool TryRemoveComponentBinding(byte binding, byte set, RenderStage stage)
         {
             DescriptorResourceKey key = new(binding, set);
             USpan<MaterialComponentBinding> componentBindings = entity.GetArray<MaterialComponentBinding>();
@@ -259,7 +248,7 @@ namespace Rendering
                 ref MaterialTextureBinding existingBinding = ref textureBindings[i];
                 if (existingBinding.key.Equals(key))
                 {
-                    throw new InvalidOperationException($"Texture with binding `{binding}` already exists on `{entity}`.");
+                    throw new InvalidOperationException($"Texture with binding `{binding}` already exists on `{entity}`");
                 }
             }
 
@@ -306,7 +295,7 @@ namespace Rendering
                 }
             }
 
-            throw new InvalidOperationException($"Texture binding referencing texture `{texture}` does not exist to update region of.");
+            throw new InvalidOperationException($"Texture binding referencing texture `{texture}` does not exist to update region of");
         }
 
         public readonly bool TryGetTextureBinding(uint textureEntity, out MaterialTextureBinding binding)
@@ -357,7 +346,7 @@ namespace Rendering
                 }
             }
 
-            throw new InvalidOperationException($"Texture binding `{binding}` does not exist on `{entity}`.");
+            throw new InvalidOperationException($"Texture binding `{binding}` does not exist on `{entity}`");
         }
 
         public readonly ref MaterialComponentBinding GetComponentBindingRef(byte binding, byte set)
@@ -373,7 +362,7 @@ namespace Rendering
                 }
             }
 
-            throw new InvalidOperationException($"Component binding `{binding}` does not exist on `{entity}`.");
+            throw new InvalidOperationException($"Component binding `{binding}` does not exist on `{entity}`");
         }
 
         public readonly bool RemoveTextureBinding(byte binding, byte set)
@@ -394,6 +383,38 @@ namespace Rendering
             }
 
             return false;
+        }
+
+        [Conditional("DEBUG")]
+        private readonly void ThrowIfComponentBindingIsMissing(byte binding, byte set, RenderStage stage)
+        {
+            DescriptorResourceKey key = new(binding, set);
+            USpan<MaterialComponentBinding> componentBindings = entity.GetArray<MaterialComponentBinding>();
+            for (uint i = 0; i < componentBindings.Length; i++)
+            {
+                ref MaterialComponentBinding existingBinding = ref componentBindings[i];
+                if (existingBinding.key == key && existingBinding.stage == stage)
+                {
+                    return;
+                }
+            }
+
+            throw new InvalidOperationException($"Component binding `{binding}` does not exist on `{entity}`");
+        }
+
+        [Conditional("DEBUG")]
+        private readonly void ThrowIfComponentBindingIsAlreadyPresent(byte binding, byte set, RenderStage stage)
+        {
+            DescriptorResourceKey key = new(binding, set);
+            USpan<MaterialComponentBinding> componentBindings = entity.GetArray<MaterialComponentBinding>();
+            for (uint i = 0; i < componentBindings.Length; i++)
+            {
+                ref MaterialComponentBinding existingBinding = ref componentBindings[i];
+                if (existingBinding.key == key && existingBinding.stage == stage)
+                {
+                    throw new InvalidOperationException($"Component binding `{binding}` already exists on `{entity}`");
+                }
+            }
         }
 
         public static implicit operator Entity(Material material)
