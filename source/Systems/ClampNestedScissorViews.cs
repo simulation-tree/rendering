@@ -77,7 +77,8 @@ namespace Rendering.Systems
             }
 
             //add missing components
-            ComponentQuery<RendererScissor> withoutWorldScissorQuery = new(world, ComponentType.GetBitSet<WorldRendererScissor>());
+            Schema schema = world.Schema;
+            ComponentQuery<RendererScissor> withoutWorldScissorQuery = new(world, schema.GetComponents<WorldRendererScissor>());
             foreach (var r in withoutWorldScissorQuery)
             {
                 addMissingComponents.SelectEntity(r.entity);
@@ -85,7 +86,7 @@ namespace Rendering.Systems
 
             if (addMissingComponents.Count > 0)
             {
-                addMissingComponents.AddComponent<WorldRendererScissor>();
+                addMissingComponents.AddComponent<WorldRendererScissor>(schema);
                 world.Perform(addMissingComponents);
                 addMissingComponents.Clear();
             }

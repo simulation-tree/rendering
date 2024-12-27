@@ -43,9 +43,9 @@ namespace Rendering
         /// <summary>
         /// Gets a property element that references a component of type <typeparamref name="T"/>.
         /// </summary>
-        public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, uint entity, RenderStage stage) where T : unmanaged
+        public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, uint entity, RenderStage stage, Schema schema) where T : unmanaged
         {
-            return new MaterialComponentBinding(key, entity, ComponentType.Get<T>(), stage);
+            return new MaterialComponentBinding(key, entity, schema.GetComponent<T>(), stage);
         }
 
         public static bool operator ==(MaterialComponentBinding left, MaterialComponentBinding right)

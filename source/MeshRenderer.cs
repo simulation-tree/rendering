@@ -63,7 +63,11 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.GetEntityValue();
         readonly World IEntity.World => entity.GetWorld();
-        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsRenderer>();
+
+        readonly Definition IEntity.GetDefinition(Schema schema)
+        {
+            return new Definition().AddComponentType<IsRenderer>(schema);
+        }
 
         public MeshRenderer(World world, uint existingEntity)
         {

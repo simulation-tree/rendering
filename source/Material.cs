@@ -48,7 +48,11 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsMaterial>().AddArrayTypes<MaterialPushBinding, MaterialComponentBinding, MaterialTextureBinding>();
+
+        readonly Definition IEntity.GetDefinition(Schema schema)
+        {
+            return new Definition().AddComponentType<IsMaterial>(schema).AddArrayTypes<MaterialPushBinding, MaterialComponentBinding, MaterialTextureBinding>(schema);
+        }
 
 #if NET
         [Obsolete("Default constructor not available", true)]
@@ -118,6 +122,7 @@ namespace Rendering
         /// </summary>
         public readonly void AddPushBinding(ComponentType componentType, RenderStage stage = RenderStage.Vertex)
         {
+            Schema schema = this.GetWorld().Schema;
             USpan<MaterialPushBinding> componentBindings = entity.GetArray<MaterialPushBinding>();
             uint start = 0;
             foreach (MaterialPushBinding existingBinding in componentBindings)
@@ -127,7 +132,7 @@ namespace Rendering
                     throw new InvalidOperationException($"Push binding `{componentType}` already exists on `{entity}`");
                 }
 
-                start += existingBinding.componentType.Size;
+                start += schema.GetComponentSize(existingBinding.componentType);
             }
 
             uint bindingCount = componentBindings.Length;
@@ -135,9 +140,10 @@ namespace Rendering
             componentBindings[bindingCount] = new(start, componentType, stage);
         }
 
-        public readonly void AddPushBinding<T>(RenderStage stage = RenderStage.Vertex) where T : unmanaged
+        public readonly void AddPushBinding<C>(RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            ComponentType componentType = ComponentType.Get<T>();
+            Schema schema = this.GetWorld().Schema;
+            ComponentType componentType = schema.GetComponent<C>();
             AddPushBinding(componentType, stage);
         }
 
@@ -179,13 +185,15 @@ namespace Rendering
 
         public readonly void AddComponentBinding<C>(byte binding, byte set, uint entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            ComponentType componentType = ComponentType.Get<C>();
+            Schema schema = this.GetWorld().Schema;
+            ComponentType componentType = schema.GetComponent<C>();
             AddComponentBinding(binding, set, entity, componentType, stage);
         }
 
         public readonly void AddComponentBinding<C>(byte binding, byte set, Entity entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            ComponentType componentType = ComponentType.Get<C>();
+            Schema schema = this.GetWorld().Schema;
+            ComponentType componentType = schema.GetComponent<C>();
             AddComponentBinding(binding, set, entity, componentType, stage);
         }
 
@@ -208,13 +216,15 @@ namespace Rendering
 
         public readonly void SetComponentBinding<C>(byte binding, byte set, uint entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            ComponentType componentType = ComponentType.Get<C>();
+            Schema schema = this.GetWorld().Schema;
+            ComponentType componentType = schema.GetComponent<C>();
             SetComponentBinding(binding, set, entity, componentType, stage);
         }
 
         public readonly void SetComponentBinding<C>(byte binding, byte set, Entity entity, RenderStage stage = RenderStage.Vertex) where C : unmanaged
         {
-            ComponentType componentType = ComponentType.Get<C>();
+            Schema schema = this.GetWorld().Schema;
+            ComponentType componentType = schema.GetComponent<C>();
             SetComponentBinding(binding, set, entity.GetEntityValue(), componentType, stage);
         }
 

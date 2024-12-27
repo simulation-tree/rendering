@@ -41,7 +41,11 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.GetEntityValue();
         readonly World IEntity.World => entity.GetWorld();
-        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsViewport>();
+
+        readonly Definition IEntity.GetDefinition(Schema schema)
+        {
+            return new Definition().AddComponentType<IsViewport>(schema);
+        }
 
 #if NET
         [Obsolete("Default constructor not supported", true)]

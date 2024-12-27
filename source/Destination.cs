@@ -1,5 +1,4 @@
-﻿using Data;
-using Rendering.Components;
+﻿using Rendering.Components;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -52,7 +51,11 @@ namespace Rendering
 
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
-        readonly Definition IEntity.Definition => new Definition().AddComponentType<IsDestination>().AddArrayType<DestinationExtension>();
+
+        readonly Definition IEntity.GetDefinition(Schema schema)
+        {
+            return new Definition().AddComponentType<IsDestination>(schema).AddArrayType<DestinationExtension>(schema);
+        }
 
         public Destination(World world, uint existingEntity)
         {
