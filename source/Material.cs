@@ -132,7 +132,7 @@ namespace Rendering
                     throw new InvalidOperationException($"Push binding `{componentType}` already exists on `{entity}`");
                 }
 
-                start += schema.GetComponentSize(existingBinding.componentType);
+                start += schema.GetSize(existingBinding.componentType);
             }
 
             uint bindingCount = componentBindings.Length;
