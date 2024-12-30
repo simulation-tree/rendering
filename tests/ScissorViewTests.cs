@@ -10,8 +10,8 @@ namespace Rendering.Tests
     {
         static ScissorViewTests()
         {
-            TypeLayout.Register<RendererScissor>("RendererScissor");
-            TypeLayout.Register<WorldRendererScissor>("WorldRendererScissor");
+            TypeLayout.Register<RendererScissor>();
+            TypeLayout.Register<WorldRendererScissor>();
         }
 
         protected override void SetUp()
