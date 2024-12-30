@@ -7,7 +7,7 @@ namespace Rendering
     /// <summary>
     /// A shader property that refers to a texture entity.
     /// </summary>
-    [Array]
+    [ArrayElement]
     public struct MaterialTextureBinding : IEquatable<MaterialTextureBinding>
     {
         public DescriptorResourceKey key;

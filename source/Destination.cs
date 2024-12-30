@@ -54,7 +54,7 @@ namespace Rendering
 
         readonly Definition IEntity.GetDefinition(Schema schema)
         {
-            return new Definition().AddComponentType<IsDestination>(schema).AddArrayType<DestinationExtension>(schema);
+            return new Definition().AddComponentType<IsDestination>(schema).AddArrayElementType<DestinationExtension>(schema);
         }
 
         public Destination(World world, uint existingEntity)

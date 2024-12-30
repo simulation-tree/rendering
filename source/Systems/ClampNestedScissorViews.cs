@@ -78,7 +78,8 @@ namespace Rendering.Systems
 
             //add missing components
             Schema schema = world.Schema;
-            ComponentQuery<RendererScissor> withoutWorldScissorQuery = new(world, schema.GetComponents<WorldRendererScissor>());
+            ComponentQuery<RendererScissor> withoutWorldScissorQuery = new(world);
+            withoutWorldScissorQuery.ExcludeComponent<WorldRendererScissor>();
             foreach (var r in withoutWorldScissorQuery)
             {
                 addMissingComponents.SelectEntity(r.entity);

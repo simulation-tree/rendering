@@ -6,7 +6,7 @@ namespace Rendering
     /// <summary>
     /// Links a component to a uniform buffer object.
     /// </summary>
-    [Array]
+    [ArrayElement]
     public struct MaterialComponentBinding : IEquatable<MaterialComponentBinding>
     {
         public DescriptorResourceKey key;

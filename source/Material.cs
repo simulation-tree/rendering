@@ -51,7 +51,7 @@ namespace Rendering
 
         readonly Definition IEntity.GetDefinition(Schema schema)
         {
-            return new Definition().AddComponentType<IsMaterial>(schema).AddArrayTypes<MaterialPushBinding, MaterialComponentBinding, MaterialTextureBinding>(schema);
+            return new Definition().AddComponentType<IsMaterial>(schema).AddArrayElementTypes<MaterialPushBinding, MaterialComponentBinding, MaterialTextureBinding>(schema);
         }
 
 #if NET

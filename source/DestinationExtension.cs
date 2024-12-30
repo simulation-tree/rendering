@@ -4,7 +4,7 @@ using Worlds;
 
 namespace Rendering
 {
-    [Array]
+    [ArrayElement]
     public readonly struct DestinationExtension
     {
         public readonly FixedString text;
