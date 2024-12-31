@@ -50,26 +50,35 @@ namespace Rendering
 
         public void SetTexture(Entity texture)
         {
-            textureEntity = texture.GetEntityValue();
-            version++;
+            uint textureEntity = texture.GetEntityValue();
+            if (this.textureEntity != textureEntity)
+            {
+                this.textureEntity = textureEntity;
+                version++;
+            }
         }
 
         public void SetRegion(Vector4 region)
         {
-            this.region = region;
-            version++;
+            if (this.region != region)
+            {
+                this.region = region;
+                version++;
+            }
         }
 
         public void SetRegion(float x, float y, float width, float height)
         {
-            region = new Vector4(x, y, width, height);
-            version++;
+            SetRegion(new Vector4(x, y, width, height));
         }
 
         public void SetFiltering(TextureFiltering filtering)
         {
-            this.filtering = filtering;
-            version++;
+            if (this.filtering != filtering)
+            {
+                this.filtering = filtering;
+                version++;
+            }
         }
 
         public readonly override bool Equals(object? obj)
