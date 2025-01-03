@@ -316,6 +316,7 @@ namespace Rendering.Systems
                     RenderSystem destinationRenderer = renderSystems.Remove(destination);
                     destinationRenderer.Dispose();
                     knownDestinations.RemoveAt(i);
+                    Trace.WriteLine($"Removed render system for destination `{destination}`");
                 }
             }
         }
