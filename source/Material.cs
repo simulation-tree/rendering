@@ -129,7 +129,7 @@ namespace Rendering
             {
                 if (existingBinding.componentType == componentType)
                 {
-                    throw new InvalidOperationException($"Push binding `{componentType}` already exists on `{entity}`");
+                    throw new InvalidOperationException($"Push binding `{componentType.ToString(schema)}` already exists on `{entity}`");
                 }
 
                 start += schema.GetSize(existingBinding.componentType);
