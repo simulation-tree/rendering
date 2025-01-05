@@ -58,5 +58,10 @@ namespace Rendering
             Allocation rendererBackend = Allocation.Create(v);
             return new(rendererBackend, v.Label, initialize, finalize, create, dispose, surfaceCreated, beginRender, render, endRender);
         }
+
+        public static FixedString GetLabel<T>() where T : unmanaged, IRenderingBackend
+        {
+            return default(T).Label;
+        }
     }
 }

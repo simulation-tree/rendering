@@ -17,7 +17,7 @@ namespace Rendering.Systems
         {
             if (systemContainer.World == world)
             {
-                Simulator simulator = systemContainer.Simulator;
+                Simulator simulator = systemContainer.simulator;
                 simulator.AddSystem<MaterialImportSystem>();
                 simulator.AddSystem<ClampNestedScissorViews>();
                 SystemContainer<RenderEngineSystem> renderEngine = simulator.AddSystem<RenderEngineSystem>();
@@ -34,7 +34,7 @@ namespace Rendering.Systems
         {
             if (systemContainer.World == world)
             {
-                Simulator simulator = systemContainer.Simulator;
+                Simulator simulator = systemContainer.simulator;
                 simulator.RemoveSystem<RenderEngineSystem>();
                 simulator.RemoveSystem<ClampNestedScissorViews>();
                 simulator.RemoveSystem<MaterialImportSystem>();
