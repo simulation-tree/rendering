@@ -7,34 +7,34 @@ namespace Rendering
 {
     public static class DestinationExtensions
     {
-        public static bool TryGetRenderSystemInUse<T>(this T destination, out RenderSystemInUse renderSystemInUse) where T : unmanaged, IDestination
+        public static bool TryGetRendererInstanceInUse<T>(this T destination, out Allocation instance) where T : unmanaged, IDestination
         {
             Entity entity = destination.AsEntity();
-            ref RenderSystemInUse component = ref entity.TryGetComponent<RenderSystemInUse>(out bool contains);
+            ref RendererInstanceInUse component = ref entity.TryGetComponent<RendererInstanceInUse>(out bool contains);
             if (contains)
             {
-                renderSystemInUse = component;
+                instance = component.value;
                 return true;
             }
             else
             {
-                renderSystemInUse = default;
+                instance = default;
                 return false;
             }
         }
 
-        public static bool TryGetSurfaceReference<T>(this T window, out SurfaceReference reference) where T : unmanaged, IDestination
+        public static bool TryGetSurfaceInUse<T>(this T window, out Allocation surface) where T : unmanaged, IDestination
         {
             Entity entity = window.AsEntity();
-            ref SurfaceReference component = ref entity.TryGetComponent<SurfaceReference>(out bool contains);
+            ref SurfaceInUse component = ref entity.TryGetComponent<SurfaceInUse>(out bool contains);
             if (contains)
             {
-                reference = component;
+                surface = component.value;
                 return true;
             }
             else
             {
-                reference = default;
+                surface = default;
                 return false;
             }
         }

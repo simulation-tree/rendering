@@ -1,4 +1,5 @@
 ﻿using Collections;
+using Simulation;
 using System;
 using System.Numerics;
 using Unmanaged;
@@ -6,34 +7,32 @@ using Unmanaged;
 namespace Rendering
 {
     /// <summary>
-    /// Represents an unmanaged <see cref="IRenderingBackend"/> instance.
+    /// Represents a handler of <see cref="IRenderingBackend"/> functions.
     /// </summary>
-    public struct RenderSystem : IDisposable
+    public struct Renderer : IDisposable
     {
         private bool hasSurface;
-        public readonly nint library;
         public readonly List<Viewport> viewports;
         public readonly Dictionary<Viewport, Dictionary<RendererKey, List<uint>>> renderers;
         public readonly Dictionary<RendererKey, RendererCombination> infos;
 
-        private readonly Allocation system;
-        private readonly RenderSystemType type;
+        private readonly Allocation allocation;
+        private readonly RenderingBackend backend;
 
         public readonly bool IsSurfaceAvailable => hasSurface;
 
 #if NET
         [Obsolete("Default constructor not supported", true)]
-        public RenderSystem()
+        public Renderer()
         {
             throw new NotImplementedException();
         }
 #endif
 
-        internal RenderSystem(CreateResult result, RenderSystemType type)
+        internal Renderer(Allocation allocation, RenderingBackend backend)
         {
-            this.system = result.system;
-            this.library = result.library;
-            this.type = type;
+            this.allocation = allocation;
+            this.backend = backend;
             hasSurface = false;
 
             viewports = new();
@@ -43,7 +42,7 @@ namespace Rendering
 
         public readonly void Dispose()
         {
-            type.destroy.Invoke(system);
+            backend.dispose.Invoke(backend.allocation, allocation);
             infos.Dispose();
             viewports.Dispose();
 
@@ -62,25 +61,25 @@ namespace Rendering
             renderers.Dispose();
         }
 
-        public void SurfaceCreated(nint surface)
+        public void SurfaceCreated(Allocation surface)
         {
-            type.surfaceCreated.Invoke(system, surface);
+            backend.surfaceCreated.Invoke(backend.allocation, allocation, surface);
             hasSurface = true;
         }
 
-        public readonly uint BeginRender(Vector4 clearColor)
+        public readonly StatusCode BeginRender(Vector4 clearColor)
         {
-            return type.beginRender.Invoke(system, clearColor);
+            return backend.beginRender.Invoke(backend.allocation, allocation, clearColor);
         }
 
         public unsafe readonly void Render(USpan<uint> renderers, uint material, uint shader, uint mesh)
         {
-            type.render.Invoke(system, renderers, material, shader, mesh);
+            backend.render.Invoke(backend.allocation, allocation, renderers, material, shader, mesh);
         }
 
-        public readonly uint EndRender()
+        public readonly void EndRender()
         {
-            return type.endRender.Invoke(system);
+            backend.endRender.Invoke(backend.allocation, allocation);
         }
     }
 }

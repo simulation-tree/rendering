@@ -13,15 +13,15 @@ namespace Rendering.Systems
     public readonly partial struct RenderEngineSystem : ISystem
     {
         private readonly List<Destination> knownDestinations;
-        private readonly Dictionary<FixedString, RenderSystemType> availableSystemTypes;
-        private readonly Dictionary<Destination, RenderSystem> renderSystems;
+        private readonly Dictionary<FixedString, RenderingBackend> availableBackends;
+        private readonly Dictionary<Destination, Renderer> renderSystems;
         private readonly Array<List<Viewport>> viewportEntities;
         private readonly List<Dictionary<RendererKey, List<uint>>> rendererGroups;
 
-        private RenderEngineSystem(List<Destination> knownDestinations, Dictionary<FixedString, RenderSystemType> availableSystemTypes, Dictionary<Destination, RenderSystem> renderSystems, Array<List<Viewport>> viewportEntities, List<Dictionary<RendererKey, List<uint>>> rendererGroups)
+        private RenderEngineSystem(List<Destination> knownDestinations, Dictionary<FixedString, RenderingBackend> availableSystemTypes, Dictionary<Destination, Renderer> renderSystems, Array<List<Viewport>> viewportEntities, List<Dictionary<RendererKey, List<uint>>> rendererGroups)
         {
             this.knownDestinations = knownDestinations;
-            this.availableSystemTypes = availableSystemTypes;
+            this.availableBackends = availableSystemTypes;
             this.renderSystems = renderSystems;
             this.viewportEntities = viewportEntities;
             this.rendererGroups = rendererGroups;
@@ -32,8 +32,8 @@ namespace Rendering.Systems
             if (systemContainer.World == world)
             {
                 List<Destination> knownDestinations = new();
-                Dictionary<FixedString, RenderSystemType> availableSystemTypes = new();
-                Dictionary<Destination, RenderSystem> renderSystems = new();
+                Dictionary<FixedString, RenderingBackend> availableSystemTypes = new();
+                Dictionary<Destination, Renderer> renderSystems = new();
                 Array<List<Viewport>> viewportEntities = new(32);
                 List<Dictionary<RendererKey, List<uint>>> rendererGroups = new();
                 for (uint i = 0; i < viewportEntities.Length; i++)
@@ -67,7 +67,7 @@ namespace Rendering.Systems
 
                 foreach (Destination key in renderSystems.Keys)
                 {
-                    ref RenderSystem renderSystem = ref renderSystems[key];
+                    ref Renderer renderSystem = ref renderSystems[key];
                     renderSystem.Dispose();
                 }
 
@@ -75,12 +75,13 @@ namespace Rendering.Systems
                 renderSystems.Dispose();
                 knownDestinations.Dispose();
 
-                foreach (FixedString label in availableSystemTypes.Keys)
+                foreach (FixedString label in availableBackends.Keys)
                 {
-                    availableSystemTypes[label].Dispose();
+                    ref RenderingBackend rendererBackend = ref availableBackends[label];
+                    rendererBackend.Dispose();
                 }
 
-                availableSystemTypes.Dispose();
+                availableBackends.Dispose();
                 rendererGroups.Dispose();
             }
         }
@@ -92,16 +93,16 @@ namespace Rendering.Systems
         public readonly void RegisterRenderingBackend<T>() where T : unmanaged, IRenderingBackend
         {
             FixedString label = default(T).Label;
-            if (availableSystemTypes.ContainsKey(label))
+            if (availableBackends.ContainsKey(label))
             {
                 throw new InvalidOperationException($"Label `{label}` already has a render system registered for");
             }
 
-            RenderSystemType systemCreator = RenderSystemType.Create<T>();
-            availableSystemTypes.Add(label, systemCreator);
+            RenderingBackend systemCreator = RenderingBackend.Create<T>();
+            availableBackends.Add(label, systemCreator);
         }
 
-        private readonly void CreateNewSystems(World world)
+        private readonly void CreateNewRenderers(World world)
         {
             USpan<FixedString> extensionNames = stackalloc FixedString[32];
             ComponentQuery<IsDestination> query = new(world);
@@ -115,13 +116,14 @@ namespace Rendering.Systems
                 }
 
                 FixedString label = component.rendererLabel;
-                if (availableSystemTypes.TryGetValue(label, out RenderSystemType systemCreator))
+                if (availableBackends.TryGetValue(label, out RenderingBackend renderingBackend))
                 {
                     uint extensionNamesLength = destination.CopyExtensionNamesTo(extensionNames);
-                    RenderSystem newRenderSystem = systemCreator.Create(destination, extensionNames.Slice(0, extensionNamesLength));
+                    (Allocation renderer, Allocation instance) = renderingBackend.create.Invoke(renderingBackend.allocation, destination, extensionNames.Slice(0, extensionNamesLength));
+                    Renderer newRenderSystem = new(renderer, renderingBackend);
                     renderSystems.Add(destination, newRenderSystem);
                     knownDestinations.Add(destination);
-                    destination.AddComponent(new RenderSystemInUse(newRenderSystem.library));
+                    destination.AddComponent(new RendererInstanceInUse(instance));
                     Trace.WriteLine($"Created render system for destination `{destination}` with label `{label}`");
                 }
                 else
@@ -148,7 +150,7 @@ namespace Rendering.Systems
                         foreach (Viewport viewport in viewportEntities[l])
                         {
                             Destination destination = viewport.Destination;
-                            if (renderSystems.TryGetValue(destination, out RenderSystem renderSystem))
+                            if (renderSystems.TryGetValue(destination, out Renderer renderSystem))
                             {
                                 rint materialReference = component.materialReference;
                                 uint materialEntity = world.GetReference(entity, materialReference);
@@ -197,7 +199,7 @@ namespace Rendering.Systems
             {
                 Viewport viewport = new Entity(world, r.entity).As<Viewport>();
                 Destination destination = viewport.Destination;
-                if (renderSystems.TryGetValue(destination, out RenderSystem destinationRenderer))
+                if (renderSystems.TryGetValue(destination, out Renderer destinationRenderer))
                 {
                     destinationRenderer.viewports.Add(viewport);
                     renderSystems[destination] = destinationRenderer;
@@ -220,14 +222,14 @@ namespace Rendering.Systems
 
         private readonly void Update(World world)
         {
-            CreateNewSystems(world);
+            CreateNewRenderers(world);
 
             //reset lists
             foreach (Destination destination in knownDestinations)
             {
                 if (destination.GetWorld() == world)
                 {
-                    ref RenderSystem renderSystem = ref renderSystems[destination];
+                    ref Renderer renderSystem = ref renderSystems[destination];
                     renderSystem.viewports.Clear();
 
                     foreach (Viewport viewport in renderSystem.renderers.Keys)
@@ -241,9 +243,9 @@ namespace Rendering.Systems
                     }
 
                     //notify that surface has been created
-                    if (!renderSystem.IsSurfaceAvailable && destination.TryGetSurfaceReference(out SurfaceReference surface))
+                    if (!renderSystem.IsSurfaceAvailable && destination.TryGetSurfaceInUse(out Allocation surface))
                     {
-                        renderSystem.SurfaceCreated(surface.address);
+                        renderSystem.SurfaceCreated(surface);
                     }
                 }
             }
@@ -256,12 +258,12 @@ namespace Rendering.Systems
         {
             foreach (Destination destination in knownDestinations)
             {
-                if (!destination.AsEntity().ContainsComponent<SurfaceReference>()) continue;
+                if (!destination.AsEntity().ContainsComponent<SurfaceInUse>()) continue;
 
                 ref IsDestination component = ref destination.AsEntity().GetComponent<IsDestination>();
                 if (component.Area == 0) continue;
 
-                ref RenderSystem renderSystem = ref renderSystems[destination];
+                ref Renderer renderSystem = ref renderSystems[destination];
                 if (renderSystem.BeginRender(component.clearColor) == 1) continue;
 
                 World world = destination.GetWorld();
@@ -313,7 +315,7 @@ namespace Rendering.Systems
                 Destination destination = knownDestinations[i];
                 if (destination.IsDestroyed())
                 {
-                    RenderSystem destinationRenderer = renderSystems.Remove(destination);
+                    Renderer destinationRenderer = renderSystems.Remove(destination);
                     destinationRenderer.Dispose();
                     knownDestinations.RemoveAt(i);
                     Trace.WriteLine($"Removed render system for destination `{destination}`");
