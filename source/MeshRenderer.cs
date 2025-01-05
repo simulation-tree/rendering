@@ -76,10 +76,9 @@ namespace Rendering
 
         public MeshRenderer(World world, Mesh mesh, Material material, uint mask = 1)
         {
-            entity = new(world);
-            rint meshReference = entity.AddReference(mesh);
-            rint materialReference = entity.AddReference(material);
-            entity.AddComponent(new IsRenderer(meshReference, materialReference, mask));
+            entity = new Entity<IsRenderer>(world, new IsRenderer((rint)1, (rint)2, mask));
+            entity.AddReference(mesh);
+            entity.AddReference(material);
         }
 
         public readonly void Dispose()

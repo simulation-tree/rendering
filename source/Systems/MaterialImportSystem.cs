@@ -1,4 +1,5 @@
 ﻿using Collections;
+using Data;
 using Data.Components;
 using Rendering.Components;
 using Shaders;
@@ -51,8 +52,8 @@ namespace Rendering.Systems
                 uint entity = r.entity;
                 if (component.shaderReference == default)
                 {
-                    FixedString address = request.address;
-                    ShaderKey key = new(address, world);
+                    Address address = request.address;
+                    ShaderKey key = new(address.value, world);
                     if (!cachedShaders.TryGetValue(key, out Shader shader))
                     {
                         if (world.ContainsArray<BinaryData>(entity))
@@ -64,8 +65,8 @@ namespace Rendering.Systems
                             if (hasVertexProperty && hasFragmentProperty)
                             {
                                 //todo: test materials and shaders loading from json
-                                USpan<char> vertexAddress = jsonObject.GetText("vertex");
-                                USpan<char> fragmentAddress = jsonObject.GetText("fragment");
+                                Address vertexAddress = new(jsonObject.GetText("vertex"));
+                                Address fragmentAddress = new(jsonObject.GetText("fragment"));
                                 shader = new(world, vertexAddress, fragmentAddress);
                                 cachedShaders.Add(key, shader);
                             }

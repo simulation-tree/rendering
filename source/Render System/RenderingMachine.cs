@@ -9,7 +9,7 @@ namespace Rendering
     /// <summary>
     /// Represents a handler of <see cref="IRenderingBackend"/> functions.
     /// </summary>
-    public struct Renderer : IDisposable
+    public struct RenderingMachine : IDisposable
     {
         private bool hasSurface;
         public readonly List<Viewport> viewports;
@@ -23,13 +23,13 @@ namespace Rendering
 
 #if NET
         [Obsolete("Default constructor not supported", true)]
-        public Renderer()
+        public RenderingMachine()
         {
             throw new NotImplementedException();
         }
 #endif
 
-        internal Renderer(Allocation allocation, RenderingBackend backend)
+        internal RenderingMachine(Allocation allocation, RenderingBackend backend)
         {
             this.allocation = allocation;
             this.backend = backend;

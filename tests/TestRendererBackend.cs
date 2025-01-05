@@ -9,7 +9,7 @@ namespace Rendering.Tests
     public readonly partial struct TestRendererBackend : IRenderingBackend
     {
         public static bool initialized;
-        public static readonly System.Collections.Generic.List<Allocation> renderers = new();
+        public static readonly System.Collections.Generic.List<Allocation> renderingMachines = new();
 
         FixedString IRenderingBackend.Label => "test";
 
@@ -26,7 +26,7 @@ namespace Rendering.Tests
         (Allocation renderer, Allocation instance) IRenderingBackend.Create(in Destination destination, in USpan<FixedString> extensionNames)
         {
             Allocation renderer = Allocation.Create(new TestRenderer(destination, extensionNames));
-            renderers.Add(renderer);
+            renderingMachines.Add(renderer);
             return (renderer, renderer);
         }
 
@@ -34,44 +34,65 @@ namespace Rendering.Tests
         {
             ref TestRenderer testRenderer = ref renderer.Read<TestRenderer>();
             testRenderer.Dispose();
-            renderers.Remove(renderer);
+            renderingMachines.Remove(renderer);
             renderer.Dispose();
         }
 
         void IRenderingBackend.SurfaceCreated(in Allocation renderer, Allocation surface)
         {
-            throw new System.NotImplementedException();
+            ref TestRenderer testRenderer = ref renderer.Read<TestRenderer>();
+            testRenderer.surface = surface;
         }
 
         StatusCode IRenderingBackend.BeginRender(in Allocation renderer, in Vector4 clearColor)
         {
-            throw new System.NotImplementedException();
+            ref TestRenderer testRenderer = ref renderer.Read<TestRenderer>();
+            testRenderer.clearColor = clearColor;
+            testRenderer.entities.Clear();
+            testRenderer.material = default;
+            testRenderer.shader = default;
+            testRenderer.mesh = default;
+            return StatusCode.Continue;
         }
 
         void IRenderingBackend.Render(in Allocation renderer, in USpan<uint> entities, in uint material, in uint shader, in uint mesh)
         {
-            throw new System.NotImplementedException();
+            ref TestRenderer testRenderer = ref renderer.Read<TestRenderer>();
+            testRenderer.entities.AddRange(entities);
+            testRenderer.material = material;
+            testRenderer.shader = shader;
+            testRenderer.mesh = mesh;
         }
 
         void IRenderingBackend.EndRender(in Allocation renderer)
         {
-            throw new System.NotImplementedException();
+            ref TestRenderer testRenderer = ref renderer.Read<TestRenderer>();
+            testRenderer.finishedRendering = true;
         }
     }
 
-    public readonly struct TestRenderer : IDisposable
+    public struct TestRenderer : IDisposable
     {
         public readonly Destination destination;
         public readonly Array<FixedString> extensionNames;
+        public readonly List<uint> entities;
+        public Vector4 clearColor;
+        public uint material;
+        public uint shader;
+        public uint mesh;
+        public Allocation surface;
+        public bool finishedRendering;
 
         public TestRenderer(Destination destination, USpan<FixedString> extensionNames)
         {
             this.destination = destination;
             this.extensionNames = new(extensionNames);
+            entities = new();
         }
 
         public void Dispose()
         {
+            entities.Dispose();
             extensionNames.Dispose();
         }
     }

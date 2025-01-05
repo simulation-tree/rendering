@@ -60,15 +60,13 @@ namespace Rendering
             entity = new(world, existingEntity);
         }
 
-        public Viewport(World world, Destination destination, uint mask)
+        public Viewport(World world, Destination destination, uint mask = uint.MaxValue)
         {
             uint cameraCount = world.CountEntitiesWithComponent<IsViewport>();
             sbyte order = (sbyte)cameraCount;
 
-            entity = new(world);
-
-            rint destinationReference = entity.AddReference(destination);
-            entity.AddComponent(new IsViewport(destinationReference, new(0, 0, 1, 1), order, mask));
+            entity = new Entity<IsViewport>(world, new IsViewport((rint)1, new(0, 0, 1, 1), order, mask));
+            entity.AddReference(destination);
         }
 
         public readonly void Dispose()

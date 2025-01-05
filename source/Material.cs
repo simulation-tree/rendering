@@ -1,4 +1,5 @@
-﻿using Data.Components;
+﻿using Data;
+using Data.Components;
 using Rendering.Components;
 using Shaders;
 using System;
@@ -69,39 +70,16 @@ namespace Rendering
 
         public Material(World world, Shader shader)
         {
-            entity = new(world);
-            rint materialReference = entity.AddReference(shader);
-            entity.AddComponent(new IsMaterial(materialReference));
+            entity = new Entity<IsMaterial>(world, new IsMaterial((rint)1));
+            entity.AddReference(shader);
             entity.CreateArray<MaterialPushBinding>(0);
             entity.CreateArray<MaterialComponentBinding>(0);
             entity.CreateArray<MaterialTextureBinding>(0);
         }
 
-        public Material(World world, USpan<char> address)
+        public Material(World world, Address address)
         {
-            entity = new(world);
-            entity.AddComponent(new IsMaterial(default));
-            entity.AddComponent(new IsDataRequest(address));
-            entity.CreateArray<MaterialPushBinding>(0);
-            entity.CreateArray<MaterialComponentBinding>(0);
-            entity.CreateArray<MaterialTextureBinding>(0);
-        }
-
-        public Material(World world, FixedString address)
-        {
-            entity = new(world);
-            entity.AddComponent(new IsMaterial(default));
-            entity.AddComponent(new IsDataRequest(address));
-            entity.CreateArray<MaterialPushBinding>(0);
-            entity.CreateArray<MaterialComponentBinding>(0);
-            entity.CreateArray<MaterialTextureBinding>(0);
-        }
-
-        public Material(World world, string address)
-        {
-            entity = new(world);
-            entity.AddComponent(new IsMaterial(default));
-            entity.AddComponent(new IsDataRequest(address));
+            entity = new Entity<IsDataRequest, IsMaterial>(world, new(address), default);
             entity.CreateArray<MaterialPushBinding>(0);
             entity.CreateArray<MaterialComponentBinding>(0);
             entity.CreateArray<MaterialTextureBinding>(0);

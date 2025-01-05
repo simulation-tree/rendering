@@ -14,11 +14,11 @@ namespace Rendering.Systems
     {
         private readonly List<Destination> knownDestinations;
         private readonly Dictionary<FixedString, RenderingBackend> availableBackends;
-        private readonly Dictionary<Destination, Renderer> renderSystems;
+        private readonly Dictionary<Destination, RenderingMachine> renderSystems;
         private readonly Array<List<Viewport>> viewportEntities;
         private readonly List<Dictionary<RendererKey, List<uint>>> rendererGroups;
 
-        private RenderEngineSystem(List<Destination> knownDestinations, Dictionary<FixedString, RenderingBackend> availableSystemTypes, Dictionary<Destination, Renderer> renderSystems, Array<List<Viewport>> viewportEntities, List<Dictionary<RendererKey, List<uint>>> rendererGroups)
+        private RenderEngineSystem(List<Destination> knownDestinations, Dictionary<FixedString, RenderingBackend> availableSystemTypes, Dictionary<Destination, RenderingMachine> renderSystems, Array<List<Viewport>> viewportEntities, List<Dictionary<RendererKey, List<uint>>> rendererGroups)
         {
             this.knownDestinations = knownDestinations;
             this.availableBackends = availableSystemTypes;
@@ -33,7 +33,7 @@ namespace Rendering.Systems
             {
                 List<Destination> knownDestinations = new();
                 Dictionary<FixedString, RenderingBackend> availableSystemTypes = new();
-                Dictionary<Destination, Renderer> renderSystems = new();
+                Dictionary<Destination, RenderingMachine> renderSystems = new();
                 Array<List<Viewport>> viewportEntities = new(32);
                 List<Dictionary<RendererKey, List<uint>>> rendererGroups = new();
                 for (uint i = 0; i < viewportEntities.Length; i++)
@@ -50,10 +50,14 @@ namespace Rendering.Systems
             if (systemContainer.World == world)
             {
                 RemoveOldSystems();
-                RenderAll();
             }
 
             Update(world);
+
+            if (systemContainer.World == world)
+            {
+                RenderAll();
+            }
         }
 
         void ISystem.Finish(in SystemContainer systemContainer, in World world)
@@ -67,7 +71,7 @@ namespace Rendering.Systems
 
                 foreach (Destination key in renderSystems.Keys)
                 {
-                    ref Renderer renderSystem = ref renderSystems[key];
+                    ref RenderingMachine renderSystem = ref renderSystems[key];
                     renderSystem.Dispose();
                 }
 
@@ -120,7 +124,7 @@ namespace Rendering.Systems
                 {
                     uint extensionNamesLength = destination.CopyExtensionNamesTo(extensionNames);
                     (Allocation renderer, Allocation instance) = renderingBackend.create.Invoke(renderingBackend.allocation, destination, extensionNames.Slice(0, extensionNamesLength));
-                    Renderer newRenderSystem = new(renderer, renderingBackend);
+                    RenderingMachine newRenderSystem = new(renderer, renderingBackend);
                     renderSystems.Add(destination, newRenderSystem);
                     knownDestinations.Add(destination);
                     destination.AddComponent(new RendererInstanceInUse(instance));
@@ -150,7 +154,7 @@ namespace Rendering.Systems
                         foreach (Viewport viewport in viewportEntities[l])
                         {
                             Destination destination = viewport.Destination;
-                            if (renderSystems.TryGetValue(destination, out Renderer renderSystem))
+                            if (renderSystems.TryGetValue(destination, out RenderingMachine renderSystem))
                             {
                                 rint materialReference = component.materialReference;
                                 uint materialEntity = world.GetReference(entity, materialReference);
@@ -199,7 +203,7 @@ namespace Rendering.Systems
             {
                 Viewport viewport = new Entity(world, r.entity).As<Viewport>();
                 Destination destination = viewport.Destination;
-                if (renderSystems.TryGetValue(destination, out Renderer destinationRenderer))
+                if (renderSystems.TryGetValue(destination, out RenderingMachine destinationRenderer))
                 {
                     destinationRenderer.viewports.Add(viewport);
                     renderSystems[destination] = destinationRenderer;
@@ -229,7 +233,7 @@ namespace Rendering.Systems
             {
                 if (destination.GetWorld() == world)
                 {
-                    ref Renderer renderSystem = ref renderSystems[destination];
+                    ref RenderingMachine renderSystem = ref renderSystems[destination];
                     renderSystem.viewports.Clear();
 
                     foreach (Viewport viewport in renderSystem.renderers.Keys)
@@ -263,8 +267,14 @@ namespace Rendering.Systems
                 ref IsDestination component = ref destination.AsEntity().GetComponent<IsDestination>();
                 if (component.Area == 0) continue;
 
-                ref Renderer renderSystem = ref renderSystems[destination];
-                if (renderSystem.BeginRender(component.clearColor) == 1) continue;
+                ref RenderingMachine renderSystem = ref renderSystems[destination];
+
+                StatusCode statusCode = renderSystem.BeginRender(component.clearColor);
+                if (statusCode != StatusCode.Continue)
+                {
+                    Trace.WriteLine($"Failed to begin rendering for destination `{destination}` because of status code `{statusCode}`");
+                    continue;
+                }
 
                 World world = destination.GetWorld();
 
@@ -315,7 +325,7 @@ namespace Rendering.Systems
                 Destination destination = knownDestinations[i];
                 if (destination.IsDestroyed())
                 {
-                    Renderer destinationRenderer = renderSystems.Remove(destination);
+                    RenderingMachine destinationRenderer = renderSystems.Remove(destination);
                     destinationRenderer.Dispose();
                     knownDestinations.RemoveAt(i);
                     Trace.WriteLine($"Removed render system for destination `{destination}`");
