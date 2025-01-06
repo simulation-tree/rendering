@@ -163,7 +163,11 @@ namespace Rendering.Systems
                                 rint shaderReference = world.GetComponent<IsMaterial>(materialEntity).shaderReference;
                                 if (shaderReference == default) continue;
 
-                                uint shaderEntity = world.GetReference(materialEntity, shaderReference);
+                                uint shaderEntity = default;
+                                if (world.ContainsReference(materialEntity, shaderReference))
+                                {
+                                    shaderEntity = world.GetReference(materialEntity, shaderReference);
+                                }
 
                                 if (shaderEntity == default || !world.ContainsEntity(shaderEntity) || !world.ContainsComponent<IsShader>(shaderEntity)) continue; //shader not yet loaded
                                 if (meshEntity == default || !world.ContainsComponent<IsMesh>(meshEntity)) continue; //mesh not yet loaded
