@@ -52,9 +52,10 @@ namespace Rendering
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
 
-        readonly Definition IEntity.GetDefinition(Schema schema)
+        readonly void IEntity.Describe(ref Archetype archetype)
         {
-            return new Definition().AddComponentType<IsDestination>(schema).AddArrayElementType<DestinationExtension>(schema);
+            archetype.AddComponentType<IsDestination>();
+            archetype.AddArrayElementType<DestinationExtension>();
         }
 
         public Destination(World world, uint existingEntity)

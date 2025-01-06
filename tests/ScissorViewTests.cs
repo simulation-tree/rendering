@@ -1,30 +1,16 @@
 ﻿using Rendering.Components;
 using Rendering.Systems;
-using Simulation.Tests;
 using System.Numerics;
-using Worlds;
 
 namespace Rendering.Tests
 {
-    public class ScissorViewTests : SimulationTests
+    public class ScissorViewTests : RenderingTests
     {
-        static ScissorViewTests()
-        {
-            TypeLayout.Register<RendererScissor>();
-            TypeLayout.Register<WorldRendererScissor>();
-        }
-
-        protected override void SetUp()
-        {
-            base.SetUp();
-            world.Schema.RegisterComponent<RendererScissor>();
-            world.Schema.RegisterComponent<WorldRendererScissor>();
-            simulator.AddSystem<ClampNestedScissorViews>();
-        }
-
         [Test]
         public void VerifyClampedScissor()
         {
+            simulator.AddSystem<ClampNestedScissorViews>();
+
             uint parentScissor = world.CreateEntity();
             uint childScissor = world.CreateEntity();
             world.SetParent(childScissor, parentScissor);
@@ -42,6 +28,8 @@ namespace Rendering.Tests
         [Test]
         public void OutOfBoundsChildScissor()
         {
+            simulator.AddSystem<ClampNestedScissorViews>();
+
             uint parentScissor = world.CreateEntity();
             uint childScissor = world.CreateEntity();
             world.SetParent(childScissor, parentScissor);
@@ -59,6 +47,8 @@ namespace Rendering.Tests
         [Test]
         public void DeepNestedChildren()
         {
+            simulator.AddSystem<ClampNestedScissorViews>();
+
             uint rootScissor = world.CreateEntity();
             uint parentScissor = world.CreateEntity();
             uint childScissor = world.CreateEntity();
@@ -81,6 +71,8 @@ namespace Rendering.Tests
         [Test]
         public void VerifyDeepDescendant()
         {
+            simulator.AddSystem<ClampNestedScissorViews>();
+
             uint rootEntity = world.CreateEntity();
             uint parentScissor = world.CreateEntity();
             uint childScissor = world.CreateEntity();

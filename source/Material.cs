@@ -50,9 +50,12 @@ namespace Rendering
         readonly uint IEntity.Value => entity.value;
         readonly World IEntity.World => entity.world;
 
-        readonly Definition IEntity.GetDefinition(Schema schema)
+        readonly void IEntity.Describe(ref Archetype archetype)
         {
-            return new Definition().AddComponentType<IsMaterial>(schema).AddArrayElementTypes<MaterialPushBinding, MaterialComponentBinding, MaterialTextureBinding>(schema);
+            archetype.AddComponentType<IsMaterial>();
+            archetype.AddArrayElementType<MaterialPushBinding>();
+            archetype.AddArrayElementType<MaterialComponentBinding>();
+            archetype.AddArrayElementType<MaterialTextureBinding>();
         }
 
 #if NET
