@@ -39,6 +39,8 @@ namespace Rendering
             }
         }
 
+        public readonly ref uint Mask => ref entity.GetComponent<IsViewport>().mask;
+
         readonly uint IEntity.Value => entity.GetEntityValue();
         readonly World IEntity.World => entity.GetWorld();
 
