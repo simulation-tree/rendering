@@ -140,11 +140,10 @@ namespace Rendering.Systems
         private readonly void FindRenderers(World world)
         {
             ComponentQuery<IsRenderer> query = new(world);
+            query.ExcludeDisabled(true);
             foreach (var r in query)
             {
                 uint entity = r.entity;
-                if (!world.IsEnabled(entity)) continue;
-
                 ref IsRenderer component = ref r.component1;
                 uint mask = component.mask;
                 for (uint l = 0; l < 32; l++)
@@ -203,6 +202,7 @@ namespace Rendering.Systems
             }
 
             ComponentQuery<IsViewport> query = new(world);
+            query.ExcludeDisabled(true);
             foreach (var r in query)
             {
                 Viewport viewport = new Entity(world, r.entity).As<Viewport>();

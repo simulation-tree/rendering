@@ -64,7 +64,7 @@ namespace Rendering
 
         public Viewport(World world, Destination destination, uint mask = uint.MaxValue)
         {
-            uint cameraCount = world.CountEntitiesWithComponent<IsViewport>();
+            uint cameraCount = world.CountEntitiesWith<IsViewport>();
             sbyte order = (sbyte)cameraCount;
 
             entity = new Entity<IsViewport>(world, new IsViewport((rint)1, new(0, 0, 1, 1), order, mask));
