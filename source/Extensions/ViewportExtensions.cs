@@ -18,10 +18,16 @@ namespace Rendering
             return ref entity.GetComponent<IsViewport>().region;
         }
 
-        public static ref uint GetMask<T>(this ref T viewport) where T : unmanaged, IViewport
+        public static ref LayerMask GetRenderMask<T>(this ref T viewport) where T : unmanaged, IViewport
         {
             Entity entity = viewport.AsEntity();
-            return ref entity.GetComponent<IsViewport>().mask;
+            return ref entity.GetComponent<IsViewport>().renderMask;
+        }
+
+        public static void SetRenderMask<T>(this ref T viewport, LayerMask value) where T : unmanaged, IViewport
+        {
+            Entity entity = viewport.AsEntity();
+            entity.GetComponent<IsViewport>().renderMask = value;
         }
     }
 }

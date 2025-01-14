@@ -7,13 +7,13 @@ namespace Rendering.Components
     {
         public rint meshReference;
         public rint materialReference;
-        public uint mask;
+        public LayerMask renderMask;
 
-        public IsRenderer(rint mesh, rint material, uint mask)
+        public IsRenderer(rint mesh, rint material, LayerMask renderMask)
         {
             this.meshReference = mesh;
             this.materialReference = material;
-            this.mask = mask;
+            this.renderMask = renderMask;
         }
     }
 }

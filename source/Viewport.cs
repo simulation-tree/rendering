@@ -39,7 +39,7 @@ namespace Rendering
             }
         }
 
-        public readonly ref uint Mask => ref entity.GetComponent<IsViewport>().mask;
+        public readonly ref LayerMask RenderMask => ref entity.GetComponent<IsViewport>().renderMask;
 
         readonly uint IEntity.Value => entity.GetEntityValue();
         readonly World IEntity.World => entity.GetWorld();
@@ -62,12 +62,21 @@ namespace Rendering
             entity = new(world, existingEntity);
         }
 
-        public Viewport(World world, Destination destination, uint mask = uint.MaxValue)
+        public Viewport(World world, Destination destination, LayerMask renderMask)
         {
             uint cameraCount = world.CountEntitiesWith<IsViewport>();
             sbyte order = (sbyte)cameraCount;
 
-            entity = new Entity<IsViewport>(world, new IsViewport((rint)1, new(0, 0, 1, 1), order, mask));
+            entity = new Entity<IsViewport>(world, new IsViewport((rint)1, new(0, 0, 1, 1), order, renderMask));
+            entity.AddReference(destination);
+        }
+
+        public Viewport(World world, Destination destination)
+        {
+            uint cameraCount = world.CountEntitiesWith<IsViewport>();
+            sbyte order = (sbyte)cameraCount;
+
+            entity = new Entity<IsViewport>(world, new IsViewport((rint)1, new(0, 0, 1, 1), order, LayerMask.All));
             entity.AddReference(destination);
         }
 

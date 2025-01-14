@@ -145,10 +145,10 @@ namespace Rendering.Systems
             {
                 uint entity = r.entity;
                 ref IsRenderer component = ref r.component1;
-                uint mask = component.mask;
-                for (uint l = 0; l < 32; l++)
+                LayerMask renderMask = component.renderMask;
+                for (byte l = 0; l < LayerMask.Capacity; l++)
                 {
-                    if ((mask & (1 << (int)l)) != 0)
+                    if (renderMask.Contains(l))
                     {
                         foreach (Viewport viewport in viewportEntities[l])
                         {
@@ -217,10 +217,10 @@ namespace Rendering.Systems
                     //system with label not found
                 }
 
-                uint mask = viewport.GetMask();
-                for (uint l = 0; l < 32; l++)
+                LayerMask renderMask = viewport.RenderMask;
+                for (byte l = 0; l < LayerMask.Capacity; l++)
                 {
-                    if ((mask & (1 << (int)l)) != 0)
+                    if (renderMask.Contains(l))
                     {
                         viewportEntities[l].Add(viewport);
                     }

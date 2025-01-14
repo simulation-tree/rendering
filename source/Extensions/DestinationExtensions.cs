@@ -52,6 +52,13 @@ namespace Rendering
             return ref entity.GetComponent<IsDestination>().clearColor;
         }
 
+        public static void SetClearColor<T>(this T destination, Vector4 clearColor) where T : unmanaged, IDestination
+        {
+            Entity entity = destination.AsEntity();
+            ref IsDestination component = ref entity.GetComponent<IsDestination>();
+            component.clearColor = clearColor;
+        }
+
         public static FixedString GetRendererLabel<T>(this T destination) where T : unmanaged, IDestination
         {
             Entity entity = destination.AsEntity();

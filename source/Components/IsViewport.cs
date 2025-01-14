@@ -9,14 +9,14 @@ namespace Rendering.Components
         public rint destinationReference;
         public Vector4 region;
         public sbyte order;
-        public uint mask;
+        public LayerMask renderMask;
 
-        public IsViewport(rint destinationReference, Vector4 region, sbyte order, uint mask)
+        public IsViewport(rint destinationReference, Vector4 region, sbyte order, LayerMask renderMask)
         {
             this.destinationReference = destinationReference;
             this.region = region;
             this.order = order;
-            this.mask = mask;
+            this.renderMask = renderMask;
         }
     }
 }

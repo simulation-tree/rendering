@@ -4,7 +4,7 @@ using Worlds;
 
 namespace Rendering
 {
-    public readonly struct MeshRenderer : IEntity
+    public readonly struct MeshRenderer : IRenderer
     {
         private readonly Entity entity;
 
@@ -12,7 +12,7 @@ namespace Rendering
         {
             get
             {
-                IsRenderer component = entity.GetComponent<IsRenderer>();
+                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
                 uint materialEntity = entity.GetReference(component.materialReference);
                 return new(entity.world, materialEntity);
             }
@@ -34,7 +34,7 @@ namespace Rendering
         {
             get
             {
-                IsRenderer component = entity.GetComponent<IsRenderer>();
+                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
                 uint meshEntity = entity.GetReference(component.meshReference);
                 return new Entity(entity.world, meshEntity).As<Mesh>();
             }
@@ -52,12 +52,12 @@ namespace Rendering
             }
         }
 
-        public readonly ref uint Mask
+        public readonly ref LayerMask RenderMask
         {
             get
             {
                 ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
-                return ref component.mask;
+                return ref component.renderMask;
             }
         }
 
@@ -74,9 +74,18 @@ namespace Rendering
             entity = new(world, existingEntity);
         }
 
-        public MeshRenderer(World world, Mesh mesh, Material material, uint mask = 1)
+        public MeshRenderer(World world, Mesh mesh, Material material, LayerMask renderMask)
         {
-            entity = new Entity<IsRenderer>(world, new IsRenderer((rint)1, (rint)2, mask));
+            entity = new Entity<IsRenderer>(world, new IsRenderer((rint)1, (rint)2, renderMask));
+            entity.AddReference(mesh);
+            entity.AddReference(material);
+        }
+
+        public MeshRenderer(World world, Mesh mesh, Material material)
+        {
+            LayerMask firstLayerOnly = default;
+            firstLayerOnly.Set(0);
+            entity = new Entity<IsRenderer>(world, new IsRenderer((rint)1, (rint)2, firstLayerOnly));
             entity.AddReference(mesh);
             entity.AddReference(material);
         }
