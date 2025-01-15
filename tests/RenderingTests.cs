@@ -4,7 +4,7 @@ using Meshes.Components;
 using Rendering.Components;
 using Shaders.Components;
 using Simulation.Tests;
-using Worlds;
+using Types;
 
 namespace Rendering.Tests
 {
