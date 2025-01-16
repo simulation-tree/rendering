@@ -47,17 +47,11 @@ namespace Rendering.Systems
 
         void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
         {
-            if (systemContainer.World == world)
-            {
-                RemoveOldSystems();
-            }
-
-            Update(world);
-
-            if (systemContainer.World == world)
-            {
-                RenderAll();
-            }
+            DestroyOldSystems(world);
+            CreateNewSystems(world);
+            FindViewports(world);
+            FindRenderers(world);
+            Render(world);
         }
 
         void ISystem.Finish(in SystemContainer systemContainer, in World world)
@@ -228,7 +222,7 @@ namespace Rendering.Systems
             }
         }
 
-        private readonly void Update(World world)
+        private readonly void CreateNewSystems(World world)
         {
             CreateNewRenderers(world);
 
@@ -257,15 +251,13 @@ namespace Rendering.Systems
                     }
                 }
             }
-
-            FindViewports(world);
-            FindRenderers(world);
         }
 
-        private readonly void RenderAll()
+        private readonly void Render(World world)
         {
             foreach (Destination destination in knownDestinations)
             {
+                if (destination.GetWorld() != world) continue;
                 if (!destination.AsEntity().ContainsComponent<SurfaceInUse>()) continue;
 
                 ref IsDestination component = ref destination.AsEntity().GetComponent<IsDestination>();
@@ -279,8 +271,6 @@ namespace Rendering.Systems
                     Trace.WriteLine($"Failed to begin rendering for destination `{destination}` because of status code `{statusCode}`");
                     continue;
                 }
-
-                World world = destination.GetWorld();
 
                 //make sure renderer entries that no longer exist are not in this list
                 //todo: is this needed?
@@ -322,11 +312,13 @@ namespace Rendering.Systems
             }
         }
 
-        private readonly void RemoveOldSystems()
+        private readonly void DestroyOldSystems(World world)
         {
             for (uint i = knownDestinations.Count - 1; i != uint.MaxValue; i--)
             {
                 Destination destination = knownDestinations[i];
+                if (destination.GetWorld() != world) continue;
+
                 if (destination.IsDestroyed())
                 {
                     RenderingMachine destinationRenderer = renderSystems.Remove(destination);
