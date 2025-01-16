@@ -33,5 +33,10 @@ namespace Rendering
         {
             value = new(r, g, b, a);
         }
+
+        public static implicit operator Vector4(Color color)
+        {
+            return color.value;
+        }
     }
 }
