@@ -11,13 +11,13 @@ namespace Rendering
     {
         public DescriptorResourceKey key;
         public uint entity;
-        public ComponentType componentType;
+        public DataType componentType;
         public RenderStage stage;
 
         public readonly byte Binding => key.Binding;
         public readonly byte Set => key.Set;
 
-        public MaterialComponentBinding(DescriptorResourceKey key, uint entity, ComponentType componentType, RenderStage stage)
+        public MaterialComponentBinding(DescriptorResourceKey key, uint entity, DataType componentType, RenderStage stage)
         {
             this.key = key;
             this.entity = entity;
@@ -45,7 +45,7 @@ namespace Rendering
         /// </summary>
         public static MaterialComponentBinding Create<T>(DescriptorResourceKey key, uint entity, RenderStage stage, Schema schema) where T : unmanaged
         {
-            return new MaterialComponentBinding(key, entity, schema.GetComponent<T>(), stage);
+            return new MaterialComponentBinding(key, entity, schema.GetComponentDataType<T>(), stage);
         }
 
         public static bool operator ==(MaterialComponentBinding left, MaterialComponentBinding right)

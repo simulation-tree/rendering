@@ -9,10 +9,10 @@ namespace Rendering
     public struct MaterialPushBinding
     {
         public uint start;
-        public ComponentType componentType;
+        public DataType componentType;
         public RenderStage stage;
 
-        public MaterialPushBinding(uint start, ComponentType componentType, RenderStage stage)
+        public MaterialPushBinding(uint start, DataType componentType, RenderStage stage)
         {
             this.start = start;
             this.componentType = componentType;
