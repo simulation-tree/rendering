@@ -303,7 +303,10 @@ namespace Rendering.Systems
                     {
                         ref List<uint> renderers = ref groups[key];
                         ref RendererCombination info = ref renderSystem.infos[key];
-                        renderSystem.Render(renderers.AsSpan(), info.material, info.shader, info.mesh);
+                        RendererData material = new(info.material, 0);
+                        RendererData shader = new(info.shader, destination.GetWorld().GetComponent<IsShader>(info.shader).version);
+                        RendererData mesh = new(info.mesh, destination.GetWorld().GetComponent<IsMesh>(info.mesh).version);
+                        renderSystem.Render(renderers.AsSpan(), material, shader, mesh);
                     }
                 }
 

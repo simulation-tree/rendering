@@ -64,7 +64,7 @@ namespace Rendering
         /// Performs rendering of a single frame with the <see cref="Destination"/>
         /// the renderer was created with.
         /// </summary>
-        void Render(in Allocation renderer, in USpan<uint> entities, in uint material, in uint shader, in uint mesh);
+        void Render(in Allocation renderer, in USpan<uint> entities, in RendererData material, in RendererData shader, in RendererData mesh);
 
         /// <summary>
         /// Finishes rendering a frame.

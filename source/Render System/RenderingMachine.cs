@@ -7,7 +7,7 @@ using Unmanaged;
 namespace Rendering
 {
     /// <summary>
-    /// Represents a handler of <see cref="IRenderingBackend"/> functions.
+    /// Represents a handler of <see cref="IRenderingBackend"/> functions for a specific <see cref="Destination"/>.
     /// </summary>
     public struct RenderingMachine : IDisposable
     {
@@ -72,7 +72,7 @@ namespace Rendering
             return backend.beginRender.Invoke(backend.allocation, allocation, clearColor);
         }
 
-        public unsafe readonly void Render(USpan<uint> renderers, uint material, uint shader, uint mesh)
+        public readonly void Render(USpan<uint> renderers, RendererData material, RendererData shader, RendererData mesh)
         {
             backend.render.Invoke(backend.allocation, allocation, renderers, material, shader, mesh);
         }

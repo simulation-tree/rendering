@@ -23,7 +23,7 @@ namespace Rendering.Functions
         }
 #endif
 
-        public readonly void Invoke(Allocation backend, Allocation renderer, USpan<uint> entities, uint material, uint shader, uint mesh)
+        public readonly void Invoke(Allocation backend, Allocation renderer, USpan<uint> entities, RendererData material, RendererData shader, RendererData mesh)
         {
             function(new(backend, renderer, entities, material, shader, mesh));
         }
@@ -32,9 +32,9 @@ namespace Rendering.Functions
         {
             public readonly Allocation backend;
             public readonly Allocation renderer;
-            public readonly uint material;
-            public readonly uint shader;
-            public readonly uint mesh;
+            public readonly RendererData material;
+            public readonly RendererData shader;
+            public readonly RendererData mesh;
 
             private readonly nint entities;
             private readonly uint count;
@@ -44,7 +44,7 @@ namespace Rendering.Functions
             /// </summary>
             public readonly USpan<uint> Entities => new(entities, count);
 
-            public Input(Allocation backend, Allocation renderer, USpan<uint> entities, uint material, uint shader, uint mesh)
+            public Input(Allocation backend, Allocation renderer, USpan<uint> entities, RendererData material, RendererData shader, RendererData mesh)
             {
                 this.backend = backend;
                 this.renderer = renderer;

@@ -55,7 +55,7 @@ namespace Rendering.Tests
             return StatusCode.Continue;
         }
 
-        void IRenderingBackend.Render(in Allocation renderer, in USpan<uint> entities, in uint material, in uint shader, in uint mesh)
+        void IRenderingBackend.Render(in Allocation renderer, in USpan<uint> entities, in RendererData material, in RendererData shader, in RendererData mesh)
         {
             ref TestRenderer testRenderer = ref renderer.Read<TestRenderer>();
             testRenderer.entities.AddRange(entities);
@@ -77,9 +77,9 @@ namespace Rendering.Tests
         public readonly Array<FixedString> extensionNames;
         public readonly List<uint> entities;
         public Vector4 clearColor;
-        public uint material;
-        public uint shader;
-        public uint mesh;
+        public RendererData material;
+        public RendererData shader;
+        public RendererData mesh;
         public Allocation surface;
         public bool finishedRendering;
 
