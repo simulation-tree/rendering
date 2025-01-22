@@ -84,7 +84,7 @@ namespace Rendering
                 {
                     USpan<char> bindingText = text.Slice(0, colonIndex);
                     USpan<char> setText = text.Slice(colonIndex + 1);
-                    if (byte.TryParse(bindingText.AsSystemSpan(), out byte binding) && byte.TryParse(setText.AsSystemSpan(), out byte set))
+                    if (byte.TryParse(bindingText, out byte binding) && byte.TryParse(setText, out byte set))
                     {
                         key = new(binding, set);
                         return true;
@@ -116,8 +116,8 @@ namespace Rendering
             uint colonIndex = text.IndexOf(':');
             USpan<char> bindingText = text.Slice(0, colonIndex);
             USpan<char> setText = text.Slice(colonIndex + 1);
-            byte binding = byte.Parse(bindingText.AsSystemSpan());
-            byte set = byte.Parse(setText.AsSystemSpan());
+            byte binding = byte.Parse(bindingText);
+            byte set = byte.Parse(setText);
             return new(binding, set);
         }
 
