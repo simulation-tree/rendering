@@ -18,8 +18,9 @@ namespace Rendering
         {
             get
             {
-                IsMaterial component = entity.GetComponent<IsMaterial>();
-                return new(entity.world, entity.GetReference(component.shaderReference));
+                ref IsMaterial component = ref entity.GetComponent<IsMaterial>();
+                uint shaderEntity = entity.GetReference(component.shaderReference);
+                return new Entity(entity.GetWorld(), shaderEntity).As<Shader>();
             }
             set
             {

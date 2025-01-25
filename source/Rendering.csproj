@@ -16,8 +16,6 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<IsAotCompatible>True</IsAotCompatible>
 		<IsTrimmable>True</IsTrimmable>
-		<AssemblyName>Rendering.Root</AssemblyName>
-		<RootNamespace>Rendering.Root</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
