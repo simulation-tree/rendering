@@ -1,4 +1,7 @@
-﻿using Simulation.Tests;
+﻿using Data;
+using Meshes;
+using Shaders;
+using Simulation.Tests;
 using Types;
 using Worlds;
 
@@ -8,19 +11,19 @@ namespace Rendering.Tests
     {
         static RenderingTests()
         {
-            TypeRegistry.Load<Data.Core.TypeBank>();
-            TypeRegistry.Load<Meshes.TypeBank>();
-            TypeRegistry.Load<Rendering.Core.TypeBank>();
-            TypeRegistry.Load<Shaders.TypeBank>();
+            TypeRegistry.Load<DataTypeBank>();
+            TypeRegistry.Load<MeshesTypeBank>();
+            TypeRegistry.Load<RenderingTypeBank>();
+            TypeRegistry.Load<ShadersTypeBank>();
         }
 
         protected override Schema CreateSchema()
         {
             Schema schema = base.CreateSchema();
-            schema.Load<Data.Core.SchemaBank>();
-            schema.Load<Meshes.SchemaBank>();
-            schema.Load<Rendering.Core.SchemaBank>();
-            schema.Load<Shaders.SchemaBank>();
+            schema.Load<DataSchemaBank>();
+            schema.Load<MeshesSchemaBank>();
+            schema.Load<RenderingSchemaBank>();
+            schema.Load<ShadersSchemaBank>();
             return schema;
         }
     }
