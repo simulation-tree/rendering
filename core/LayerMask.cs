@@ -3,6 +3,9 @@ using Unmanaged;
 
 namespace Rendering
 {
+    /// <summary>
+    /// Represents a mask containing up to 32 <see cref="Layer"/>s.
+    /// </summary>
     public struct LayerMask : IEquatable<LayerMask>
     {
         /// <summary>

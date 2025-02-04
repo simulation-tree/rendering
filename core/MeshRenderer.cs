@@ -1,31 +1,30 @@
-﻿using Meshes;
+﻿using Materials;
+using Meshes;
 using Rendering.Components;
 using Worlds;
 
 namespace Rendering
 {
-    public readonly struct MeshRenderer : IRenderer
+    public readonly partial struct MeshRenderer : IEntity
     {
-        private readonly Entity entity;
-
         public readonly Material Material
         {
             get
             {
-                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
-                uint materialEntity = entity.GetReference(component.materialReference);
-                return new(entity.world, materialEntity);
+                ref IsRenderer component = ref GetComponent<IsRenderer>();
+                uint materialEntity = GetReference(component.materialReference);
+                return new Entity(world, materialEntity).As<Material>();
             }
             set
             {
-                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
-                if (entity.ContainsReference(component.materialReference))
+                ref IsRenderer component = ref GetComponent<IsRenderer>();
+                if (ContainsReference(component.materialReference))
                 {
-                    entity.SetReference(component.materialReference, value);
+                    SetReference(component.materialReference, value);
                 }
                 else
                 {
-                    component.materialReference = entity.AddReference(value);
+                    component.materialReference = AddReference(value);
                 }
             }
         }
@@ -34,20 +33,20 @@ namespace Rendering
         {
             get
             {
-                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
-                uint meshEntity = entity.GetReference(component.meshReference);
-                return new Entity(entity.world, meshEntity).As<Mesh>();
+                ref IsRenderer component = ref GetComponent<IsRenderer>();
+                uint meshEntity = GetReference(component.meshReference);
+                return new Entity(world, meshEntity).As<Mesh>();
             }
             set
             {
-                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
-                if (entity.ContainsReference(component.meshReference))
+                ref IsRenderer component = ref GetComponent<IsRenderer>();
+                if (ContainsReference(component.meshReference))
                 {
-                    entity.SetReference(component.meshReference, value);
+                    SetReference(component.meshReference, value);
                 }
                 else
                 {
-                    component.meshReference = entity.AddReference(value);
+                    component.meshReference = AddReference(value);
                 }
             }
         }
@@ -56,53 +55,38 @@ namespace Rendering
         {
             get
             {
-                ref IsRenderer component = ref entity.GetComponent<IsRenderer>();
+                ref IsRenderer component = ref GetComponent<IsRenderer>();
                 return ref component.renderMask;
             }
         }
 
-        readonly uint IEntity.Value => entity.GetEntityValue();
-        readonly World IEntity.World => entity.GetWorld();
+        public MeshRenderer(World world, Mesh mesh, Material material, LayerMask renderMask)
+        {
+            this.world = world;
+            value = world.CreateEntity(new IsRenderer((rint)1, (rint)2, renderMask));
+            AddReference(mesh);
+            AddReference(material);
+        }
+
+        public MeshRenderer(World world, Mesh mesh, Material material)
+        {
+            LayerMask renderMask = default;
+            renderMask.Set(0);
+
+            this.world = world;
+            value = world.CreateEntity(new IsRenderer((rint)1, (rint)2, renderMask));
+            AddReference(mesh);
+            AddReference(material);
+        }
 
         readonly void IEntity.Describe(ref Archetype archetype)
         {
             archetype.AddComponentType<IsRenderer>();
         }
 
-        public MeshRenderer(World world, uint existingEntity)
-        {
-            entity = new(world, existingEntity);
-        }
-
-        public MeshRenderer(World world, Mesh mesh, Material material, LayerMask renderMask)
-        {
-            entity = new Entity<IsRenderer>(world, new IsRenderer((rint)1, (rint)2, renderMask));
-            entity.AddReference(mesh);
-            entity.AddReference(material);
-        }
-
-        public MeshRenderer(World world, Mesh mesh, Material material)
-        {
-            LayerMask firstLayerOnly = default;
-            firstLayerOnly.Set(0);
-            entity = new Entity<IsRenderer>(world, new IsRenderer((rint)1, (rint)2, firstLayerOnly));
-            entity.AddReference(mesh);
-            entity.AddReference(material);
-        }
-
-        public readonly void Dispose()
-        {
-            entity.Dispose();
-        }
-
         public readonly override string ToString()
         {
-            return entity.ToString();
-        }
-
-        public static implicit operator Entity(MeshRenderer renderer)
-        {
-            return renderer.entity;
+            return value.ToString();
         }
     }
 }

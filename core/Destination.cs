@@ -1,16 +1,14 @@
 ﻿using Rendering.Components;
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Numerics;
 using Unmanaged;
 using Worlds;
 
 namespace Rendering
 {
-    public readonly struct Destination : IDestination, IEquatable<Destination>
+    public readonly partial struct Destination : IEntity
     {
-        private readonly Entity entity;
-
         /// <summary>
         /// Retrieves the size of the destination.
         /// </summary>
@@ -18,14 +16,29 @@ namespace Rendering
         {
             get
             {
-                IsDestination isDestination = entity.GetComponent<IsDestination>();
-                return (isDestination.width, isDestination.height);
+                IsDestination component = GetComponent<IsDestination>();
+                return (component.width, component.height);
             }
             set
             {
-                ref IsDestination isDestination = ref entity.GetComponent<IsDestination>();
-                isDestination.width = value.width;
-                isDestination.height = value.height;
+                ref IsDestination component = ref GetComponent<IsDestination>();
+                component.width = value.width;
+                component.height = value.height;
+            }
+        }
+
+        public readonly Vector2 SizeAsVector2
+        {
+            get
+            {
+                IsDestination component = GetComponent<IsDestination>();
+                return new Vector2(component.width, component.height);
+            }
+            set
+            {
+                ref IsDestination component = ref GetComponent<IsDestination>();
+                component.width = (uint)value.X;
+                component.height = (uint)value.Y;
             }
         }
 
@@ -47,83 +60,65 @@ namespace Rendering
             }
         }
 
-        public readonly ref Vector4 DestinationRegion => ref entity.GetComponent<IsDestination>().region;
-
-        readonly uint IEntity.Value => entity.value;
-        readonly World IEntity.World => entity.world;
-
-        readonly void IEntity.Describe(ref Archetype archetype)
-        {
-            archetype.AddComponentType<IsDestination>();
-            archetype.AddArrayElementType<DestinationExtension>();
-        }
-
-        public Destination(World world, uint existingEntity)
-        {
-            entity = new(world, existingEntity);
-        }
+        public readonly ref Vector4 Region => ref GetComponent<IsDestination>().region;
+        public readonly ref Vector4 ClearColor => ref GetComponent<IsDestination>().clearColor;
+        public readonly ref FixedString RendererLabel => ref GetComponent<IsDestination>().rendererLabel;
 
         public Destination(World world, Vector2 size, FixedString renderer)
         {
-            entity = new Entity<IsDestination>(world, new IsDestination(size, renderer));
-            entity.CreateArray<DestinationExtension>();
+            this.world = world;
+            value = world.CreateEntity(new IsDestination(size, renderer));
+            CreateArray<DestinationExtension>();
         }
 
         public Destination(World world, Vector2 size, USpan<char> renderer)
         {
-            entity = new Entity<IsDestination>(world, new IsDestination(size, new(renderer)));
-            entity.CreateArray<DestinationExtension>();
+            this.world = world;
+            value = world.CreateEntity(new IsDestination(size, renderer));
+            CreateArray<DestinationExtension>();
         }
 
-        public readonly void Dispose()
+        readonly void IEntity.Describe(ref Archetype archetype)
         {
-            entity.Dispose();
+            archetype.AddComponentType<IsDestination>();
+            archetype.AddArrayType<DestinationExtension>();
         }
 
         public readonly override string ToString()
         {
-            return entity.ToString();
+            return value.ToString();
         }
 
-        public readonly override bool Equals([NotNullWhen(true)] object? obj)
+        public readonly uint CopyExtensionNamesTo(USpan<FixedString> destination)
         {
-            return obj is Destination destination && entity == destination.entity;
-        }
-
-        public readonly override int GetHashCode()
-        {
-            return entity.GetHashCode();
-        }
-
-        public readonly uint CopyExtensionNamesTo(USpan<FixedString> buffer)
-        {
-            USpan<DestinationExtension> extensions = entity.GetArray<DestinationExtension>();
-            uint length = Math.Min(extensions.Length, buffer.Length);
-            extensions.As<FixedString>().Slice(0, length).CopyTo(buffer);
+            USpan<DestinationExtension> array = GetArray<DestinationExtension>();
+            uint length = Math.Min(array.Length, destination.Length);
+            array.As<FixedString>().Slice(0, length).CopyTo(destination);
             return length;
         }
 
-        public readonly void AddExtension(USpan<char> extension)
+        public readonly bool ContainsExtension(FixedString extension)
         {
-            USpan<DestinationExtension> extensions = entity.GetArray<DestinationExtension>();
-            for (uint i = 0; i < extensions.Length; i++)
+            USpan<DestinationExtension> array = GetArray<DestinationExtension>();
+            for (uint i = 0; i < array.Length; i++)
             {
-                if (extensions[i].text.Equals(extension))
+                if (array[i].value.Equals(extension))
                 {
-                    throw new InvalidOperationException($"Extension `{extension.ToString()}` is already attached to destination `{entity}`");
+                    return true;
                 }
             }
 
-            uint extensionCount = extensions.Length;
-            extensions = entity.ResizeArray<DestinationExtension>(extensionCount + 1);
-            extensions[extensionCount] = new DestinationExtension(extension);
+            return false;
         }
 
         public readonly void AddExtension(FixedString extension)
         {
-            USpan<char> span = stackalloc char[(int)FixedString.Capacity];
-            uint length = extension.CopyTo(span);
-            AddExtension(span.Slice(0, length));
+            ThrowIfExtensionAlreadyPresent(extension);
+
+            USpan<DestinationExtension> array = GetArray<DestinationExtension>();
+            uint length = array.Length;
+            array = ResizeArray<DestinationExtension>(length + 1);
+            array[length] = new DestinationExtension(extension);
         }
 
         /// <summary>
@@ -132,28 +127,46 @@ namespace Rendering
         public readonly Vector2 GetScreenPointFromPosition(Vector2 position)
         {
             (uint width, uint height) = Size;
-            Vector2 screenPoint = position / new Vector2(width, height);
-            return screenPoint;
+            return position / new Vector2(width, height);
         }
 
-        public readonly bool Equals(Destination other)
+        public readonly bool TryGetRendererInstanceInUse(out Allocation instance)
         {
-            return entity == other.entity;
+            ref RendererInstanceInUse component = ref TryGetComponent<RendererInstanceInUse>(out bool contains);
+            if (contains)
+            {
+                instance = component.value;
+                return true;
+            }
+            else
+            {
+                instance = default;
+                return false;
+            }
         }
 
-        public static bool operator ==(Destination a, Destination b)
+        public readonly bool TryGetSurfaceInUse(out Allocation surface)
         {
-            return a.entity == b.entity;
+            ref SurfaceInUse component = ref TryGetComponent<SurfaceInUse>(out bool contains);
+            if (contains)
+            {
+                surface = component.value;
+                return true;
+            }
+            else
+            {
+                surface = default;
+                return false;
+            }
         }
 
-        public static bool operator !=(Destination a, Destination b)
+        [Conditional("DEBUG")]
+        private readonly void ThrowIfExtensionAlreadyPresent(FixedString extension)
         {
-            return a.entity != b.entity;
-        }
-
-        public static implicit operator Entity(Destination destination)
-        {
-            return destination.entity;
+            if (ContainsExtension(extension))
+            {
+                throw new InvalidOperationException($"Extension `{extension}` is already present on the destination.");
+            }
         }
     }
 }

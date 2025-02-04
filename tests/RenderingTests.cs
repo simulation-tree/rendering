@@ -1,18 +1,20 @@
 ﻿using Data;
+using Materials;
 using Meshes;
 using Shaders;
-using Simulation.Tests;
 using Types;
 using Worlds;
+using Worlds.Tests;
 
 namespace Rendering.Tests
 {
-    public abstract class RenderingTests : SimulationTests
+    public abstract class RenderingTests : WorldTests
     {
         static RenderingTests()
         {
             TypeRegistry.Load<DataTypeBank>();
             TypeRegistry.Load<MeshesTypeBank>();
+            TypeRegistry.Load<MaterialsTypeBank>();
             TypeRegistry.Load<RenderingTypeBank>();
             TypeRegistry.Load<ShadersTypeBank>();
         }
@@ -22,6 +24,7 @@ namespace Rendering.Tests
             Schema schema = base.CreateSchema();
             schema.Load<DataSchemaBank>();
             schema.Load<MeshesSchemaBank>();
+            schema.Load<MaterialsSchemaBank>();
             schema.Load<RenderingSchemaBank>();
             schema.Load<ShadersSchemaBank>();
             return schema;

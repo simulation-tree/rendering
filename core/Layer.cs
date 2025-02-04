@@ -5,7 +5,7 @@ using Unmanaged;
 namespace Rendering
 {
     /// <summary>
-    /// Represents a layer part of a <see cref="LayerMask"/>.
+    /// Represents a single layer inside a <see cref="LayerMask"/>.
     /// </summary>
     public readonly struct Layer : IEquatable<Layer>
     {
