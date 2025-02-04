@@ -82,9 +82,6 @@ jobs:
       - name: Build Source
         run: dotnet build "${{ github.event.repository.name }}/source" -c Release /p:Version=${VERSION}
       
-      - name: Build Generator
-        run: dotnet build "${{ github.event.repository.name }}/generator" -c Release /p:Version=${VERSION}
-
       - name: Build Core
         run: dotnet build "${{ github.event.repository.name }}/core" -c Release /p:Version=${VERSION}
 
@@ -94,9 +91,6 @@ jobs:
       - name: Pack Source
         run: dotnet pack "${{ github.event.repository.name }}/source" -c Release /p:Version=${VERSION} --no-build --output .
 
-      - name: Pack Generator
-        run: dotnet pack "${{ github.event.repository.name }}/generator" -c Release /p:Version=${VERSION} --no-build --output .
-
       - name: Pack Core
         run: dotnet pack "${{ github.event.repository.name }}/core" -c Release /p:Version=${VERSION} --no-build --output .
 
@@ -105,11 +99,6 @@ jobs:
       
       - name: Push Core
         run: dotnet nuget push Rendering.Core.${VERSION}.nupkg --source github --api-key ${NUGET_TOKEN}
-        env:
-          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-
-      - name: Push Generator
-        run: dotnet nuget push Rendering.Generator.${VERSION}.nupkg --source github --api-key ${NUGET_TOKEN}
         env:
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
 
