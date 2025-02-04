@@ -62,20 +62,13 @@ jobs:
           repository: game-simulations/meshes
           token: ${{ secrets.PAT }}
           path: meshes
-          
-      - name: Checkout `serialization`
-        uses: actions/checkout@v4.1.2
-        with:
-          repository: game-simulations/serialization
-          token: ${{ secrets.PAT }}
-          path: serialization
 
-      - name: Checkout `simulation`
+      - name: Checkout `materials`
         uses: actions/checkout@v4.1.2
         with:
-          repository: game-simulations/simulation
+          repository: game-simulations/materials
           token: ${{ secrets.PAT }}
-          path: simulation
+          path: materials
 
       - name: Checkout `data`
         uses: actions/checkout@v4.1.2
