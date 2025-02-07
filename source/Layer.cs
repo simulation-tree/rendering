@@ -10,7 +10,7 @@ namespace Rendering
     public readonly struct Layer : IEquatable<Layer>
     {
         public static readonly Layer MinValue = new(0);
-        public static readonly Layer MaxValue = new(31);
+        public static readonly Layer MaxValue = new(LayerMask.Capacity - 1);
 
         private readonly byte value;
 
@@ -21,11 +21,16 @@ namespace Rendering
             this.value = value;
         }
 
+        public Layer(uint value)
+        {
+            ThrowIfOutOfRange(value);
+
+            this.value = (byte)value;
+        }
+
         public readonly override string ToString()
         {
-            USpan<char> buffer = stackalloc char[2];
-            uint length = ToString(buffer);
-            return buffer.Slice(0, length).ToString();
+            return value.ToString();
         }
 
         public readonly uint ToString(USpan<char> buffer)
@@ -81,11 +86,11 @@ namespace Rendering
         }
 
         [Conditional("DEBUG")]
-        private static void ThrowIfOutOfRange(byte value)
+        private static void ThrowIfOutOfRange(uint value)
         {
-            if (value > 31)
+            if (value >= LayerMask.Capacity)
             {
-                throw new ArgumentOutOfRangeException(nameof(value), $"The layer must be no greater than 31");
+                throw new ArgumentOutOfRangeException(nameof(value), $"The layer must be no greater than {LayerMask.Capacity - 1}");
             }
         }
     }

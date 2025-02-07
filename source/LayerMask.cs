@@ -42,7 +42,7 @@ namespace Rendering
         public readonly uint ToString(USpan<char> buffer)
         {
             uint length = 0;
-            for (byte i = 0; i < Layer.MaxValue; i++)
+            for (uint i = 0; i < Capacity; i++)
             {
                 if (Contains(new(i)))
                 {
