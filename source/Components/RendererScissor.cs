@@ -1,9 +1,7 @@
 ﻿using System.Numerics;
-using Worlds;
 
 namespace Rendering.Components
 {
-    [Component]
     public struct RendererScissor
     {
         public Vector4 value;

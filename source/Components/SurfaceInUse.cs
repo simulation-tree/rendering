@@ -1,9 +1,7 @@
 ﻿using Unmanaged;
-using Worlds;
 
 namespace Rendering.Components
 {
-    [Component]
     public readonly struct SurfaceInUse
     {
         public readonly Allocation value;

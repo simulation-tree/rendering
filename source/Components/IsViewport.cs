@@ -3,7 +3,6 @@ using Worlds;
 
 namespace Rendering.Components
 {
-    [Component]
     public struct IsViewport
     {
         public rint destinationReference;

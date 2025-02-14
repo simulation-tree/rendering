@@ -1,9 +1,7 @@
 ﻿using System.Numerics;
-using Worlds;
 
 namespace Rendering
 {
-    [Component]
     public struct Color
     {
         public static readonly Color White = new(1, 1, 1, 1);

@@ -1,9 +1,7 @@
 ﻿using Unmanaged;
-using Worlds;
 
 namespace Rendering
 {
-    [ArrayElement]
     public readonly struct DestinationExtension
     {
         public readonly FixedString value;

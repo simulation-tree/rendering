@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Numerics;
 using Unmanaged;
-using Worlds;
 
 namespace Rendering.Components
 {
-    [Component]
     public struct IsDestination
     {
         public uint width;
