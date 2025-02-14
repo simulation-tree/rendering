@@ -1,6 +1,7 @@
 ﻿using Materials;
 using Meshes;
 using Rendering.Components;
+using System.Numerics;
 using Worlds;
 
 namespace Rendering
@@ -25,6 +26,38 @@ namespace Rendering
                 else
                 {
                     component.materialReference = AddReference(value);
+                }
+            }
+        }
+
+        public readonly ref Vector4 LocalScissor
+        {
+            get
+            {
+                ref RendererScissor component = ref TryGetComponent<RendererScissor>(out bool contains);
+                if (contains)
+                {
+                    return ref component.value;
+                }
+                else
+                {
+                    return ref AddComponent(new RendererScissor()).value;
+                }
+            }
+        }
+
+        public readonly Vector4 WorldScissor
+        {
+            get
+            {
+                ref WorldRendererScissor component = ref TryGetComponent<WorldRendererScissor>(out bool contains);
+                if (contains)
+                {
+                    return component.value;
+                }
+                else
+                {
+                    return AddComponent(new WorldRendererScissor()).value;
                 }
             }
         }
