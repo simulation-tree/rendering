@@ -103,7 +103,7 @@ namespace Rendering
 
         public MeshRenderer(World world, Mesh mesh, Material material)
         {
-            LayerMask renderMask = default;
+            LayerMask renderMask = new();
             renderMask.Set(0);
 
             this.world = world;

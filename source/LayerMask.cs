@@ -25,9 +25,20 @@ namespace Rendering
         public LayerMask()
         {
         }
+
+        /// <summary>
+        /// Creates a layer mask with the given <paramref name="layers"/> set.
+        /// </summary>
+        public LayerMask(params USpan<Layer> layers)
+        {
+            for (uint i = 0; i < layers.Length; i++)
+            {
+                Set(layers[i]);
+            }
+        }
 #endif
 
-        public LayerMask(uint value)
+        private LayerMask(uint value)
         {
             this.value = value;
         }
@@ -101,19 +112,17 @@ namespace Rendering
         /// <summary>
         /// Makes the given <paramref name="layer"/> present in the layer mask.
         /// </summary>
-        public LayerMask Set(Layer layer)
+        public void Set(Layer layer)
         {
             value |= 1u << layer;
-            return this;
         }
 
         /// <summary>
         /// Removes the given <paramref name="layer"/> from the layer mask.
         /// </summary>
-        public LayerMask Clear(Layer layer)
+        public void Clear(Layer layer)
         {
             value &= ~(1u << layer);
-            return this;
         }
 
         public static bool operator ==(LayerMask left, LayerMask right)
