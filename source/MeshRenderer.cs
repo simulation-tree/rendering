@@ -35,14 +35,12 @@ namespace Rendering
             get
             {
                 ref RendererScissor component = ref TryGetComponent<RendererScissor>(out bool contains);
-                if (contains)
+                if (!contains)
                 {
-                    return ref component.value;
+                    component = ref AddComponent<RendererScissor>();
                 }
-                else
-                {
-                    return ref AddComponent(new RendererScissor()).value;
-                }
+
+                return ref component.value;
             }
         }
 
@@ -57,7 +55,7 @@ namespace Rendering
                 }
                 else
                 {
-                    return AddComponent(new WorldRendererScissor()).value;
+                    return default;
                 }
             }
         }
