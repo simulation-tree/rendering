@@ -1,4 +1,5 @@
-﻿using Rendering.Components;
+﻿using Collections.Generic;
+using Rendering.Components;
 using System;
 using System.Diagnostics;
 using System.Numerics;
@@ -91,7 +92,7 @@ namespace Rendering
 
         public readonly uint CopyExtensionNamesTo(USpan<FixedString> destination)
         {
-            USpan<DestinationExtension> array = GetArray<DestinationExtension>();
+            USpan<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
             uint length = Math.Min(array.Length, destination.Length);
             array.As<FixedString>().Slice(0, length).CopyTo(destination);
             return length;
@@ -99,7 +100,7 @@ namespace Rendering
 
         public readonly bool ContainsExtension(FixedString extension)
         {
-            USpan<DestinationExtension> array = GetArray<DestinationExtension>();
+            USpan<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
             for (uint i = 0; i < array.Length; i++)
             {
                 if (array[i].value.Equals(extension))
@@ -115,9 +116,9 @@ namespace Rendering
         {
             ThrowIfExtensionAlreadyPresent(extension);
 
-            USpan<DestinationExtension> array = GetArray<DestinationExtension>();
+            Array<DestinationExtension> array = GetArray<DestinationExtension>();
             uint length = array.Length;
-            array = ResizeArray<DestinationExtension>(length + 1);
+            array.Length++;
             array[length] = new DestinationExtension(extension);
         }
 
