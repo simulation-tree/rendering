@@ -1,5 +1,4 @@
-﻿using Collections.Generic;
-using Rendering.Components;
+﻿using Rendering.Components;
 using System;
 using System.Diagnostics;
 using System.Numerics;
@@ -94,7 +93,7 @@ namespace Rendering
         {
             USpan<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
             uint length = Math.Min(array.Length, destination.Length);
-            array.As<FixedString>().Slice(0, length).CopyTo(destination);
+            array.As<FixedString>().GetSpan(length).CopyTo(destination);
             return length;
         }
 
@@ -116,7 +115,7 @@ namespace Rendering
         {
             ThrowIfExtensionAlreadyPresent(extension);
 
-            Array<DestinationExtension> array = GetArray<DestinationExtension>();
+            Values<DestinationExtension> array = GetArray<DestinationExtension>();
             uint length = array.Length;
             array.Length++;
             array[length] = new DestinationExtension(extension);

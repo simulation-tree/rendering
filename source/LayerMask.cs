@@ -47,7 +47,7 @@ namespace Rendering
         {
             USpan<char> buffer = stackalloc char[32];
             uint length = ToString(buffer);
-            return buffer.Slice(0, length).ToString();
+            return buffer.GetSpan(length).ToString();
         }
 
         public readonly uint ToString(USpan<char> buffer)
@@ -55,7 +55,7 @@ namespace Rendering
             uint length = 0;
             for (uint i = 0; i < Capacity; i++)
             {
-                if (Contains(new(i)))
+                if (Contains(i))
                 {
                     length += i.ToString(buffer.Slice(length));
                     buffer[length++] = ',';
@@ -91,6 +91,14 @@ namespace Rendering
         public readonly bool Contains(Layer layer)
         {
             return (value & (1u << layer)) != 0;
+        }
+
+        public readonly bool Contains(uint layer)
+        {
+            unchecked
+            {
+                return (value & (1u << (int)layer)) != 0;
+            }
         }
 
         /// <summary>
