@@ -62,9 +62,9 @@ namespace Rendering
 
         public readonly ref Vector4 Region => ref GetComponent<IsDestination>().region;
         public readonly ref Vector4 ClearColor => ref GetComponent<IsDestination>().clearColor;
-        public readonly ref FixedString RendererLabel => ref GetComponent<IsDestination>().rendererLabel;
+        public readonly ref ASCIIText256 RendererLabel => ref GetComponent<IsDestination>().rendererLabel;
 
-        public Destination(World world, Vector2 size, FixedString renderer)
+        public Destination(World world, Vector2 size, ASCIIText256 renderer)
         {
             this.world = world;
             value = world.CreateEntity(new IsDestination(size, renderer));
@@ -89,15 +89,15 @@ namespace Rendering
             return value.ToString();
         }
 
-        public readonly uint CopyExtensionNamesTo(USpan<FixedString> destination)
+        public readonly uint CopyExtensionNamesTo(USpan<ASCIIText256> destination)
         {
             USpan<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
             uint length = Math.Min(array.Length, destination.Length);
-            array.As<FixedString>().GetSpan(length).CopyTo(destination);
+            array.As<ASCIIText256>().GetSpan(length).CopyTo(destination);
             return length;
         }
 
-        public readonly bool ContainsExtension(FixedString extension)
+        public readonly bool ContainsExtension(ASCIIText256 extension)
         {
             USpan<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
             for (uint i = 0; i < array.Length; i++)
@@ -111,7 +111,7 @@ namespace Rendering
             return false;
         }
 
-        public readonly void AddExtension(FixedString extension)
+        public readonly void AddExtension(ASCIIText256 extension)
         {
             ThrowIfExtensionAlreadyPresent(extension);
 
@@ -130,7 +130,7 @@ namespace Rendering
             return position / new Vector2(width, height);
         }
 
-        public readonly bool TryGetRendererInstanceInUse(out Allocation instance)
+        public readonly bool TryGetRendererInstanceInUse(out MemoryAddress instance)
         {
             ref RendererInstanceInUse component = ref TryGetComponent<RendererInstanceInUse>(out bool contains);
             if (contains)
@@ -145,7 +145,7 @@ namespace Rendering
             }
         }
 
-        public readonly bool TryGetSurfaceInUse(out Allocation surface)
+        public readonly bool TryGetSurfaceInUse(out MemoryAddress surface)
         {
             ref SurfaceInUse component = ref TryGetComponent<SurfaceInUse>(out bool contains);
             if (contains)
@@ -161,7 +161,7 @@ namespace Rendering
         }
 
         [Conditional("DEBUG")]
-        private readonly void ThrowIfExtensionAlreadyPresent(FixedString extension)
+        private readonly void ThrowIfExtensionAlreadyPresent(ASCIIText256 extension)
         {
             if (ContainsExtension(extension))
             {

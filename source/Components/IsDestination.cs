@@ -10,7 +10,7 @@ namespace Rendering.Components
         public uint height;
         public Vector4 region;
         public Vector4 clearColor;
-        public FixedString rendererLabel;
+        public ASCIIText256 rendererLabel;
 
         public readonly uint Area => width * height;
 
@@ -33,7 +33,7 @@ namespace Rendering.Components
             throw new NotImplementedException();
         }
 #endif
-        public IsDestination(Vector2 size, FixedString rendererLabel)
+        public IsDestination(Vector2 size, ASCIIText256 rendererLabel)
         {
             width = (uint)size.X;
             height = (uint)size.Y;
@@ -42,7 +42,7 @@ namespace Rendering.Components
             this.rendererLabel = rendererLabel;
         }
 
-        public IsDestination(uint width, uint height, FixedString rendererLabel, Vector4 region, Vector4 clearColor)
+        public IsDestination(uint width, uint height, ASCIIText256 rendererLabel, Vector4 region, Vector4 clearColor)
         {
             this.width = width;
             this.height = height;
@@ -51,7 +51,7 @@ namespace Rendering.Components
             this.rendererLabel = rendererLabel;
         }
 
-        public IsDestination(Vector2 size, FixedString rendererLabel, Vector4 region, Vector4 clearColor)
+        public IsDestination(Vector2 size, ASCIIText256 rendererLabel, Vector4 region, Vector4 clearColor)
         {
             width = (uint)size.X;
             height = (uint)size.Y;

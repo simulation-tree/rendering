@@ -4,9 +4,9 @@ namespace Rendering
 {
     public readonly struct DestinationExtension
     {
-        public readonly FixedString value;
+        public readonly ASCIIText256 value;
 
-        public DestinationExtension(FixedString value)
+        public DestinationExtension(ASCIIText256 value)
         {
             this.value = value;
         }

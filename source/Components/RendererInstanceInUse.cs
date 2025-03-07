@@ -10,9 +10,9 @@ namespace Rendering.Components
     /// </summary>
     public readonly struct RendererInstanceInUse
     {
-        public readonly Allocation value;
+        public readonly MemoryAddress value;
 
-        public RendererInstanceInUse(Allocation value)
+        public RendererInstanceInUse(MemoryAddress value)
         {
             this.value = value;
         }

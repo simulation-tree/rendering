@@ -4,9 +4,9 @@ namespace Rendering.Components
 {
     public readonly struct SurfaceInUse
     {
-        public readonly Allocation value;
+        public readonly MemoryAddress value;
 
-        public SurfaceInUse(Allocation value)
+        public SurfaceInUse(MemoryAddress value)
         {
             this.value = value;
         }
