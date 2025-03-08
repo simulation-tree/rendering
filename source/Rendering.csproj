@@ -7,8 +7,8 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Title>Rendering</Title>
         <Authors>popcron</Authors>
-        <Company>game-simulations</Company>
-        <RepositoryUrl>https://github.com/game-simulations/rendering</RepositoryUrl>
+        <Company>simulation-tree</Company>
+        <RepositoryUrl>https://github.com/simulation-tree/rendering</RepositoryUrl>
         <IsAotCompatible>True</IsAotCompatible>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
         <PackageId/>

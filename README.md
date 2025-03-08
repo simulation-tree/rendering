@@ -3,7 +3,7 @@ Defines the types needed for 3D rendering implementations.
 
 ### Destinations
 These are entities that are known to be rendered to, and are referenced by cameras. They're expected
-to be implemented with individual window libraries, like in [`windows`](https://github.com/game-simulations/windows).
+to be implemented with individual window libraries, like in [`windows`](https://github.com/simulation-tree/windows).
 
 Destinations are then presented separately from appearing. They also require a label on them, with that label's handler registered with the `RenderEngineSystem`. The render engine system then updates upon the `RenderUpdate` event (which should be submitted last) and draws all enabled destinations:
 ```cs
@@ -22,7 +22,7 @@ Whenever they get updated, they will have a `CameraProjection` component added t
 the view and projection matrices.
 
 ### Binding data to shaders
-Its the materials entities that contain information about how to bind entity or texture data to [`shaders`](https://github.com/game-simulations/shaders):
+Its the materials entities that contain information about how to bind entity or texture data to [`shaders`](https://github.com/simulation-tree/shaders):
 ```cs
 Shader shader = new(world, "Assets/Shaders/shader.vert.glsl", "Assets/Shaders/shader.frag.glsl");
 Texture texture = new(world, "Assets/Textures/texture.png");
@@ -61,7 +61,7 @@ Material material = new(world, "*/Materials/Unlit.material.json");
 
 ### Renderers
 Finally the entities that cause rendering. They reference the previously mentioned materials
-and cameras, as well as [`meshes`](https://github.com/game-simulations/meshes).
+and cameras, as well as [`meshes`](https://github.com/simulation-tree/meshes).
 ```cs
 Mesh mesh = ...
 Renderer renderer = new(world, mesh, material, camera);
