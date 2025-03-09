@@ -1,11 +1,9 @@
 ﻿using Meshes;
 using Shaders;
 using System;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Types;
-using Unmanaged;
 
 namespace Rendering
 {
@@ -30,9 +28,9 @@ namespace Rendering
         {
             //get lowercase version
             byte length = attribute.name.Length;
-            USpan<char> nameBuffer = stackalloc char[length];
+            Span<char> nameBuffer = stackalloc char[length];
             attribute.name.CopyTo(nameBuffer);
-            for (uint i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 nameBuffer[i] = char.ToLower(nameBuffer[i]);
             }
@@ -40,7 +38,7 @@ namespace Rendering
             TypeLayout attributeType = attribute.Type;
             if (attributeType == vector2Type)
             {
-                if (nameBuffer.Contains("uv".AsSpan()))
+                if (nameBuffer.IndexOf("uv") != -1)
                 {
                     meshChannel = MeshChannel.UV;
                     return true;
@@ -48,22 +46,22 @@ namespace Rendering
             }
             else if (attributeType == vector3Type)
             {
-                if (nameBuffer.Contains("normal".AsSpan()))
+                if (nameBuffer.IndexOf("normal") != -1)
                 {
                     meshChannel = MeshChannel.Normal;
                     return true;
                 }
-                else if (nameBuffer.Contains("tangent".AsSpan()))
+                else if (nameBuffer.IndexOf("tangent") != -1)
                 {
                     meshChannel = MeshChannel.Tangent;
                     return true;
                 }
-                else if (nameBuffer.Contains("position".AsSpan()))
+                else if (nameBuffer.IndexOf("position") != -1)
                 {
                     meshChannel = MeshChannel.Position;
                     return true;
                 }
-                else if (nameBuffer.Contains("bitangent".AsSpan()))
+                else if (nameBuffer.IndexOf("bitangent") != -1)
                 {
                     meshChannel = MeshChannel.BiTangent;
                     return true;
@@ -71,7 +69,7 @@ namespace Rendering
             }
             else if (attributeType == vector4Type)
             {
-                if (nameBuffer.Contains("color".AsSpan()))
+                if (nameBuffer.IndexOf("color") != -1)
                 {
                     meshChannel = MeshChannel.Color;
                     return true;

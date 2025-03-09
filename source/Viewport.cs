@@ -51,7 +51,7 @@ namespace Rendering
 
         public Viewport(World world, Destination destination, LayerMask renderMask)
         {
-            uint cameraCount = world.CountEntitiesWith<IsViewport>();
+            int cameraCount = world.CountEntitiesWith<IsViewport>();
             sbyte order = (sbyte)cameraCount;
 
             this.world = world;
@@ -61,7 +61,7 @@ namespace Rendering
 
         public Viewport(World world, Destination destination)
         {
-            uint cameraCount = world.CountEntitiesWith<IsViewport>();
+            int cameraCount = world.CountEntitiesWith<IsViewport>();
             sbyte order = (sbyte)cameraCount;
 
             this.world = world;

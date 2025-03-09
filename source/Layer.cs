@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Unmanaged;
 
 namespace Rendering
 {
@@ -33,9 +32,9 @@ namespace Rendering
             return value.ToString();
         }
 
-        public readonly uint ToString(USpan<char> buffer)
+        public readonly int ToString(Span<char> destination)
         {
-            return value.ToString(buffer);
+            return value.ToString(destination);
         }
 
         public readonly override bool Equals(object? obj)

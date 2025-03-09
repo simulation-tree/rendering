@@ -1,4 +1,5 @@
-﻿using Unmanaged;
+﻿using System;
+using Unmanaged;
 
 namespace Rendering
 {
@@ -11,7 +12,7 @@ namespace Rendering
             this.value = value;
         }
 
-        public DestinationExtension(USpan<char> value)
+        public DestinationExtension(Span<char> value)
         {
             this.value = new(value);
         }

@@ -71,7 +71,7 @@ namespace Rendering
             CreateArray<DestinationExtension>();
         }
 
-        public Destination(World world, Vector2 size, USpan<char> renderer)
+        public Destination(World world, Vector2 size, System.Span<char> renderer)
         {
             this.world = world;
             value = world.CreateEntity(new IsDestination(size, renderer));
@@ -89,18 +89,18 @@ namespace Rendering
             return value.ToString();
         }
 
-        public readonly uint CopyExtensionNamesTo(USpan<ASCIIText256> destination)
+        public readonly int CopyExtensionNamesTo(Span<ASCIIText256> destination)
         {
-            USpan<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
-            uint length = Math.Min(array.Length, destination.Length);
-            array.As<ASCIIText256>().GetSpan(length).CopyTo(destination);
+            Span<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
+            int length = Math.Min(array.Length, destination.Length);
+            array.As<DestinationExtension, ASCIIText256>().Slice(0, length).CopyTo(destination);
             return length;
         }
 
         public readonly bool ContainsExtension(ASCIIText256 extension)
         {
-            USpan<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
-            for (uint i = 0; i < array.Length; i++)
+            Span<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
+            for (int i = 0; i < array.Length; i++)
             {
                 if (array[i].value.Equals(extension))
                 {
@@ -116,7 +116,7 @@ namespace Rendering
             ThrowIfExtensionAlreadyPresent(extension);
 
             Values<DestinationExtension> array = GetArray<DestinationExtension>();
-            uint length = array.Length;
+            int length = array.Length;
             array.Length++;
             array[length] = new DestinationExtension(extension);
         }

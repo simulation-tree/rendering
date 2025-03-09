@@ -1,5 +1,4 @@
 ﻿using System;
-using Unmanaged;
 
 namespace Rendering
 {
@@ -29,9 +28,9 @@ namespace Rendering
         /// <summary>
         /// Creates a layer mask with the given <paramref name="layers"/> set.
         /// </summary>
-        public LayerMask(params USpan<Layer> layers)
+        public LayerMask(params Span<Layer> layers)
         {
-            for (uint i = 0; i < layers.Length; i++)
+            for (int i = 0; i < layers.Length; i++)
             {
                 Set(layers[i]);
             }
@@ -45,20 +44,20 @@ namespace Rendering
 
         public readonly override string ToString()
         {
-            USpan<char> buffer = stackalloc char[32];
-            uint length = ToString(buffer);
-            return buffer.GetSpan(length).ToString();
+            Span<char> buffer = stackalloc char[32];
+            int length = ToString(buffer);
+            return buffer.Slice(0, length).ToString();
         }
 
-        public readonly uint ToString(USpan<char> buffer)
+        public readonly int ToString(Span<char> destination)
         {
-            uint length = 0;
-            for (uint i = 0; i < Capacity; i++)
+            int length = 0;
+            for (int i = 0; i < Capacity; i++)
             {
                 if (Contains(i))
                 {
-                    length += i.ToString(buffer.Slice(length));
-                    buffer[length++] = ',';
+                    length += i.ToString(destination.Slice(length));
+                    destination[length++] = ',';
                 }
             }
 
@@ -93,12 +92,9 @@ namespace Rendering
             return (value & (1u << layer)) != 0;
         }
 
-        public readonly bool Contains(uint layer)
+        public readonly bool Contains(int layer)
         {
-            unchecked
-            {
-                return (value & (1u << (int)layer)) != 0;
-            }
+            return (value & (1u << layer)) != 0;
         }
 
         /// <summary>
