@@ -64,17 +64,17 @@ namespace Rendering
         public readonly ref Vector4 ClearColor => ref GetComponent<IsDestination>().clearColor;
         public readonly ref ASCIIText256 RendererLabel => ref GetComponent<IsDestination>().rendererLabel;
 
-        public Destination(World world, Vector2 size, ASCIIText256 renderer)
+        public Destination(World world, Vector2 size, ASCIIText256 rendererLabel)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDestination(size, renderer));
+            value = world.CreateEntity(new IsDestination(size, rendererLabel));
             CreateArray<DestinationExtension>();
         }
 
-        public Destination(World world, Vector2 size, System.Span<char> renderer)
+        public Destination(World world, Vector2 size, ReadOnlySpan<char> rendererLabel)
         {
             this.world = world;
-            value = world.CreateEntity(new IsDestination(size, renderer));
+            value = world.CreateEntity(new IsDestination(size, rendererLabel));
             CreateArray<DestinationExtension>();
         }
 

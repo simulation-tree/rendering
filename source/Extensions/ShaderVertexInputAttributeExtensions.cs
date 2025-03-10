@@ -27,7 +27,7 @@ namespace Rendering
         public static bool TryDeduceMeshChannel(this ShaderVertexInputAttribute attribute, out MeshChannel meshChannel)
         {
             //get lowercase version
-            byte length = attribute.name.Length;
+            int length = attribute.name.Length;
             Span<char> nameBuffer = stackalloc char[length];
             attribute.name.CopyTo(nameBuffer);
             for (int i = 0; i < length; i++)
