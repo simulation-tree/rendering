@@ -12,7 +12,7 @@ namespace Rendering
             this.value = value;
         }
 
-        public DestinationExtension(Span<char> value)
+        public DestinationExtension(ReadOnlySpan<char> value)
         {
             this.value = new(value);
         }

@@ -116,9 +116,15 @@ namespace Rendering
             ThrowIfExtensionAlreadyPresent(extension);
 
             Values<DestinationExtension> array = GetArray<DestinationExtension>();
-            int length = array.Length;
-            array.Length++;
-            array[length] = new DestinationExtension(extension);
+            array.Add(new DestinationExtension(extension));
+        }
+
+        public readonly void AddExtension(ReadOnlySpan<char> extension)
+        {
+            ThrowIfExtensionAlreadyPresent(extension);
+
+            Values<DestinationExtension> array = GetArray<DestinationExtension>();
+            array.Add(new DestinationExtension(extension));
         }
 
         /// <summary>
