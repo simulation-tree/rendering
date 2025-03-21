@@ -91,7 +91,7 @@ namespace Rendering
 
         public readonly int CopyExtensionNamesTo(Span<ASCIIText256> destination)
         {
-            Span<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
+            Span<DestinationExtension> array = GetArray<DestinationExtension>();
             int length = Math.Min(array.Length, destination.Length);
             array.As<DestinationExtension, ASCIIText256>().Slice(0, length).CopyTo(destination);
             return length;
@@ -99,7 +99,7 @@ namespace Rendering
 
         public readonly bool ContainsExtension(ASCIIText256 extension)
         {
-            Span<DestinationExtension> array = GetArray<DestinationExtension>().AsSpan();
+            Span<DestinationExtension> array = GetArray<DestinationExtension>();
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i].value.Equals(extension))

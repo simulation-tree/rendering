@@ -10,15 +10,15 @@ namespace Rendering
     [SkipLocalsInit]
     public static class ShaderVertexInputAttributeExtensions
     {
-        private static readonly TypeLayout vector2Type;
-        private static readonly TypeLayout vector3Type;
-        private static readonly TypeLayout vector4Type;
+        private static readonly Types.Type vector2Type;
+        private static readonly Types.Type vector3Type;
+        private static readonly Types.Type vector4Type;
 
         static ShaderVertexInputAttributeExtensions()
         {
-            vector2Type = TypeRegistry.Get<Vector2>();
-            vector3Type = TypeRegistry.Get<Vector3>();
-            vector4Type = TypeRegistry.Get<Vector4>();
+            vector2Type = TypeRegistry.GetType<Vector2>();
+            vector3Type = TypeRegistry.GetType<Vector3>();
+            vector4Type = TypeRegistry.GetType<Vector4>();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Rendering
                 nameBuffer[i] = char.ToLower(nameBuffer[i]);
             }
 
-            TypeLayout attributeType = attribute.Type;
+            Types.Type attributeType = attribute.Type;
             if (attributeType == vector2Type)
             {
                 if (nameBuffer.IndexOf("uv") != -1)
