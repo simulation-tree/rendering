@@ -16,9 +16,9 @@ namespace Rendering
 
         static ShaderVertexInputAttributeExtensions()
         {
-            vector2Type = TypeRegistry.GetType<Vector2>();
-            vector3Type = TypeRegistry.GetType<Vector3>();
-            vector4Type = TypeRegistry.GetType<Vector4>();
+            vector2Type = MetadataRegistry.GetType<Vector2>();
+            vector3Type = MetadataRegistry.GetType<Vector3>();
+            vector4Type = MetadataRegistry.GetType<Vector4>();
         }
 
         /// <summary>
