@@ -60,7 +60,7 @@ namespace Rendering.Components
             this.rendererLabel = rendererLabel;
         }
 
-        public readonly Vector2 SizeAsVector2()
+        public readonly Vector2 GetSizeAsVector2()
         {
             return new(width, height);
         }
