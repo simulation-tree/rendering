@@ -11,9 +11,25 @@ namespace Rendering
             value = world.CreateEntity(function);
         }
 
+        public unsafe RenderEnginePlugin(World world, delegate* unmanaged<RenderEnginePluginFunction.Input, void> function)
+        {
+            this.world = world;
+            value = world.CreateEntity(new RenderEnginePluginFunction(function));
+        }
+
         void IEntity.Describe(ref Archetype archetype)
         {
             archetype.AddComponentType<RenderEnginePluginFunction>();
+        }
+
+        public static RenderEnginePlugin Create(World world, RenderEnginePluginFunction function)
+        {
+            return new(world, function);
+        }
+
+        public unsafe static RenderEnginePlugin Create(World world, delegate* unmanaged<RenderEnginePluginFunction.Input, void> function)
+        {
+            return new(world, function);
         }
     }
 }
