@@ -21,9 +21,9 @@ namespace Rendering.Functions
         }
 #endif
 
-        public readonly void Invoke(World world, uint materialEntity, Span<RenderEntity> entities)
+        public readonly void Invoke(World world, sbyte renderGroup, Span<RenderEntity> entities)
         {
-            function(new(world, materialEntity, entities));
+            function(new(world, renderGroup, entities));
         }
 
         public readonly override bool Equals(object? obj)
@@ -54,17 +54,17 @@ namespace Rendering.Functions
         public readonly struct Input
         {
             public readonly World world;
-            public readonly uint materialEntity;
+            public readonly sbyte renderGroup;
 
             private readonly RenderEntity* entities;
             private readonly int count;
 
             public readonly Span<RenderEntity> Entities => new(entities, count);
 
-            public Input(World world, uint materialEntity, Span<RenderEntity> entities)
+            public Input(World world, sbyte renderGroup, Span<RenderEntity> entities)
             {
                 this.world = world;
-                this.materialEntity = materialEntity;
+                this.renderGroup = renderGroup;
                 this.entities = entities.GetPointer();
                 count = entities.Length;
             }

@@ -22,7 +22,7 @@ namespace Rendering
         {
             this.entity = entity;
             version = component.version;
-            order = component.order;
+            order = component.renderGroup;
         }
 
         public readonly override bool Equals(object? obj)

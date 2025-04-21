@@ -6,16 +6,18 @@ namespace Rendering
     {
         public readonly uint entity;
         public readonly uint meshEntity;
+        public readonly uint materialEntity;
         public readonly uint vertexShaderEntity;
         public readonly uint fragmentShaderEntity;
         public readonly ushort meshVersion;
         public readonly ushort vertexShaderVersion;
         public readonly ushort fragmentShaderVersion;
 
-        public RenderEntity(uint entity, uint meshEntity, uint vertexShaderEntity, uint fragmentShaderEntity, ushort meshVersion, ushort vertexShaderVersion, ushort fragmentShaderVersion)
+        public RenderEntity(uint entity, uint meshEntity, uint materialEntity, uint vertexShaderEntity, uint fragmentShaderEntity, ushort meshVersion, ushort vertexShaderVersion, ushort fragmentShaderVersion)
         {
             this.entity = entity;
             this.meshEntity = meshEntity;
+            this.materialEntity = materialEntity;
             this.vertexShaderEntity = vertexShaderEntity;
             this.fragmentShaderEntity = fragmentShaderEntity;
             this.meshVersion = meshVersion;
@@ -31,12 +33,13 @@ namespace Rendering
         public readonly bool Equals(RenderEntity other)
         {
             return entity == other.entity &&
-                   meshEntity == other.meshEntity &&
-                   vertexShaderEntity == other.vertexShaderEntity &&
-                   fragmentShaderEntity == other.fragmentShaderEntity &&
-                   meshVersion == other.meshVersion &&
-                   vertexShaderVersion == other.vertexShaderVersion &&
-                   fragmentShaderVersion == other.fragmentShaderVersion;
+                    meshEntity == other.meshEntity &&
+                    materialEntity == other.materialEntity &&
+                    vertexShaderEntity == other.vertexShaderEntity &&
+                    fragmentShaderEntity == other.fragmentShaderEntity &&
+                    meshVersion == other.meshVersion &&
+                    vertexShaderVersion == other.vertexShaderVersion &&
+                    fragmentShaderVersion == other.fragmentShaderVersion;
         }
 
         public readonly override int GetHashCode()
@@ -44,6 +47,7 @@ namespace Rendering
             HashCode hash = new();
             hash.Add(entity);
             hash.Add(meshEntity);
+            hash.Add(materialEntity);
             hash.Add(vertexShaderEntity);
             hash.Add(fragmentShaderEntity);
             hash.Add(meshVersion);
