@@ -10,9 +10,9 @@ namespace Rendering
     [SkipLocalsInit]
     public static class ShaderVertexInputAttributeExtensions
     {
-        private static readonly Types.Type vector2Type;
-        private static readonly Types.Type vector3Type;
-        private static readonly Types.Type vector4Type;
+        private static readonly TypeMetadata vector2Type;
+        private static readonly TypeMetadata vector3Type;
+        private static readonly TypeMetadata vector4Type;
 
         static ShaderVertexInputAttributeExtensions()
         {
@@ -35,8 +35,7 @@ namespace Rendering
                 nameBuffer[i] = char.ToLower(nameBuffer[i]);
             }
 
-            Types.Type attributeType = attribute.Type;
-            if (attributeType == vector2Type)
+            if (attribute.type == vector2Type)
             {
                 if (nameBuffer.IndexOf("uv") != -1)
                 {
@@ -44,7 +43,7 @@ namespace Rendering
                     return true;
                 }
             }
-            else if (attributeType == vector3Type)
+            else if (attribute.type == vector3Type)
             {
                 if (nameBuffer.IndexOf("normal") != -1)
                 {
@@ -67,7 +66,7 @@ namespace Rendering
                     return true;
                 }
             }
-            else if (attributeType == vector4Type)
+            else if (attribute.type == vector4Type)
             {
                 if (nameBuffer.IndexOf("color") != -1)
                 {
