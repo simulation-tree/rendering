@@ -11,13 +11,13 @@
         <RepositoryUrl>https://github.com/simulation-tree/rendering</RepositoryUrl>
         <IsAotCompatible>True</IsAotCompatible>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-        <PackageId/>
+        <PackageId />
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\materials\source\Materials.csproj"/>
-        <ProjectReference Include="..\..\meshes\source\Meshes.csproj"/>
-        <ProjectReference Include="..\..\shaders\source\Shaders.csproj"/>
+        <ProjectReference Include="..\..\materials\source\Materials.csproj" />
+        <ProjectReference Include="..\..\meshes\source\Meshes.csproj" />
+        <ProjectReference Include="..\..\shaders\source\Shaders.csproj" />
         <ProjectReference Include="..\..\types\generator\Types.Generator.csproj">
             <OutputItemType>Analyzer</OutputItemType>
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
