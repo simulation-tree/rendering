@@ -62,18 +62,11 @@ namespace Rendering
 
         public readonly ref Vector4 Region => ref GetComponent<IsDestination>().region;
         public readonly ref Vector4 ClearColor => ref GetComponent<IsDestination>().clearColor;
-        public readonly ref ASCIIText256 RendererLabel => ref GetComponent<IsDestination>().rendererLabel;
+        public readonly ref RendererLabel RendererLabel => ref GetComponent<IsDestination>().rendererLabel;
         public readonly int ExtensionCount => GetArrayLength<DestinationExtension>();
         public readonly ReadOnlySpan<DestinationExtension> Extensions => GetArray<DestinationExtension>().AsSpan();
 
-        public Destination(World world, Vector2 size, ASCIIText256 rendererLabel)
-        {
-            this.world = world;
-            value = world.CreateEntity(new IsDestination(size, rendererLabel));
-            CreateArray<DestinationExtension>();
-        }
-
-        public Destination(World world, Vector2 size, ReadOnlySpan<char> rendererLabel)
+        public Destination(World world, Vector2 size, RendererLabel rendererLabel)
         {
             this.world = world;
             value = world.CreateEntity(new IsDestination(size, rendererLabel));

@@ -11,7 +11,7 @@ namespace Rendering.Tests
             using World world = CreateWorld();
             Destination destination = new(world, new Vector2(1920, 1080), "Renderer");
             Assert.That(destination.IsCompliant, Is.True);
-            Assert.That(destination.RendererLabel.ToString(), Is.EqualTo("Renderer"));
+            Assert.That(destination.RendererLabel, Is.EqualTo(new RendererLabel("Renderer")));
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Numerics;
-using Unmanaged;
 
 namespace Rendering.Components
 {
@@ -10,7 +9,7 @@ namespace Rendering.Components
         public uint height;
         public Vector4 region;
         public Vector4 clearColor;
-        public ASCIIText256 rendererLabel;
+        public RendererLabel rendererLabel;
 
         public readonly uint Area => width * height;
 
@@ -33,7 +32,7 @@ namespace Rendering.Components
             throw new NotImplementedException();
         }
 #endif
-        public IsDestination(Vector2 size, ASCIIText256 rendererLabel)
+        public IsDestination(Vector2 size, RendererLabel rendererLabel)
         {
             width = (uint)size.X;
             height = (uint)size.Y;
@@ -42,7 +41,7 @@ namespace Rendering.Components
             this.rendererLabel = rendererLabel;
         }
 
-        public IsDestination(uint width, uint height, ASCIIText256 rendererLabel, Vector4 region, Vector4 clearColor)
+        public IsDestination(uint width, uint height, RendererLabel rendererLabel, Vector4 region, Vector4 clearColor)
         {
             this.width = width;
             this.height = height;
@@ -51,18 +50,13 @@ namespace Rendering.Components
             this.rendererLabel = rendererLabel;
         }
 
-        public IsDestination(Vector2 size, ASCIIText256 rendererLabel, Vector4 region, Vector4 clearColor)
+        public IsDestination(Vector2 size, RendererLabel rendererLabel, Vector4 region, Vector4 clearColor)
         {
             width = (uint)size.X;
             height = (uint)size.Y;
             this.region = region;
             this.clearColor = clearColor;
             this.rendererLabel = rendererLabel;
-        }
-
-        public readonly Vector2 GetSizeAsVector2()
-        {
-            return new(width, height);
         }
     }
 }
