@@ -31,9 +31,9 @@
 
   <ItemGroup>
     <Content Include="bin/Debug/net9.0/Rendering.dll" Pack="true" PackagePath="tools/debug/Rendering.dll" Visible="false"/>
-    <Content Include="bin/Debug/net9.0/Rendering.xml" Pack="true" PackagePath="tools/debug/Rendering.xml" Visible="false"/>
+    <Content Include="bin/Debug/net9.0/Rendering.xml" Pack="true" PackagePath="tools/debug/Rendering.xml" Visible="false" Condition="Exists('bin/Debug/net9.0/Rendering.xml')"/>
     <Content Include="bin/Release/net9.0/Rendering.dll" Pack="true" PackagePath="tools/release/Rendering.dll" Visible="false"/>
-    <Content Include="bin/Release/net9.0/Rendering.xml" Pack="true" PackagePath="tools/release/Rendering.xml" Visible="false"/>
+    <Content Include="bin/Release/net9.0/Rendering.xml" Pack="true" PackagePath="tools/release/Rendering.xml" Visible="false" Condition="Exists('bin/Release/net9.0/Rendering.xml')"/>
     <Content Include="build/Rendering.targets" Pack="true" PackagePath="build/Rendering.targets" Visible="false"/>
   </ItemGroup>
 
