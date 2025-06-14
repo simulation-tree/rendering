@@ -14,8 +14,8 @@ namespace Rendering
                 uint destinationEntity = GetReference(component.destinationReference);
                 if (world.ContainsEntity(destinationEntity))
                 {
-                    //todo: this branch means the destination reference should be 0 instead
-                    return new Entity(world, destinationEntity).As<Destination>();
+                    //todo: this branch means the destination reference should be 0 instead, to avoid having to check if entity exists
+                    return Entity.Get<Destination>(world, destinationEntity);
                 }
                 else
                 {
