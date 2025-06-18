@@ -32,7 +32,7 @@ namespace Rendering
         {
             for (int i = 0; i < layers.Length; i++)
             {
-                Set(layers[i]);
+                value |= 1u << layers[i];
             }
         }
 #endif
@@ -81,7 +81,7 @@ namespace Rendering
 
         public readonly override int GetHashCode()
         {
-            return HashCode.Combine(value);
+            return unchecked((int)value);
         }
 
         /// <summary>
@@ -133,6 +133,7 @@ namespace Rendering
         {
             return left.Equals(right);
         }
+
         public static bool operator !=(LayerMask left, LayerMask right)
         {
             return !(left == right);
