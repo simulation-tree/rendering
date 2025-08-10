@@ -3,7 +3,7 @@
 
     <ItemGroup>
         <Reference Include="Rendering">
-            <HintPath>$(MSBuildThisFileDirectory)..\lib\net9.0\$(Configuration)\Rendering.dll</HintPath>
+            <HintPath>$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\$(Configuration)\Rendering.dll</HintPath>
         </Reference>
     </ItemGroup>
 
