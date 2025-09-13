@@ -31,15 +31,12 @@ namespace Rendering
 
         public readonly override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + (int)materialEntity;
-                hash = hash * 23 + (int)meshEntity;
-                hash = hash * 23 + (int)vertexShaderEntity;
-                hash = hash * 23 + (int)fragmentShaderEntity;
-                return hash;
-            }
+            int hash = 17;
+            hash = hash * 23 + (int)materialEntity;
+            hash = hash * 23 + (int)meshEntity;
+            hash = hash * 23 + (int)vertexShaderEntity;
+            hash = hash * 23 + (int)fragmentShaderEntity;
+            return hash;
         }
 
         public static bool operator ==(RendererCombination left, RendererCombination right)

@@ -28,7 +28,11 @@ namespace Rendering.Components
 
         public readonly override int GetHashCode()
         {
-            return HashCode.Combine(meshReference, materialReference, renderMask);
+            int hash = 17;
+            hash = hash * 31 + meshReference.GetHashCode();
+            hash = hash * 31 + materialReference.GetHashCode();
+            hash = hash * 31 + renderMask.GetHashCode();
+            return hash;
         }
 
         public static bool operator ==(IsRenderer left, IsRenderer right)

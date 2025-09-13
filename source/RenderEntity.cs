@@ -44,16 +44,16 @@ namespace Rendering
 
         public readonly override int GetHashCode()
         {
-            HashCode hash = new();
-            hash.Add(entity);
-            hash.Add(meshEntity);
-            hash.Add(materialEntity);
-            hash.Add(vertexShaderEntity);
-            hash.Add(fragmentShaderEntity);
-            hash.Add(meshVersion);
-            hash.Add(vertexShaderVersion);
-            hash.Add(fragmentShaderVersion);
-            return hash.ToHashCode();
+            int hash = 17;
+            hash = hash * 31 + (int)entity;
+            hash = hash * 31 + (int)meshEntity;
+            hash = hash * 31 + (int)materialEntity;
+            hash = hash * 31 + (int)vertexShaderEntity;
+            hash = hash * 31 + (int)fragmentShaderEntity;
+            hash = hash * 31 + meshVersion;
+            hash = hash * 31 + vertexShaderVersion;
+            hash = hash * 31 + fragmentShaderVersion;
+            return hash;
         }
 
         public static bool operator ==(RenderEntity left, RenderEntity right)

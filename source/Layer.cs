@@ -49,7 +49,7 @@ namespace Rendering
 
         public readonly override int GetHashCode()
         {
-            return HashCode.Combine(value);
+            return value;
         }
 
         public static bool operator ==(Layer left, Layer right)

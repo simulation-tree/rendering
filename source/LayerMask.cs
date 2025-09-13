@@ -81,7 +81,7 @@ namespace Rendering
 
         public readonly override int GetHashCode()
         {
-            return unchecked((int)value);
+            return (int)value;
         }
 
         /// <summary>
