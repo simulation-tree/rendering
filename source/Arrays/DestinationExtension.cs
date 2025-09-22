@@ -1,7 +1,7 @@
 ﻿using System;
 using Unmanaged;
 
-namespace Rendering
+namespace Rendering.Arrays
 {
     public readonly struct DestinationExtension
     {
